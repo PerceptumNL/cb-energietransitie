@@ -1,6 +1,8 @@
 
 ### Running and upload application
 
+Tested with Google App Engine 1.8.1.
+
 Create the `tools` directory and unpack Google App Engine inside the directory.
 
 Run `source activate` to load the environment variables, and then run GAE as usual.
