@@ -12,13 +12,11 @@ Add to `activity.html` course file:
 
     {% block main_content %}
 
-...
 
-  <script src="assets/lib/ddq.js"></script>
-  <script src="assets/lib/jquery.color.js"></script>
-  <link rel="stylesheet" type="text/css" href="assets/css/activity.css">
+    <script src="assets/lib/ddq.js"></script>
+    <script src="assets/lib/jquery.color.js"></script>
+    <link rel="stylesheet" type="text/css" href="assets/css/activity.css">
 
-...
 
     {% endblock main_content %}
 
