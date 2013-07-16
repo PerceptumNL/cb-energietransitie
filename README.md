@@ -7,6 +7,8 @@ Create the `tools` directory and unpack Google App Engine inside the directory.
 
 Run `source activate` to load the environment variables, and then run GAE as usual.
 
+Run `./apprun` to run the development server using a persistent datastorage.
+
 
 ### Customs exercises
 

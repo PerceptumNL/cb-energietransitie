@@ -1,0 +1,4 @@
+
+source activate
+
+dev_appserver.py --datastore_path=./tmp/test_db.sqlite coursebuilder/
