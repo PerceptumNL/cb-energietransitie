@@ -1,0 +1,11 @@
+GAE_PATH=$PWD/tools/google_appengine
+export SERVER_SOFTWARE="Development"
+
+#alias dev_appserver.py='dev_appserver.py --allow_skipped_files --use_sqlite --high_replication --enable_console'
+
+export PATH=$GAE_PATH:$PATH:$GAE_PATH
+export PYTHONPATH=$PYTHONPATH:$GAE_PATH:$GAE_PATH/lib/fancy_urllib:$GAE_PATH/lib/jinja2-2.6:$GAE_PATH/lib/webapp2-2.5.2:$GAE_PATH/lib/webob-1.2.3:$GAE_PATH/lib/yaml/lib:$PWD/coursebuilder:$PWD/coursebuilder/tools/etl
+
+chmod +x $GAE_PATH/dev_appserver.py
+chmod +x $GAE_PATH/appcfg.py
+
