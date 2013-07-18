@@ -32,7 +32,7 @@ var tfq_activity = {
     { 
       type: 'text',
       text: 'Are you human?',
-      correctAnswer: 1,
+      correctAnswer: 0,
       answerMaybe: true,
       answers: [{
         type: 'text',
