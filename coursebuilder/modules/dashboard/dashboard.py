@@ -21,6 +21,7 @@ import os
 import urllib
 import appengine_config
 from common import jinja_utils
+import logging
 from common import safe_dom
 from controllers import sites
 from controllers.utils import ApplicationHandler
@@ -705,14 +706,20 @@ class DashboardHandler(
         else:
             if job.status_code == jobs.STATUS_CODE_COMPLETED:
                 stats = transforms.loads(job.output)
+                logging.info(stats)
                 stats_calculated = True
 
+                subtemplate_values['names'] = stats['names']
                 subtemplate_values['enrolled'] = stats['enrollment']['enrolled']
                 subtemplate_values['unenrolled'] = (
                     stats['enrollment']['unenrolled'])
 
                 scores = []
                 total_records = 0
+
+                names = []
+                for name in stats['names'].items():
+                    names.append({'name': name[0], 'passed': name[1]})
                 for key, value in stats['scores'].items():
                     total_records += value[0]
                     avg = round(value[1] / value[0], 1) if value[0] else 0
@@ -720,6 +727,7 @@ class DashboardHandler(
                                    'avg': avg})
                 subtemplate_values['scores'] = scores
                 subtemplate_values['total_records'] = total_records
+                subtemplate_values['names'] = names
 
                 update_message = safe_dom.Text("""
                     Enrollment and assessment statistics were last updated at
@@ -758,6 +766,7 @@ class DashboardHandler(
         all_jobs_have_finished = True
 
         basic_analytics_job = ComputeStudentStats(self.app_context).load()
+        #basic_analytics_job = {}
         stats_html = self.get_markup_for_basic_analytics(basic_analytics_job)
         if (basic_analytics_job and
             basic_analytics_job.status_code != jobs.STATUS_CODE_COMPLETED):
@@ -819,7 +828,6 @@ class ScoresAggregator(object):
                 self.name_to_tuple[key] = (
                     count + 1, score_sum + float(scores[key]))
 
-
 class EnrollmentAggregator(object):
     """Aggregates enrollment statistics."""
 
@@ -833,6 +841,25 @@ class EnrollmentAggregator(object):
         else:
             self.unenrolled += 1
 
+class NamesAggregator(object):
+    """Aggregates names of students."""
+
+    def __init__(self):
+        self.stname = {}
+        #self.stname = ""
+
+    def visit(self, student):
+        name = student.name
+        count = 0
+        if student.scores:
+            scores = transforms.loads(student.scores)
+            for key in scores.keys():
+                count += 1
+
+        if count > 1:
+            self.stname[name] = "Pass"
+        else:
+            self.stname[name] = "Not"
 
 class ComputeStudentStats(jobs.DurableJob):
     """A job that computes student statistics."""
@@ -842,12 +869,14 @@ class ComputeStudentStats(jobs.DurableJob):
 
         enrollment = EnrollmentAggregator()
         scores = ScoresAggregator()
+        names = NamesAggregator()
         mapper = utils.QueryMapper(
             Student.all(), batch_size=500, report_every=1000)
 
         def map_fn(student):
             enrollment.visit(student)
             scores.visit(student)
+            names.visit(student)
 
         mapper.run(map_fn)
 
@@ -855,7 +884,8 @@ class ComputeStudentStats(jobs.DurableJob):
             'enrollment': {
                 'enrolled': enrollment.enrolled,
                 'unenrolled': enrollment.unenrolled},
-            'scores': scores.name_to_tuple}
+            'scores': scores.name_to_tuple,
+            'names': names.stname}
 
         return data
 

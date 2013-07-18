@@ -17,6 +17,16 @@
       total: {{ total_records }}
     </li>
   </ul>
+
+  <h3>Student Statistics</h3>
+  <ul>
+    {% for unit in names%}
+      <li>
+        {{ unit['name'] }}: {{ unit['passed'] }} 
+      </li>
+    {% endfor %}
+ </ul>
+
 {% endif %}
 
 {% if errors %}
