@@ -47,7 +47,7 @@ var TFQ = {
       $("#incorrect").html(incorrect);
       $("#maybe").html(maybe);
       if (!self.isTesting()) {
-        var evt = {"source":"true-false-question", "payload": JSON.stringify(results), xsrf_token: eventXsrfToken}
+        var evt = {"source":"true-false-question", "payload": JSON.stringify(self.results), xsrf_token: eventXsrfToken}
         //{"source":"tag-youtube-milestone","payload":"{\"video_id\":\"983DwAOCXRI\",\"instance_id\":0,\"event_id\":1,\"position\":31,\"location\":\"http://127.0.0.1:8080/unit?unit=2\"}","xsrf_token":"1374137555/cUFulwtXw5jAYKT5TKM_hA=="}
         $.post('/rest/events', {request: JSON.stringify(evt)}, function() {
           self.log("Activity results sent");
