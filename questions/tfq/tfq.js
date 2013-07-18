@@ -1,12 +1,16 @@
 var TFQ = {
+  isTesting: function() {
+    return (typeof testing !== "undefined" && testing);
+  },
   getLibUrl: function() {
-    if (typeof testing !== "undefinded" && testing) {
+    if (this.isTesting()) {
         return "";
     } else {
         return "assets/lib/";
     }
   },
   create: function(targets) {
+    var self = this;
     var curr_concept = null;
     var done_concepts = [];
     var list_concepts = [];
@@ -36,7 +40,7 @@ var TFQ = {
         });
       }
   
-      if (list_concepts.length == 0) {
+      if (!self.isTesting() && list_concepts.length == 0) {
         $("#activity").hide();
         $("#results").show();
         var correct=0, incorrect=0;
@@ -48,11 +52,13 @@ var TFQ = {
         });
         $("#correct").html(correct);
         $("#incorrect").html(incorrect);
-        //$.post('/activity', {activity_type: config.activity_type, answers: results, score: correct/(correct+incorrect)}, function() {
-        //  log("Activity results sent");
-        //}).fail(function() { 
-        //  log("Error sending activity results");
-        //});
+        var evt = {"source":"true-false-question", "payload": JSON.stringify(results), xsrf_token: eventXsrfToken}
+        //{"source":"tag-youtube-milestone","payload":"{\"video_id\":\"983DwAOCXRI\",\"instance_id\":0,\"event_id\":1,\"position\":31,\"location\":\"http://127.0.0.1:8080/unit?unit=2\"}","xsrf_token":"1374137555/cUFulwtXw5jAYKT5TKM_hA=="}
+        $.post('/rest/events', {request: JSON.stringify(evt)}, function() {
+          log("Activity results sent");
+        }).fail(function() { 
+          log("Error sending activity results");
+        });
         
         //alert("Activity finished");
         return;
