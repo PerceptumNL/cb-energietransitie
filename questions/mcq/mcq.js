@@ -94,7 +94,7 @@ var MCQ = {
     var a = q.answers;
     var self = this;
     var per = 95 / a.length
-    var selectedanswers = [];
+    var selected = [];
     $("#targets").html("");
     $.each(a, function(k, v) {
       div = $("<div>").text(v.text).css("width", per + "%");
@@ -114,8 +114,11 @@ var MCQ = {
     $("input").click(function(){
       $("div.toggleon").each(function(){
         console.log(q.correctAnswer);
+        console.log($(this).index());
+        selected.push($(this).index());
+        console.log(selected);
+      });
     });
-
     if (q.answerMaybe) {
         var div = $("<div>Maybe</div>")
             .css("width", "95%")

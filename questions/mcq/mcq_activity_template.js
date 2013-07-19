@@ -1,5 +1,5 @@
 var activity = [
-  '<div>True/False questionary test!</div>',
+  '<div>Multiple Choice questionary test!</div>',
   '<script>generateMultipleChoiceQuestion();</script>',
 ];
 
