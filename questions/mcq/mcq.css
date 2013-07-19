@@ -1,0 +1,28 @@
+#concept_img {
+  height: 200px;
+}
+#concepts {
+  height: 300px;
+}
+#targets {
+  text-align: center;
+}
+#targets div {
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+  border: 1px solid black;
+  line-height: 50px;
+  font-size: 30px;
+  cursor: pointer;
+  position: relative;
+}
+#targets div:hover {
+  background-color: gray;
+}
+
+.toggleon{
+background-color: #6699FF;
+color:white
+}
+
