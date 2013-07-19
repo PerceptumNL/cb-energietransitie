@@ -117,6 +117,7 @@ var MCQ = {
         console.log($(this).index());
         selected.push($(this).index());
         console.log(selected);
+        this.listcompare(selected, q.correctAnswer);
       });
     });
     if (q.answerMaybe) {
@@ -184,6 +185,23 @@ var MCQ = {
         return true;
       }
     }
+  },
+//this may not be the most efficient way to do it
+  listcompare: function(selected, answers) {
+    correct = [];
+    incorrect = [];
+    for(var i=0; i<selected.length; i++){
+      for(var j=0; j<answers.length; j++){
+        if(selected[i] == answers[j]){
+          correct.push(selected[i])
+        }
+      if(correct==[]){
+          incorrect.push(selected[i]);
+        }
+      }
+    }
+    console.log("correct:" + correct);
+    console.log("incorrect:" + incorrect);
   }
 }
 
