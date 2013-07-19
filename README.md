@@ -22,7 +22,7 @@ Run `./apprun` to run the development server using a persistent datastorage.
 
 
 2. Edit the course file `activity.html`:
-
+```html
     {% block main_content %}
 
     <script src="assets/lib/tfq.js"></script>
@@ -30,9 +30,9 @@ Run `./apprun` to run the development server using a persistent datastorage.
     <link rel="stylesheet" type="text/css" href="assets/css/tfq.css">
 
     {% endblock main_content %}
+```
 
-
-3. Add an activity based on the example template:
+3. Add an activity to a lesson based on the example template:
 
 * `questions/tfq/tfq_activity_template.js`
 
