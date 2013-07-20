@@ -117,7 +117,7 @@ var MCQ = {
         console.log($(this).index());
         selected.push($(this).index());
         console.log(selected);
-        this.listcompare(selected, q.correctAnswer);
+        console.log(MCQ.listcompare(selected, q.correctAnswer));
       });
     });
     if (q.answerMaybe) {
@@ -191,12 +191,20 @@ var MCQ = {
     correct = [];
     incorrect = [];
     for(var i=0; i<selected.length; i++){
+      checkel = 0;
       for(var j=0; j<answers.length; j++){
         if(selected[i] == answers[j]){
-          correct.push(selected[i])
+          if(correct.indexOf(selected[i]) == -1){
+            correct.push(selected[i]);
+          }
+          checkel =checkel+1;
+          console.log("correct in the loop:" + selected[i]);
         }
-      if(correct==[]){
-          incorrect.push(selected[i]);
+      if(checkel == 0){ 
+          if(incorrect.indexOf(selected[i]) == -1){
+            incorrect.push(selected[i]);
+          }
+          console.log("incorrect in the loop:" + selected[i]);
         }
       }
     }
