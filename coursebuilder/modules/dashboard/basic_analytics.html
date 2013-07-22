@@ -19,13 +19,32 @@
   </ul>
 
   <h3>Student Statistics</h3>
-  <ul>
-    {% for unit in names%}
-      <li>
-        {{ unit['name'] }}: {{ unit['passed'] }} 
-      </li>
+  <br></br>
+  <table>
+      <tr>
+            <th>Student</th>
+            {% for m in data[2]['scores'] %}
+            <th> {{ m['title'] }} </th>
+            {% endfor %}
+      </tr>
+    {% for d in data%}
+      <tr>
+            <td>
+              {{ d['name'] }} 
+            </td>
+            {% for ds in d['scores']%}
+                <td align="center">
+                  {% if ds['completed'] %}
+                    {{ ds['score'] }}
+                  {% else %}
+                    {{ '0' }}
+                  {% endif%}
+                </td>
+            {% endfor %}
+      </tr>
     {% endfor %}
- </ul>
+   </table>
+  <br></br>
 
 {% endif %}
 

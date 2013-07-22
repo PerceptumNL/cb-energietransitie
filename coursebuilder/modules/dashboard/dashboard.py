@@ -37,6 +37,7 @@ from models import roles
 from models import transforms
 from models import utils
 from models import vfs
+from models import student_work
 from models.models import QuestionDAO
 from models.models import QuestionGroupDAO
 from models.models import Student
@@ -706,28 +707,42 @@ class DashboardHandler(
         else:
             if job.status_code == jobs.STATUS_CODE_COMPLETED:
                 stats = transforms.loads(job.output)
-                logging.info(stats)
                 stats_calculated = True
 
-                subtemplate_values['names'] = stats['names']
                 subtemplate_values['enrolled'] = stats['enrollment']['enrolled']
                 subtemplate_values['unenrolled'] = (
                     stats['enrollment']['unenrolled'])
+                subtemplate_values['submissions'] =  stats['id']
 
                 scores = []
                 total_records = 0
-
                 names = []
-                for name in stats['names'].items():
-                    names.append({'name': name[0], 'passed': name[1]})
+                submissions = {}
+                students = {}
+                data = []
+
+                for key, value in stats['id'].items():
+                    students[key] = value
+
+                course = courses.Course(self)
+                problems = course.get_assessment_list()
+                assessments = dict( (a.unit_id, a.title) for a in problems)
+
+                for sname, sid in students.items():
+                    st = Student.get_student_by_user_id(sid)
+                    sc = course.get_all_scores(st)
+                    data.append({'name': sname, 'scores': sc})
+                
                 for key, value in stats['scores'].items():
                     total_records += value[0]
                     avg = round(value[1] / value[0], 1) if value[0] else 0
                     scores.append({'key': key, 'completed': value[0],
                                    'avg': avg})
+
                 subtemplate_values['scores'] = scores
                 subtemplate_values['total_records'] = total_records
                 subtemplate_values['names'] = names
+                subtemplate_values['data'] = data
 
                 update_message = safe_dom.Text("""
                     Enrollment and assessment statistics were last updated at
@@ -846,21 +861,30 @@ class NamesAggregator(object):
 
     def __init__(self):
         self.stname = {}
-        #self.stname = ""
+        self.submissions = {}
+        self.st_id = {}
 
     def visit(self, student):
         name = student.name
-        count = 0
+        self.stname[name] = 0
+        self.st_id[name] = student.user_id
+
+        exe = []
         if student.scores:
             scores = transforms.loads(student.scores)
+            self.stname[name] = len(scores)
             for key in scores.keys():
-                count += 1
+                exe.append(key)
 
-        if count > 1:
-            self.stname[name] = "Pass"
-        else:
-            self.stname[name] = "Not"
-
+        submission = []
+        for e in exe:
+            sub = student_work.Submission.get_contents(e, student.get_key())
+            for s in sub:
+                s['enum'] = e
+                submission.append(s)
+    
+        self.submissions[name] = submission
+    
 class ComputeStudentStats(jobs.DurableJob):
     """A job that computes student statistics."""
 
@@ -879,13 +903,14 @@ class ComputeStudentStats(jobs.DurableJob):
             names.visit(student)
 
         mapper.run(map_fn)
-
+        
         data = {
             'enrollment': {
                 'enrolled': enrollment.enrolled,
                 'unenrolled': enrollment.unenrolled},
             'scores': scores.name_to_tuple,
-            'names': names.stname}
+            'id': names.st_id
+                }
 
         return data
 
