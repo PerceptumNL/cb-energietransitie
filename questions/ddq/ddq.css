@@ -1,0 +1,58 @@
+#concept_img {
+  height: 200px;
+}
+#check_answer {
+  margin-top: 20px;
+  text-align: center;
+}
+#check_answer span:hover {
+  color: white;
+  background-color: blue;
+  cursor: pointer;
+  
+}
+#check_answer span {
+  color: blue;
+  font-weight: bold;
+  text-align: center;
+  border: 1px blue solid;
+  padding: 10px;
+}
+.concepts {
+  text-align: center;
+}
+.concept:hover {
+  cursor: pointer;
+}
+.concept {
+  display: inline-block;
+  border: 2px dashed orange;
+  margin: 10px;
+  padding: 10px;
+
+}
+.target {
+  display: inline-block;
+  text-align: center;
+  border: 1px solid black;
+  height: 100px;
+  margin-left: 1%;
+  margin-right: 1%;
+
+}
+.targets {
+  text-align: center;
+}
+#targets div {
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+  border: 1px solid black;
+  line-height: 50px;
+  font-size: 30px;
+  cursor: pointer;
+  position: relative;
+}
+#targets div:hover {
+  background-color: gray;
+}
