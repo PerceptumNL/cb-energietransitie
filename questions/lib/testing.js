@@ -13,7 +13,4 @@ window.addEventListener("load", function() {
 })
 
 var testing = true;
-
-
-
-
+var eventXsrfToken = true;

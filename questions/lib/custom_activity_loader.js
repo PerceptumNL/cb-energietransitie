@@ -113,7 +113,7 @@ var QuestionTrait = Trait({
 
   getLibUrl: function() {
     if (this.isTesting()) {
-      return "";
+      return "lib/";
     } else {
       return "assets/lib/";
     }
