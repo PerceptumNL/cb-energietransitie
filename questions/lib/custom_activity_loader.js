@@ -50,11 +50,11 @@ var Questionary = {
     var evt = {
       //Find Unit
       "source": "custom-activity-results",
-      "payload": {
-        "results": JSON.stringify(self.doneQuestions), 
+      "payload": JSON.stringify({
+        "results": this.doneQuestions, 
         "unit": this.getUnit(),
         "lesson": this.getLesson(),
-      },
+      }),
       "xsrf_token": eventXsrfToken
     }
     if (self.isTesting()) {
