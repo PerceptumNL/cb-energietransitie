@@ -41,6 +41,7 @@ from models import student_work
 from models.models import QuestionDAO
 from models.models import QuestionGroupDAO
 from models.models import Student
+from models.models import EventEntity
 from tools import verify
 from course_settings import CourseSettingsHandler
 from course_settings import CourseSettingsRESTHandler
@@ -709,6 +710,9 @@ class DashboardHandler(
                 stats = transforms.loads(job.output)
                 stats_calculated = True
 
+                #event = EventEntity().all().fetch(limit=400)
+                cr = courses.Course(self).get_units()
+
                 subtemplate_values['enrolled'] = stats['enrollment']['enrolled']
                 subtemplate_values['unenrolled'] = (
                     stats['enrollment']['unenrolled'])
@@ -728,6 +732,42 @@ class DashboardHandler(
                 problems = course.get_assessment_list()
                 assessments = dict( (a.unit_id, a.title) for a in problems)
 
+                lesson_list = []
+                unit_list = []
+                units = course.get_units()
+                for u in units:
+                    lessons = course.get_lessons(u.unit_id)    
+                    for l in lessons:
+                        single = {}
+                        single['lesson_unit'] = l.unit_id
+                        single['lesson_id'] = l.lesson_id
+                        single['lesson_title'] = l.title
+                        lesson_list.append(single)
+                    if u.type == 'U':
+                        un = {}
+                        un['index'] = u._index
+                        un['id'] = u.unit_id
+                        un['title'] = u.title
+                        unit_list.append(un)
+
+                tmp_unit = {}
+                for l in lesson_list:
+                    tmp_unit[l['lesson_unit']] = []
+
+                for l in lesson_list:
+                    tmp_unit[l['lesson_unit']].append(l)
+
+                struct = []
+                for key, value in tmp_unit.items():
+                    unit = {}
+                    for u in unit_list:
+                        if u['index'] == key:
+                            unit['id'] = u['id']
+                            unit['title'] = u['title']
+                    unit['lessons'] = value
+                    unit['lesson_count'] = len(value)
+                    struct.append(unit)
+
                 for sname, sid in students.items():
                     st = Student.get_student_by_user_id(sid)
                     sc = course.get_all_scores(st)
@@ -743,6 +783,7 @@ class DashboardHandler(
                 subtemplate_values['total_records'] = total_records
                 subtemplate_values['names'] = names
                 subtemplate_values['data'] = data
+                subtemplate_values['struct'] = struct
 
                 update_message = safe_dom.Text("""
                     Enrollment and assessment statistics were last updated at

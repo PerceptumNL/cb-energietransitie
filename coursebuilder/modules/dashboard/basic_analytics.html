@@ -37,12 +37,33 @@
                   {% if ds['completed'] %}
                     {{ ds['score'] }}
                   {% else %}
-                    {{ '0' }}
+                    {{ '-' }}
                   {% endif%}
                 </td>
             {% endfor %}
       </tr>
     {% endfor %}
+   </table>
+  <br></br>
+
+  <h3>Unit Statistics</h3>
+  <br></br>
+  <table>
+      <tr>
+            <th>Units</th>
+            {% for s in struct %}
+            <th colspan={{ s['lesson_count'] }}> Unit {{ s['id'] }} - {{ s['title'] }} </th>
+            {% endfor %}
+      </tr>
+
+      <tr>
+            <th>Lessons</th>
+            {% for s in struct %}
+                {% for sl in s['lessons'] %}
+                    <th> {{ sl['lesson_unit'] }}.{{ sl['lesson_id'] }} </th>
+                {% endfor %}
+            {% endfor %}
+      </tr>
    </table>
   <br></br>
 
