@@ -1,11 +1,11 @@
 var activity = [
   '<div>Multiple Choice questionary test!</div>',
-  '<script>generateMultipleChoiceQuestion();</script>',
+  '<question name="mcq_activity"></question>',
 ];
-
 
 var mcq_activity = {
   randomize: true,
+  questionsType: 'mcq',
   questionsList: [
     { 
       type: 'text',
