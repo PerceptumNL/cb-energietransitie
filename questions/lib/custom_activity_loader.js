@@ -49,7 +49,7 @@ var Questionary = {
     var self = this;
     var evt = {
       //Find Unit
-      "source": "custom-activity-results",
+      "source": "questionary-results",
       "payload": JSON.stringify({
         "results": this.doneQuestions, 
         "unit": this.getUnit(),

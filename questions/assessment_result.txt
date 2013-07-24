@@ -1,5 +1,0 @@
-ERROR    2013-06-20 14:11:54,402 assessments.py:81] test@example.com
-ERROR    2013-06-20 14:11:54,402 assessments.py:82] 1
-ERROR    2013-06-20 14:11:54,402 assessments.py:83] [{u'index': 0, u'type': u'choices', u'correct': False, u'value': 0}, {u'index': 1, u'type': u'choices', u'correct': False, u'value': 1}, {u'index': 2, u'type': u'string', u'correct': False, u'value': u'bbbccc'}, {u'index': 3, u'type': u'regex', u'correct': False, u'value': u'111'}]
-ERROR    2013-06-20 14:11:54,402 assessments.py:84] 0
-
