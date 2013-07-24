@@ -60,7 +60,7 @@
             <th>Lessons</th>
             {% for s in struct %}
                 {% for sl in s['lessons'] %}
-                    <th> {{ sl['lesson_unit'] }}.{{ sl['lesson_id'] }} </th>
+                    <th> {{ sl['lesson_unit_idx'] }}.{{ sl['lesson_idx'] }} </th>
                 {% endfor %}
             {% endfor %}
       </tr>

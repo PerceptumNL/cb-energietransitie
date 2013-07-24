@@ -739,9 +739,11 @@ class DashboardHandler(
                     lessons = course.get_lessons(u.unit_id)    
                     for l in lessons:
                         single = {}
+                        single['lesson_unit_idx'] = u._index
                         single['lesson_unit'] = l.unit_id
                         single['lesson_id'] = l.lesson_id
                         single['lesson_title'] = l.title
+                        single['lesson_idx'] = l._index
                         lesson_list.append(single)
                     if u.type == 'U':
                         un = {}
@@ -752,21 +754,28 @@ class DashboardHandler(
 
                 tmp_unit = {}
                 for l in lesson_list:
-                    tmp_unit[l['lesson_unit']] = []
+                    tmp_unit[l['lesson_unit_idx']] = []
 
                 for l in lesson_list:
-                    tmp_unit[l['lesson_unit']].append(l)
+                    tmp_unit[l['lesson_unit_idx']].append(l)
 
                 struct = []
                 for key, value in tmp_unit.items():
+                    logging.info(key)
+                    logging.info(value)
                     unit = {}
                     for u in unit_list:
+                        logging.info('idx: %s', u['index'])
+                        logging.info('key: %s', key)
                         if u['index'] == key:
-                            unit['id'] = u['id']
+                            logging.info('yes')
+                            unit['id'] = u['index']
                             unit['title'] = u['title']
                     unit['lessons'] = value
                     unit['lesson_count'] = len(value)
                     struct.append(unit)
+
+                logging.info(struct)
 
                 for sname, sid in students.items():
                     st = Student.get_student_by_user_id(sid)
