@@ -761,21 +761,14 @@ class DashboardHandler(
 
                 struct = []
                 for key, value in tmp_unit.items():
-                    logging.info(key)
-                    logging.info(value)
                     unit = {}
                     for u in unit_list:
-                        logging.info('idx: %s', u['index'])
-                        logging.info('key: %s', key)
                         if u['index'] == key:
-                            logging.info('yes')
                             unit['id'] = u['index']
                             unit['title'] = u['title']
                     unit['lessons'] = value
                     unit['lesson_count'] = len(value)
                     struct.append(unit)
-
-                logging.info(struct)
 
                 for sname, sid in students.items():
                     st = Student.get_student_by_user_id(sid)
