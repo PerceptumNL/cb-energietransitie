@@ -12,7 +12,7 @@ with open('build/questionary.js', 'w') as outfile:
             for line in infile:
                 outfile.write(line)
 
-filenames = ['lib/ddq.css', 'lib/mcq.css', 'lib/tfq.css']
+filenames = ['lib/common.css', 'lib/ddq.css', 'lib/mcq.css', 'lib/tfq.css']
 with open('build/questionary.css', 'w') as outfile:
     for fname in filenames:
         with open(fname) as infile:

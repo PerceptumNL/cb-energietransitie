@@ -77,7 +77,7 @@ var Questionary = {
         a.questionsList[i].questionType = this.defaultQuestionType;
       this.leftQuestions.push(a.questionsList[i]);
     }
-    $("activityContents").parent().append("<div id='cover'></div>");
+    $("#activityContents").parent().append("<div id='cover'></div>");
     $("#cover").bind("click", function(evt) {
       Questionary.next(result);
     });
