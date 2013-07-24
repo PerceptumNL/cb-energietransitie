@@ -26,3 +26,10 @@ background-color: #6699FF;
 color:white
 }
 
+
+#targets div.incorrect {
+    border: 2px solid red;
+}
+#targets div.correct {
+    border: 2px solid green;
+}

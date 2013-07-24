@@ -9,38 +9,49 @@ Run `source activate` to load the environment variables, and then run GAE as usu
 Run `./apprun` to run the development server using a persistent datastorage.
 
 
-### Customs exercises
+### Using the questionary into course-builder
 
-1. In the menu `Dashboard` > `Assets` upload the following files:
 
-* To the `assets/libs` path:
+1. From the `questions` path run:
+    
+  `python build.py`
+
+2. In the menu `Dashboard` > `Assets` upload the following files:
+
+* From `questions/build` to `assets/css` path:
+  * questionary.css
+
+* From `questions/build/` to `assets/libs` path:
+  * questionary.js
+
+* From `questions/lib/` to `assets/libs` path:
   * tfq.html
-  * tfq.js
-
-* To the  `assets/css` path:
-  * tfq.css
-
+  * ddq.html
+  * mcq.html
+  
 
 2. Edit the course file `activity.html`:
 ```html
     {% block main_content %}
 
-    <script src="assets/lib/tfq.js"></script>
-    <script src="assets/lib/jquery.color.js"></script>
-    <link rel="stylesheet" type="text/css" href="assets/css/tfq.css">
+    <script src="assets/lib/questionary.js"></script>
+    <link rel="stylesheet" type="text/css" href="assets/css/questionary.css">
 
     {% endblock main_content %}
 ```
 
-3. Add an activity to a lesson based on the example template:
+3. Add an activity to a lesson based on the example templates:
 
-* `questions/tfq/tfq_activity_template.js`
+* `questions/lib/tfq_activity_template.js`
+* `questions/lib/ddq_activity_template.js`
+* `questions/lib/mcq_activity_template.js`
+* `questions/lib/mix_activity_template.js`
 
 
-### Developing exercises
+### Testing and developing questions
 
 In the path `questions` run:
     
-    `python -m SimpleHTTPServer`
+  `python -m SimpleHTTPServer`
 
-Then you test and edit the custom question outside the course-builder environment.
+Then you can test and edit the custom question outside the course-builder environment.
