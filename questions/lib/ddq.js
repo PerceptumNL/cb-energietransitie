@@ -37,9 +37,7 @@ var DDQ = function(question) {
         draw_answers: function() {
           var self = this;
           var per = 90 / targetList.length
-          $('body').append("<div class='concepts'></div>");
-          $('body').append("<div class='targets'></div>");
-          $('body').append("<div id='check_answer'><span>Check!</span></div>");
+          $('#activity').append("<div id='check_answer'><span>Check!</span></div>");
           $.each(targetList, function(k, v) {
             var target_div = $("<div class='target'>" + v.text + "</div>");
             target_div.idx = k
