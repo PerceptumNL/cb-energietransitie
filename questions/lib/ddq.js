@@ -17,8 +17,9 @@ var DDQ = function(question) {
           result = {
             incorrect: false,
             correct: false,
-            maybe: "",
+            maybe: false,
             hint: false,
+    
           }
           this.draw_question();
           this.draw_answers();
@@ -92,11 +93,14 @@ var DDQ = function(question) {
           console.log(count_answered);
           console.log(num_concepts);
 
+          result.correct = true;
           $.each(this.targets, function(k, v) {
             $.each(v.answers, function(_k, answer) {
-              if ($(answer).attr("answer_idx") != $(answer).attr("target_idx"))
+              if ($(answer).attr("answer_idx") != $(answer).attr("target_idx")) {
+                result.correct = false;
+                result.incorrect = true;
                 $(answer).css("border-color", "red");
-              else
+              } else
                 $(answer).css("border-color", "green");
             });
           });
