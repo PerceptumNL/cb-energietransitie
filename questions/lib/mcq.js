@@ -14,6 +14,7 @@ var MCQ = function(question) {
           result = {
             incorrect: false,
             correct: false,
+            hint: false,
           }
           this.draw_question();
           this.draw_answers();

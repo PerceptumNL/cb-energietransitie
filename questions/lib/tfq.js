@@ -14,7 +14,8 @@ var TFQ = function(question) {
           result = {
             incorrect: false,
             correct: false,
-            maybe: "",
+            maybe: false,
+            maybeText: "",
             hint: false,
           }
           this.draw_question();
@@ -70,10 +71,8 @@ var TFQ = function(question) {
         },
 
         prompt_maybe: function() {
-          this.question.maybeText = prompt("Enter your thoughts!");
-          this.question.attemps.push(this.question.maybeText);
-          this.question.maybe = true;
-          this.results.push(this.question);
+          result.maybeText = prompt("Enter your thoughts!");
+          result.maybe = true;
           this.next_question();
         },
 
