@@ -713,7 +713,7 @@ class DashboardHandler(
 
     def get_index_by_id(self, map_ul, u_id, l_id):
         for m in map_ul:
-            if m['id_idx'][1] == str(u_id):
+            if m['id_idx'][1] == u_id:
                 for key, value in m['lessons'].items():
                     if value == l_id:
                         return [m['id_idx'][0], key]
@@ -723,7 +723,7 @@ class DashboardHandler(
         max_score = -1
         max_date = datetime.datetime(2000, 1, 1, 1, 1, 1, 1)
         for a in activity[name]:
-            if a[0]['unit'] == str(unit_idx) and a[1]['lesson'] == str(les_idx):
+            if a[0]['unit'] == unit_idx and a[1]['lesson'] == les_idx:
                 if a[3]['date'] > max_date:
                     max_score = a[4]['result']['score']
         return max_score
@@ -864,7 +864,6 @@ class DashboardHandler(
                                    'avg': avg})
 
                 map_ul = self.get_map_units_lessons()
-                idd = self.get_index_by_id(map_ul, 6, 3)
                 activity = self.get_activity(map_ul)
 
                 att_scores = {}
@@ -881,7 +880,6 @@ class DashboardHandler(
                                 attempt_scores.append(sc)
                     att_scores[n] = attempt_scores
 
-                logging.info(att_scores)
                 subtemplate_values['att_scores'] = att_scores
                 subtemplate_values['scores'] = scores
                 subtemplate_values['total_records'] = total_records
