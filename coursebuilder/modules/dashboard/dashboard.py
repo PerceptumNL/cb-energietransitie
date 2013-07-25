@@ -694,6 +694,89 @@ class DashboardHandler(
         template_values['main_content'] = items
         self.render_page(template_values)
 
+    def get_map_units_lessons(self):
+        course = courses.Course(self)
+        units = course.get_units()
+        unit_list = []
+        for u in units:
+            lesson_list = {}
+            if u._index:
+                unit = {}
+                unit['id_idx'] = [u._index, u.unit_id]
+                lessons = course.get_lessons(u.unit_id)    
+                for l in lessons:
+                    lesson_list[l._index] = l.lesson_id
+                unit['lessons'] = lesson_list
+                unit_list.append(unit)
+
+        return unit_list
+
+    def get_index_by_id(self, map_ul, u_id, l_id):
+        for m in map_ul:
+            if m['id_idx'][1] == str(u_id):
+                for key, value in m['lessons'].items():
+                    if value == l_id:
+                        return [m['id_idx'][0], key]
+        return None         
+
+    def get_attempt_scores(self, name, activity, unit_idx, les_idx):
+        max_score = -1
+        max_date = datetime.datetime(2000, 1, 1, 1, 1, 1, 1)
+        for a in activity[name]:
+            if a[0]['unit'] == str(unit_idx) and a[1]['lesson'] == str(les_idx):
+                if a[3]['date'] > max_date:
+                    max_score = a[4]['result']['score']
+        return max_score
+
+    def get_activity(self, map_ul):
+        activity = {}
+        events = EventEntity().all().fetch(limit = 4000)
+        for e in events:
+            st = Student.get_student_by_user_id(e.user_id)
+            if e.source == "questionary-results" and st:
+                questionary = transforms.loads(e.data)
+                attempt = questionary['results']
+                maybeText = []
+                corrects = 0
+                incorrects = 0
+                maybes = 0
+                for a in attempt:
+                    if a['result'].get('correct') == True:
+                        corrects += 1
+                    if a['result'].get('incorrect') == True:
+                        incorrects += 1
+                    if a['result'].get('maybe') == True:
+                        maybes += 1
+                        QA = {}
+                        QA[a['text']] = a['result'].get('maybeText')
+                        maybeText.append(QA)
+                score = float(corrects) / (corrects + incorrects + maybes)
+                result = {
+                    'correct': corrects,
+                    'maybe': maybes,
+                    'incorrect': incorrects,
+                    'score': score
+                         }
+                if not activity.get(st.name):
+                    activity[st.name] = []
+                att = []
+                map_ul = self.get_map_units_lessons()
+                idxs = self.get_index_by_id(map_ul, 
+                    int(questionary['unit']), int(questionary['lesson']))
+                if idxs:
+                    att.append({'unit': idxs[0]})
+                    att.append({'lesson': idxs[1]})
+                else:
+                    att.append({'unit': questionary['unit']})
+                    att.append({'lesson': questionary['lesson']})
+                att.append({'ref': e.key()})
+                att.append({'date': e.recorded_on})
+                att.append({'result': result})
+                att.append({'maybeText': maybeText})
+                activity[st.name].append(att)
+        return activity
+
+
     def get_markup_for_basic_analytics(self, job):
         """Renders markup for basic enrollment and assessment analytics."""
         subtemplate_values = {}
@@ -710,7 +793,6 @@ class DashboardHandler(
                 stats = transforms.loads(job.output)
                 stats_calculated = True
 
-                #event = EventEntity().all().fetch(limit=400)
                 cr = courses.Course(self).get_units()
 
                 subtemplate_values['enrolled'] = stats['enrollment']['enrolled']
@@ -781,6 +863,26 @@ class DashboardHandler(
                     scores.append({'key': key, 'completed': value[0],
                                    'avg': avg})
 
+                map_ul = self.get_map_units_lessons()
+                idd = self.get_index_by_id(map_ul, 6, 3)
+                activity = self.get_activity(map_ul)
+
+                att_scores = {}
+                for n in  activity.keys():
+                    name = n
+                    attempt_scores = []
+                    for s in struct:
+                        for sl in s['lessons']:
+                            sc = self.get_attempt_scores(n,
+                                activity, sl['lesson_unit_idx'], sl['lesson_idx'])
+                            if sc == -1:
+                                attempt_scores.append('-')
+                            else:
+                                attempt_scores.append(sc)
+                    att_scores[n] = attempt_scores
+
+                logging.info(att_scores)
+                subtemplate_values['att_scores'] = att_scores
                 subtemplate_values['scores'] = scores
                 subtemplate_values['total_records'] = total_records
                 subtemplate_values['names'] = names
