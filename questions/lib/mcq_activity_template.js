@@ -1,5 +1,4 @@
 var activity = [
-  '<div>Multiple Choice questionary test!</div>',
   '<question name="mcq_activity"></question>',
 ];
 
@@ -10,27 +9,35 @@ var mcq_activity = {
     { 
       type: 'text',
       text: 'Are you human?',
-      correctAnswer: [0,2],
+      correctAnswer: [0],
       answerMaybe: false,
       answers: [{
         type: 'text',
         text: 'Yes',
+        feedback: "correct",
       },{
         type: 'text',
         text: 'No',
+        feedback: "incorrect",
       },{
         type: 'text',
         text: 'Yes',
+        feedback: "correct",
       },{
         type: 'text',
         text: 'No',
-      }]
+        feedback: "incorrect",
+      },{
+        type: 'text',
+        text: 'WHO ARE YOU TO JUDGE',
+        feedback: 'so close',
+     }]
     },
     {
       type: 'image',
       text: 'Is this a dog?',
       image: 'dog.jpg',
-      correctAnswer: [0,2],
+      correctAnswer: [0],
       answerMaybe: false,
       answers: [{
         type: 'text',
@@ -49,7 +56,26 @@ var mcq_activity = {
     {
       type: 'text',
       text: 'Are you a pet?',
-      correctAnswer: [1],
+      correctAnswer: [0],
+      answerMaybe: false,
+      answers: [{
+        type: 'text',
+        text: 'YES',
+      },{
+        type: 'text',
+        text: 'derp',
+      },{
+        type: 'text',
+        text: 'herp',
+      },{
+        type: 'text',
+        text: 'schmerp',
+      }]
+    },
+   {
+      type: 'text',
+      text: 'Are you NOT a pet?',
+      correctAnswer: [0],
       answerMaybe: false,
       answers: [{
         type: 'text',

@@ -1,16 +1,25 @@
+$("#button-hint").click(function() {
+   $(".hint").show(); 
+});
+
+$(".hint").click(function() {
+    $(this).hide();
+});
+
 var MCQ = function(question) {
   return Trait.create(
     Object.prototype,
     Trait.compose(
       QuestionTrait,
       Trait({
-
+        answers: null,
         questionType: "mcq",
         question: null,
         result: {},
       
         create_question: function(q) {
           question = q;
+          answers= q.answers;
           result = {
             incorrect: false,
             correct: false,
@@ -23,10 +32,12 @@ var MCQ = function(question) {
         draw_question: function() {
           var q = question;
           if (q.type == "text") {
-            $("#concepts").html(q.text);
+            console.log("tekst type");
+            $("#q-table").html(q.text);
           } else if (q.type == "image") {
-            $("#concepts").html("<img id='concept_img' src='"+q.image+"'/>");
-            $("#concepts").append("<div>"+q.text+"</div>");
+            console.log("image type");
+            $("#q-table").html("<img id='concept_img' src='"+q.image+"'/>");
+            $("#q-table").append("<div>"+q.text+"</div>");
           }
         },
       
@@ -36,10 +47,10 @@ var MCQ = function(question) {
           var self = this;
           var per = 95 / a.length
           var selected = [];
-          $("#targets").html("");
+          $(".option").html("");
           $.each(a, function(k, v) {
-            div = $("<div>").text(v.text).css("width", per + "%");
-            $("#targets").append(div);
+            div = $("<div>").text(v.text).css("width", "80%");
+            $(".option").append(div);
             $(div).click(
               function(evt) {
                 if(!$(evt.target).hasClass("toggleon")){
@@ -51,34 +62,72 @@ var MCQ = function(question) {
               }
             )
           });
-      
-          $("input").click(function(){
+          $("#send-button").hide(); 
+          $("#checkanswer").show();
+
+          $("#checkanswer").click(function(){
             self.check_answer();
+            $("#checkanswer").hide();
+            $("#send-button").show();
           });
         },
       
-        check_answer: function(answer_idx) {
+        prompt_maybe: function() {
+          result.maybeText = prompt("Enter your thoughts!");
+          result.maybe = true;
+          this.next_question();
+        },
+
+        feedback_correct: function(answer_idx) {
+          console.log("feedback_Correct");
+          var ele = $(".option").children()[answer_idx];
+          $(ele).addClass("correct");
+          $(".right").show();
+          answer_text = answers[answer_idx].feedback;
+          if (typeof answer_text != "undefined")
+            $(".feedback-text").append("<div>" + answer_text + "</div>")
+          $(".feedback").fadeIn();
+        },
+        
+        feedback_incorrect: function(answer_idx) {
+          console.log("feedback_Incorrect");
+          var ele = $(".option").children()[answer_idx];
+          $(ele).addClass("incorrect");        
+          $(".wrong").show();
+          answer_text = answers[answer_idx].feedback;
+          if (typeof answer_text != "undefined")
+            $(".feedback-text").append("<div>" + answer_text + "</div>")
+          $(".feedback").fadeIn();
+        },
+          
+   check_answer: function(answer_idx) {
+          var self = this
           var current_answers = [];
-          $("#targets").children().each(function(idx) {
+          $(".option").children().each(function(idx) {
             current_answers[idx] = $(this).hasClass("toggleon");
           });
           result.correct = true;
+
           $.each(question.answers, function(idx, ans) {
             if ($.inArray(idx, question.correctAnswer) >= 0 && 
                 current_answers[idx] == true) {
-                $($("#targets").children()[idx]).addClass("correct");
+                $($(".option").children()[idx]).addClass("correct");
                 ans.correct = true; 
+                self.feedback_correct(idx);
+
             }
             else if ($.inArray(idx, question.correctAnswer) == -1 && 
                 current_answers[idx] == false) {
-                $($("#targets").children()[idx]).addClass("correct");
-                ans.correct = true; 
+                $($(".option").children()[idx]).addClass("correct");
+                ans.correct = true;
+                self.feedback_correct(idx);
             }
             else {
-                $($("#targets").children()[idx]).addClass("incorrect");
+                $($(".option").children()[idx]).addClass("incorrect");
                 ans.incorrect = true; 
                 result.correct = false;
                 result.incorrect = true;
+                self.feedback_incorrect(idx);
             }
           });
           this.next_question();
