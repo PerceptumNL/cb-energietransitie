@@ -12,12 +12,15 @@ var tfq_activity = {
       text: 'Are you human?',
       correctAnswer: 0,
       answerMaybe: true,
+      hint: 'You are stupid :P',
       answers: [{
         type: 'text',
         text: 'Yes',
+        feedback: 'Correct!',
       },{
         type: 'text',
         text: 'No',
+        feedback: 'What kind of matter you think you are! haha',
       }]
     },
     {
@@ -28,10 +31,10 @@ var tfq_activity = {
       answerMaybe: true,
       answers: [{
         type: 'text',
-        text: 'YES',
+        text: 'True',
       },{
         type: 'text',
-        text: 'NO',
+        text: 'False',
       }]
     },
     {

@@ -1,3 +1,11 @@
+$("#button-hint").click(function() {
+   $(".hint").show(); 
+});
+
+$(".hint").click(function() {
+    $(this).hide();
+});
+
 var TFQ = function(question) {
   return Trait.create(
     Object.prototype,
@@ -7,10 +15,12 @@ var TFQ = function(question) {
 
         questionType: "tfq",
         question: null,
+        answers: null,
         result: {},
 
         create_question: function(q) {
           question = q;
+          answers = q.answers;
           result = {
             incorrect: false,
             correct: false,
@@ -18,17 +28,19 @@ var TFQ = function(question) {
             maybeText: "",
             hint: false,
           }
+          $(".feedback").hide();
+          $(".feedback-text").html("");
+          $(".right").hide();
+          $(".wrong").hide();
           this.draw_question();
           this.draw_answers();
         },
 
         draw_question: function() {
-          var q = question;
-          if (q.type == "text") {
-            $("#concepts").html(q.text);
-          } else if (q.type == "image") {
-            $("#concepts").html("<img id='concept_img' src='"+q.image+"'/>");
-            $("#concepts").append("<div>"+q.text+"</div>");
+          $("#q-text").html(question.text);
+          if (question.type == "image") {
+            $("#q-image").attr("src", question.image);
+            $("#tr-image").show();
           }
         },
 
@@ -36,37 +48,18 @@ var TFQ = function(question) {
           var q = question;
           var a = q.answers;
           var self = this;
-          var per = 95 / a.length
-          $("#targets").html("");
+          $(".option").html("");
           $.each(a, function(k, v) {
-            div = $("<div>").text(v.text).css("width", per + "%");
-            $("#targets").append(div);
+            div = $("<div>").text(v.text);
+            $(".option").append(div);
             div.click(function() { self.check_answer(k) });
-            $("#targets").children().hover(
-              function() {
-                $(this).css({ 
-                  backgroundColor: 'grey',
-                  borderColor: 'yellow',
-                  color: 'yellow'
-                });
-              },
-              function() {
-                $(this).css({
-                  backgroundColor: 'white',
-                  borderColor: 'black',
-                  color: 'black'
-                });
-              }
-            )
           });
           if (q.answerMaybe) {
-              var div = $("<div>Maybe</div>")
-                  .css("width", "95%")
-                  .css("margin-top", "10px")
-                  .click(function() {
-                      self.prompt_maybe();
-                  });
-              $("#targets").append(div)    
+            div = $("<div>").text("Maybe");
+            $(".option").append(div);
+            div.click(function() {
+                self.prompt_maybe(k) 
+            });  
           }
         },
 
@@ -76,47 +69,24 @@ var TFQ = function(question) {
           this.next_question();
         },
 
-
         feedback_correct: function(answer_idx) {
-          var self = this;
-          var $ele = $($("#targets").children()[answer_idx]);
-          $ele.animate({
-            backgroundColor: "green"
-          },{
-            duration: 100
-          }).animate({
-            backgroundColor: "gray"
-          },{
-            duration: 100,
-            complete: function() {
-              self.next_question();
-            }
-          });
+          var ele = $(".option").children()[answer_idx];
+          $(ele).addClass("correct");
+          $(".right").show();
+          answer_text = answers[answer_idx].feedback;
+          if (typeof answer_text != "undefined")
+            $(".feedback-text").html("<div>" + answer_text + "</div>")
+          $(".feedback").fadeIn();
         },
         
         feedback_incorrect: function(answer_idx) {
-          var self = this;
-          $("#targets").css("z-index", "0");
-          var $ele = $($("#targets").children()[answer_idx]);
-          $ele.css("z-index", 100)
-          $ele.animate({
-            backgroundColor: "red",
-            left: "-=20px"
-          },{
-            duration: 50
-          }).animate({
-            left: "+=40px"
-          },{
-            duration: 100
-          }).animate({
-            backgroundColor: "gray",
-            left: "-=20px"
-          },{
-            duration: 50,
-            complete: function() {
-              self.next_question();
-            }
-          });
+          var ele = $(".option").children()[answer_idx];
+          $(ele).addClass("incorrect");        
+          $(".wrong").show();
+          answer_text = answers[answer_idx].feedback;
+          if (typeof answer_text != "undefined")
+            $(".feedback-text").append("<div>" + answer_text + "</div>")
+          $(".feedback").fadeIn();
         },
           
         check_answer: function(answer_idx) {
@@ -131,6 +101,14 @@ var TFQ = function(question) {
             console.log("Wrong... Try again!");
             this.feedback_incorrect(answer_idx);
           }
+          
+          $(".option").children().each(function(idx, ele) {
+            if (idx != answer_idx) {
+              $(ele).addClass("disabled");
+            }
+          });
+          $(".option").children().unbind("click");
+          this.next_question();
         }
      })
     )
@@ -138,3 +116,4 @@ var TFQ = function(question) {
 }
 
 Questionary.registerType(TFQ);
+

@@ -5,7 +5,7 @@ function getURLParameter(name) {
 var Questionary = {
   registeredQuestionTypes: {},
   defaultQuestionType: null,
-  questionList: [],
+  questionsList: [],
   questionIdx: 0,
   activity: null,
   results: [],
@@ -22,6 +22,17 @@ var Questionary = {
 
   isTesting: function() {
     return (typeof testing !== "undefined" && testing);
+  },
+
+  drawNumbers: function() {
+    nquestions = this.questionsList.length;
+    console.log(nquestions);
+    var ntmpl = $("#number").children()[0].outerHTML;
+    $("#number").html("");
+    for (var i=0; i<nquestions; i++) {
+      qnumber = $(ntmpl).html(i+1)
+      $("#number").append(qnumber);
+    }
   },
 
   showResults: function() {
@@ -71,20 +82,33 @@ var Questionary = {
 
   create: function(a) {
     this.activity = a;
+    this.questionsList = a.questionsList;
     this.defaultQuestionType = a.questionsType;
     for (var i=0; i<a.questionsList.length; i++) {
       if (typeof a.questionsList[i].questionType == "undefined") 
         a.questionsList[i].questionType = this.defaultQuestionType;
       this.leftQuestions.push(a.questionsList[i]);
     }
-    $("#activityContents").parent().append("<div id='cover'></div>");
-    $("#cover").bind("click", function(evt) {
-      Questionary.next(result);
+    //$("#activityContents").parent().append("<div id='cover'></div>");
+    //$("#cover").bind("click", function(evt) {
+    //  Questionary.next(result);
+    //});
+    $("#button-hint").click(function() {
+      $(".hint").show();
     });
+    $(".hint").click(function() {
+      $(".hint").hide();
+    });
+    this.drawNumbers();
     this.next();
   },
 
   next: function(question_result) {
+
+    $("#number").children().removeClass("sel-number");
+    $("#number").children().eq(this.questionIdx).addClass("sel-number");
+    this.questionIdx++;
+
     if (this.question && question_result) {
       this.question.result = question_result;
     }
@@ -94,8 +118,8 @@ var Questionary = {
       this.saveResults();
       return;
     }
-    this.question = this.leftQuestions[this.questionIdx];
-    this.leftQuestions.splice(this.questionIdx,1);
+    this.question = this.leftQuestions[0]; //pop?
+    this.leftQuestions.splice(0,1);
     this.doneQuestions.push(this.question);
     this.questionClass = this.registeredQuestionTypes[this.question.questionType];
     this.questionClass().create(this.question);
@@ -128,26 +152,35 @@ var QuestionTrait = Trait({
   create: function(question) {
     var self = this;
     var _question = question;
-    $.ajax({
-      url: this.getLibUrl() + this.questionType + '.html',
-      type: 'get',
-      dataType: 'html',
-      async: false,
-      success: function(data) {
-        $('#activityContents').delay(500).fadeOut(200, function() { 
-          $('#activityContents').html("");
-          $('#activityContents').append(data);
+    $("#send-button").click(function() {
+      Questionary.next(self.result);
+    });
+    $(".hint-text").html(question.hint);
+    if (typeof question.hint == "undefined") 
+      $("hint").hide();
+    else 
+      $("hint").show();
+    console.log(question);
+    
+   // $.ajax({
+   //   url: this.getLibUrl() + this.questionType + '.html',
+   //   type: 'get',
+   //   dataType: 'html',
+   //   async: false,
+   //   success: function(data) {
+   //     $('#activityContents').delay(500).fadeOut(200, function() { 
+   //       $('#activityContents').html("");
+   //       $('#activityContents').append(data);
 
           self.create_question(_question);
-          $("#cover").removeClass("show");
-          $(this).fadeIn(200); 
-        });
-      } 
-    });
+   //       $("#cover").removeClass("show");
+   //       $(this).fadeIn(200); 
+   //     });
+   //   } 
+   // });
   }, 
 
   next_question: function() {
-    $("#cover").addClass("show");
   }
 });
 
