@@ -877,6 +877,7 @@ class DashboardHandler(
                             if sc == -1:
                                 attempt_scores.append('-')
                             else:
+                                sc = '{0:.0%}'.format(sc)
                                 attempt_scores.append(sc)
                     att_scores[n] = attempt_scores
 
