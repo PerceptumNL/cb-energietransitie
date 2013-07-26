@@ -14,7 +14,7 @@ var mcq_activity = {
       answers: [{
         type: 'text',
         text: 'Yes',
-        feedback: "correct",
+        feedback: "correct Hello this is Marta speaking how are you today fine gentleman. I am so happy that Sergio had coffee.",
       },{
         type: 'text',
         text: 'No',

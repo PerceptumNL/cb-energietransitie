@@ -1,5 +1,6 @@
 * {
    font-family:sans-serif; 
+    overflow:auto;
 }
 
 
@@ -72,8 +73,8 @@
     font-size:17px;
     margin-left: 10px;
     margin-right:10px;
+    margin-top:50px;
     position:relative;
-
 }
 .option div {
     margin: 10px 10px;
@@ -111,8 +112,9 @@
     position:relative;
 }
 #send-button {
+    font-size:14px;
     position:absolute;
-    right:10px;
+    left:10px;
     bottom:10px;
 }
 
@@ -197,4 +199,5 @@ div.toggleon:hover{
 #fb{
   background-color:white;
   text-align:left;
+  color:black;
 }
