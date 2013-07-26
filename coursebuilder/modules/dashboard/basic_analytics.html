@@ -51,23 +51,23 @@
   <table>
       <tr>
             <th>Units</th>
-            {% for s in struct %}
-            <th colspan={{ s['lesson_count'] }}> Unit {{ s['id'] }} - {{ s['title'] }} </th>
+            {% for k, v in struct.items() %}
+                <th colspan={{ v['lesson_count'] }}> Unit {{ k }} - {{ v['title'] }} </th>
             {% endfor %}
       </tr>
 
       <tr>
             <th>Lessons</th>
-            {% for s in struct %}
-                {% for sl in s['lessons'] %}
-                    <th> {{ sl['lesson_unit_idx'] }}.{{ sl['lesson_idx'] }} </th>
+            {% for k, v in struct.items() %}
+                {% for key, val in v['lessons'].items() %}
+                    <th> {{ k }}.{{ key }} </th>
                 {% endfor %}
             {% endfor %}
       </tr>
       {% for key, value in att_scores.items() %}
             <th> {{ key }} </th>
             {% for v in value %}
-                <td> {{ v }} </td>
+                <td ref={{ v[1] }}> {{ v[0] }} </td>
             {% endfor%}
       {% endfor %}
    </table>
