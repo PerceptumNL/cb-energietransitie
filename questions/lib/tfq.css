@@ -84,7 +84,7 @@
     margin-left: 10px;
     margin-right:10px;
 }
-.option div {
+.option > div {
     width: 70px;
     display: inline-block;
     padding: 10px 10px;
@@ -92,7 +92,7 @@
     background-color:#8980FF;
 }
 
-.option div:hover {
+.option > div:hover {
     background-color:#3A49BA;
     cursor: pointer;
 }
@@ -102,12 +102,12 @@
     cursor: default;
 }
 
-.option div.correct {
+.option > div.correct {
     background-color: green !important;   
     cursor: default;
 }
 
-.option div.incorrect {
+.option > div.incorrect {
     background-color: red !important;   
     cursor: default;
 }
