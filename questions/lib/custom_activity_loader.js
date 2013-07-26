@@ -101,6 +101,7 @@ var Questionary = {
     });
     this.drawNumbers();
     this.next();
+    $("#questionary").fadeIn(100);
   },
 
   next: function(question_result) {
@@ -191,4 +192,8 @@ window.addEventListener("load", function() {
     var a = window[a_name];
     Questionary.create(a);
   }
+  //$(".right").show();
+  //$(".feedback").show();
 });
+
+

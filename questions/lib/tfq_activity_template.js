@@ -20,7 +20,7 @@ var tfq_activity = {
       },{
         type: 'text',
         text: 'No',
-        feedback: 'What kind of matter you think you are! haha',
+        feedback: 'Humans are uniquely adept at utilizing systems of symbolic communication such as language and art for self-expression, the exchange of ideas, and organization. Humans create complex social structures composed of many cooperating and competing groups, from families and kinship networks to states. Social interactions between humans have established an extremely wide variety of values, social norms, and rituals, which together form the basis of human society. The human desire to understand and influence their environment, and to explain and manipulate phenomena has been the foundation for the development of science, philosophy, mythology, and religion.',
       }]
     },
     {

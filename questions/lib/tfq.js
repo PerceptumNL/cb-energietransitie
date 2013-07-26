@@ -28,7 +28,7 @@ var TFQ = function(question) {
             maybeText: "",
             hint: false,
           }
-          $(".feedback").hide();
+          $(".table-feedback").hide();
           $(".feedback-text").html("");
           $(".right").hide();
           $(".wrong").hide();
@@ -76,7 +76,7 @@ var TFQ = function(question) {
           answer_text = answers[answer_idx].feedback;
           if (typeof answer_text != "undefined")
             $(".feedback-text").html("<div>" + answer_text + "</div>")
-          $(".feedback").fadeIn();
+          $(".table-feedback").fadeIn();
         },
         
         feedback_incorrect: function(answer_idx) {
@@ -86,7 +86,7 @@ var TFQ = function(question) {
           answer_text = answers[answer_idx].feedback;
           if (typeof answer_text != "undefined")
             $(".feedback-text").append("<div>" + answer_text + "</div>")
-          $(".feedback").fadeIn();
+          $(".table-feedback").fadeIn();
         },
           
         check_answer: function(answer_idx) {
