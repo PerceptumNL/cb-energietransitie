@@ -66,7 +66,6 @@ var TFQ = function(question) {
         prompt_maybe: function() {
           result.maybeText = prompt("Enter your thoughts!");
           result.maybe = true;
-          this.next_question();
         },
 
         feedback_correct: function(answer_idx) {
@@ -108,7 +107,6 @@ var TFQ = function(question) {
             }
           });
           $(".option").children().unbind("click");
-          this.next_question();
         }
      })
     )

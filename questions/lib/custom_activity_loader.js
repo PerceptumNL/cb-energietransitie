@@ -26,7 +26,6 @@ var Questionary = {
 
   drawNumbers: function() {
     nquestions = this.questionsList.length;
-    console.log(nquestions);
     var ntmpl = $("#number").children()[0].outerHTML;
     $("#number").html("");
     for (var i=0; i<nquestions; i++) {
@@ -37,7 +36,8 @@ var Questionary = {
 
   showResults: function() {
     if (this.leftQuestions.length == 0) {
-      $("#activity").hide();
+      $("#question").hide();
+      $("#answer").hide();
       $("#results").show();
       var correct=0, incorrect=0, maybe=0;
       $.each(this.doneQuestions, function(k, q) {
@@ -102,13 +102,18 @@ var Questionary = {
     this.drawNumbers();
     this.next();
     $("#questionary").fadeIn(100);
+    $("#send-button").click(function() {
+      Questionary.next(self.result);
+    });
   },
 
   next: function(question_result) {
 
+    $("#tr-image").hide();
     $("#number").children().removeClass("sel-number");
     $("#number").children().eq(this.questionIdx).addClass("sel-number");
     this.questionIdx++;
+      
 
     if (this.question && question_result) {
       this.question.result = question_result;
@@ -153,15 +158,11 @@ var QuestionTrait = Trait({
   create: function(question) {
     var self = this;
     var _question = question;
-    $("#send-button").click(function() {
-      Questionary.next(self.result);
-    });
     $(".hint-text").html(question.hint);
     if (typeof question.hint == "undefined") 
       $("hint").hide();
     else 
       $("hint").show();
-    console.log(question);
     
    // $.ajax({
    //   url: this.getLibUrl() + this.questionType + '.html',
@@ -194,6 +195,9 @@ window.addEventListener("load", function() {
   }
   //$(".right").show();
   //$(".feedback").show();
+  //$("#question").hide();
+  //$("#answer").hide();
+  //$("#results").show();
 });
 
 

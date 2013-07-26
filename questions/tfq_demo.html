@@ -26,6 +26,20 @@
       </div>
       <div id="out">
         
+        <table id="results" style="display:none">
+            <tr id="tr-correct">
+                <td>Correct</td>
+                <td id="correct-count" class="count">4</td>
+            </tr>
+            <tr id="tr-incorrect">
+                <td>Incorrect</td>
+                <td id="incorrect-count" class="count">1</td>
+            </tr>
+            <tr id="tr-maybe">
+                <td>Maybe</td>
+                <td id="maybe-count" class="count">5</td>
+            </tr>
+        </table>
         <div id="question">
           <table id="q-table">
             <tr id="tr-text">
@@ -51,8 +65,11 @@
               <td id="td-fb-text">
                 <span class="feedback-text"></span>
               </td>
+            </tr>
+            <tr id="tr-next">
+              <td></td>
               <td id="td-fb-next">
-                <div id="send-button">&#8629;</div>
+                <div id="send-button">&rarr;</div>
               </td>
             </tr>
           </table>

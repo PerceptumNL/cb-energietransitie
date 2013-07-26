@@ -55,6 +55,17 @@
     min-height: 450px;
 }
 
+#results {
+    width: 100%;
+    font-size:24px;
+    float:left;
+    text-align:center;
+    min-height: 450px;
+}
+#results tr td {
+    width: 50%;
+}
+
 #answer {
     width: 336px;
     border-left: 2px dashed #9C959B;
@@ -79,23 +90,26 @@
     padding: 10px 10px;
     margin: 0px 2px;
     background-color:#8980FF;
-    
 }
 
 .option div:hover {
     background-color:#3A49BA;
     cursor: pointer;
 }
-.option div.disabled {
+.option div.disabled,
+.option div.disabled:hover {
     background-color:#aaa;
+    cursor: default;
 }
 
 .option div.correct {
     background-color: green !important;   
+    cursor: default;
 }
 
 .option div.incorrect {
     background-color: red !important;   
+    cursor: default;
 }
 
 
@@ -110,7 +124,7 @@
     border-radius: 2px;
     margin-bottom: 20px;
 }
-.feedback-text: {
+.feedback-text {
 
 }
 
@@ -119,6 +133,9 @@
     padding: 8px 11px;
     border-top-left-radius: 2px;
     background-color: #bbb;
+    width: 50px;
+    float: right;
+    text-align: center;
 }
 #send-button:hover {
     background-color: #9C959B;
@@ -205,3 +222,20 @@
     clear: both;
 
 }
+#tr-next {
+    text-align: right;
+}
+
+#tr-correct {
+    background-color: green;    
+}
+
+#tr-incorrect {
+    background-color: red;    
+}
+
+#tr-maybe {
+    background-color: orange;    
+    border: 1px solid orange;    
+}
+
