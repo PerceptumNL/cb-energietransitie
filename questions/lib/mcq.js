@@ -111,7 +111,8 @@ var MCQ = function(question) {
           $.each(question.answers, function(idx, ans) {
             if ($.inArray(idx, question.correctAnswer) >= 0 && 
                 current_answers[idx] == true) {
-                $($(".option").children()[idx]).addClass("correct");
+                $($(".option").children()[idx]).addClass("correct")
+                $($(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/11iXTZG'/></div>");
                 ans.correct = true; 
                 self.feedback_correct(idx);
 
@@ -119,12 +120,14 @@ var MCQ = function(question) {
             else if ($.inArray(idx, question.correctAnswer) == -1 && 
                 current_answers[idx] == false) {
                 $($(".option").children()[idx]).addClass("correct");
+                $($(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/11iXTZG'/></div>");
                 ans.correct = true;
                 self.feedback_correct(idx);
             }
             else {
                 $($(".option").children()[idx]).addClass("incorrect");
                 ans.incorrect = true; 
+                $($(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/1aMHTSK'/></div>");
                 result.correct = false;
                 result.incorrect = true;
                 self.feedback_incorrect(idx);
