@@ -65,10 +65,12 @@
             {% endfor %}
       </tr>
       {% for key, value in att_scores.items() %}
-            <th> {{ key }} </th>
-            {% for v in value %}
-                <td ref={{ v[1] }}> {{ v[0] }} </td>
-            {% endfor%}
+            <tr>
+                <th> {{ key }} </th>
+                    {% for v in value %}
+                        <td ref={{ v[1] }}> {{ v[0] }} </td>
+                    {% endfor%}
+            </tr>
       {% endfor %}
    </table>
   <br></br>

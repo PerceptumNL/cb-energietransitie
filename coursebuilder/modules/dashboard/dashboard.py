@@ -697,17 +697,22 @@ class DashboardHandler(
     def get_attempt_scores(self, name, activity, unit_idx, les_idx):
         max_score = -1
         ref = 0
-        max_date = datetime.datetime(2000, 1, 1, 1, 1, 1, 1)
-        if activity[name].get(unit_idx):
-            for a in activity[name][unit_idx][les_idx]:
-                if a['date'] > max_date:
-                    max_score = a['result']['score']
-                    ref = a['ref']
+        logging.info('attempt scores: %s %s', unit_idx, les_idx)
+        max_date = datetime.datetime(2000, 1, 1, 1, 1, 1, 1).isoformat()
+        logging.info(activity[name])
+        if activity[name].get(str(unit_idx)):
+            logging.info('1')
+            if activity[name][str(unit_idx)].get(str(les_idx)):
+                for a in activity[name][str(unit_idx)].get(str(les_idx)):
+                    if a['date'] > max_date:
+                        logging.info('2')
+                        max_score = a['result']['score']
+                        ref = a['ref']
         return [max_score, ref]
 
     def get_activity(self, inv_map):
         activity = {}
-        events = EventEntity().all().fetch(limit = 4000)
+        events = EventEntity().all().fetch(limit = 400)
         for e in events:
             st = Student.get_student_by_user_id(e.user_id)
             if e.source == "questionary-results" and st:
@@ -833,14 +838,16 @@ class DashboardHandler(
                                    'avg': avg})
 
                 activity = self.get_activity(inv_map)
+                logging.info(activity)
 
                 att_scores = {}
                 for name in activity.keys():
                     attempt_scores = []
                     for k, v in struct.items():
-                        for les in v['lessons']:
+                        for les, les1 in v['lessons'].items():
+                            idxs = [les1['lesson_unit'], les1['lesson_id']]
                             sc = self.get_attempt_scores(name, activity,
-                                k, les)
+                                idxs[0], idxs[1])
                             if sc[0] == -1:
                                 sc[0] = '-'
                                 attempt_scores.append(sc)
