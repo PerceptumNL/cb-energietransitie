@@ -31,10 +31,10 @@
     background-color: red !important;   
 }
 
-div.toggleon{
+.option.mcq div.toggleon {
   background-color:#FF5C33;
 }
-div.toggleon:hover {
+.option.mcq div.toggleon:hover {
   background-color: #FF3300;
 }
 
