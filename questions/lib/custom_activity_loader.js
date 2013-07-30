@@ -11,6 +11,7 @@ var Questionary = {
   results: [],
   leftQuestions: [],
   doneQuestions: [],
+  firstLoad: true,
 
   getLesson: function() {
     return getURLParameter("lesson");
@@ -25,13 +26,15 @@ var Questionary = {
   },
 
   drawNumbers: function() {
-    nquestions = this.questionsList.length;
+    var nquestions = this.questionsList.length;
     var ntmpl = $("#number").children()[0].outerHTML;
     $("#number").html("");
     for (var i=0; i<nquestions; i++) {
       qnumber = $(ntmpl).html(i+1)
       $("#number").append(qnumber);
     }
+    $("#number").children().removeClass("sel-number");
+    $("#number").children().eq(this.questionIdx).addClass("sel-number");
   },
 
   showResults: function() {
@@ -50,9 +53,8 @@ var Questionary = {
       $("#right .percentage").html(Math.round(correct / total * 100) + "%");
       $("#wrong .percentage").html(Math.round(incorrect / total * 100) + "%");
       //$("#maybe").html(maybe);
-      $(".questionnaire").fadeOut(function() {
-        $("#overview").show();
-      });
+      $(".questionnaire").hide()
+      $("#overview").show();
       return;
     }
   },
@@ -82,7 +84,13 @@ var Questionary = {
   },
 
   create: function(a) {
-    this.activity = a;
+    this.questionIdx = 0;
+    this.results = [];
+    this.leftQuestions = [];
+    this.doneQuestions = [];
+
+    this.activity_original = $.extend(true, [], a);
+    this.activity = $.extend(true, [], a);
     this.questionsList = a.questionsList;
     this.defaultQuestionType = a.questionsType;
     for (var i=0; i<a.questionsList.length; i++) {
@@ -90,31 +98,17 @@ var Questionary = {
         a.questionsList[i].questionType = this.defaultQuestionType;
       this.leftQuestions.push(a.questionsList[i]);
     }
-    //$("#activityContents").parent().append("<div id='cover'></div>");
-    //$("#cover").bind("click", function(evt) {
-    //  Questionary.next(result);
-    //});
-    $("#button-hint").click(function() {
-      $(".hint").show();
-    });
-    $(".hint").click(function() {
-      $(".hint").hide();
-    });
-    this.drawNumbers();
+
+    $("#overview").hide();
     this.next();
-    $("#questions").fadeIn(100);
-    $("#send-button").click(function() {
-      Questionary.next(self.result);
-    });
+
+  },
+
+  restart: function() {
+    this.create(this.activity_original);
   },
 
   next: function(question_result) {
-
-    $("#tr-image").hide();
-    $("#number").children().removeClass("sel-number");
-    $("#number").children().eq(this.questionIdx).addClass("sel-number");
-    this.questionIdx++;
-      
 
     if (this.question && question_result) {
       this.question.result = question_result;
@@ -130,6 +124,24 @@ var Questionary = {
     this.doneQuestions.push(this.question);
     this.questionClass = this.registeredQuestionTypes[this.question.questionType];
     this.questionClass().create(this.question);
+    $("#questions").show();
+    $("#send-button").click(function() {
+      Questionary.next(self.result);
+    });
+    $("#tr-image").hide();
+    this.drawNumbers();
+    this.questionIdx++;
+    $("#button-hint").click(function() {
+      $(".hint").show();
+    });
+    $(".hint").click(function() {
+      $(".hint").hide();
+    });
+    var _self = this;
+    $("#redo").click(function() {
+          console.log("ble");
+        _self.restart();
+    })
   },
 
   registerType: function(questionObj) {
@@ -159,38 +171,33 @@ var QuestionTrait = Trait({
   create: function(question) {
     var self = this;
     var _question = question;
-    $(".hint-text").html(question.hint);
-    if (typeof question.hint == "undefined") 
-      $("hint").hide();
-    else 
-      $("hint").show();
     
-   // $.ajax({
-   //   url: this.getLibUrl() + this.questionType + '.html',
-   //   type: 'get',
-   //   dataType: 'html',
-   //   async: false,
-   //   success: function(data) {
-   //     $('#activityContents').delay(500).fadeOut(200, function() { 
-   //       $('#activityContents').html("");
-   //       $('#activityContents').append(data);
-
-          self.create_question(_question);
-   //       $("#cover").removeClass("show");
-   //       $(this).fadeIn(200); 
-   //     });
-   //   } 
-   // });
+    $.ajax({
+      url: this.getLibUrl() + this.questionType + '.html',
+      type: 'get',
+      dataType: 'html',
+      async: false,
+      success: function(data) {
+        $('#activityContents').html("");
+        $('#activityContents').append(data);
+        self.create_question(_question);
+        $(".hint-text").html(question.hint);
+        if (typeof question.hint == "undefined") 
+          $("#button-hint").hide();
+        else 
+          $("#button-hint").show();
+      } 
+    });
   }, 
 
   next_question: function() {
+    Questionary.next(result);
   }
 });
 
-
 function test_overview() {
-    $(".questionnaire").hide();
-    $("#overview").show();
+  $(".questionnaire").hide();
+  $("#overview").show();
 }
 
 window.addEventListener("load", function() {
@@ -200,12 +207,6 @@ window.addEventListener("load", function() {
     Questionary.create(a);
   }
 //  test_overview();
-  //$(".right").show();
-  //$(".feedback").show();
-  //$("#question").hide();
-  //$("#answer").hide();
-  //$("#results").show();
-    
 });
 
 

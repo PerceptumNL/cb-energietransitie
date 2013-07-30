@@ -28,7 +28,7 @@ var tfq_activity = {
       text: 'Is this a dog?',
       image: 'http://eofdreams.com/data_images/dreams/dog/dog-01.jpg',
       correctAnswer: 0,
-      answerMaybe: true,
+      answerMaybe: false,
       answers: [{
         type: 'text',
         text: 'True',

@@ -2,9 +2,6 @@ $("#button-hint").click(function() {
    $(".hint").show(); 
 });
 
-$(".hint").click(function() {
-    $(this).hide();
-});
 
 var TFQ = function(question) {
   return Trait.create(
@@ -55,17 +52,29 @@ var TFQ = function(question) {
             div.click(function() { self.check_answer(k) });
           });
           if (q.answerMaybe) {
-            div = $("<div>").text("Maybe");
+            div = $("<div>").text("Maybe").attr("id", "maybe-button");
             $(".option").append(div);
             div.click(function() {
-                self.prompt_maybe(k) 
+                self.prompt_maybe()
             });  
           }
         },
 
         prompt_maybe: function() {
-          result.maybeText = prompt("Enter your thoughts!");
-          result.maybe = true;
+          var self = this;
+          $(".table-feedback").show();
+          $("#feedback-input").show();
+          $("#tr-fb-input").show();
+          $("#send-button").hide();
+          $("#submit-button").show().click(function() {
+            $(this).hide()
+            $("#send-button").show();
+            $("#tr-fb-input").hide();
+            $("#feedback-input").hide();
+            result.maybe = true;
+            result.maybeText = $("#feedback-input").val();
+            self.next_question();
+          });
         },
 
         feedback_correct: function(answer_idx) {
