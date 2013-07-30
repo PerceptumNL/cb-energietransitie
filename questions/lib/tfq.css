@@ -2,18 +2,18 @@
    font-family:sans-serif; 
 }
 
-#out {
+.questions {
+    height: 497px;
     width: 788px;
     border: 2px solid #9C959B;
     position:relative;    
 
 }
 
-#margin-top {
+#q-header {
     height:30px;
     width:788px;
-    border: 2px solid #9C959B;
-    border-bottom: none;
+    border-bottom: 2px solid #9C959B;
     position:relative;
     color:#9C959B;
 }
@@ -48,11 +48,6 @@
 }
 
 #question {
-    width: 450px;
-    font-size:24px;
-    float:left;
-    text-align:center;
-    min-height: 450px;
 }
 
 #results {
@@ -67,13 +62,6 @@
 }
 
 #answer {
-    width: 336px;
-    border-left: 2px dashed #9C959B;
-    text-align:center;
-    position:relative;    
-    display: inline-block;
-    clear: both; 
-    min-height: 450px;
 }
 
 .option {
@@ -195,7 +183,6 @@
 }
 
 #questionary {
-  display: none;
 }
 
 #td-fb-icon {
@@ -238,4 +225,134 @@
     background-color: orange;    
     border: 1px solid orange;    
 }
+
+
+#submit-button {
+    display: none;
+    bottom:0px;
+    padding: 8px 11px;
+    border-top-left-radius: 2px;
+    background-color: #bbb;
+    width: 50px;
+    float: right;
+    text-align: center;
+}
+#submit-button:hover {
+    background-color: #9C959B;
+}
+#feedback-input {
+    display: none;
+}
+
+.right-col {
+    position:relative;    
+    display: inline-block;
+    min-height: 450px;
+    height: 497px;
+    width: 328px;
+    border-left: 2px dashed #9C959B;
+    text-align:center;
+    clear: both; 
+}
+
+.left-col {
+    width: 450px;
+    font-size:24px;
+    float:left;
+    text-align:center;
+    min-height: 450px;
+}
+
+/* RESULTS */
+
+
+#question {
+    }
+
+#title {
+    margin-top:100px;
+    position:relative;
+}
+
+
+#statistics{
+    display:inline-block;
+}
+#lesson {
+    display:inline-block;
+    margin-left: 20px;
+}
+
+.results{
+    position:absolute;
+    margin-top:100px;
+    left:50px;
+}
+#right {
+    position:relative;
+}
+#wrong {
+    position:relative;
+    top: 20px;
+    
+}
+.ima{
+    display:inline-block;
+   
+    
+}
+.percentage {
+    display:inline-block;
+    position: absolute;
+    top:10px;
+    margin-left: 50px;
+    
+}
+
+#boxes {
+    margin-top:350px;   
+    margin-left:20px;
+    margin-right:20px;
+    color: #726C78;  
+    text-align:center;
+}
+#revisit {
+    border: 1px solid #4671D5;
+    background-color:#4671D5;
+    color: white;
+    margin: 10px 0px;
+    padding: 20px 0px;
+    padding-left: 15px;
+    
+}
+#revisit:hover {
+    cursor:pointer;
+    background-color:#0D43BD;
+}
+#redo {
+    border: 1px solid #FF8100;
+    background-color: #FF8100;
+    color: white;
+    margin: 10px 0px;
+    padding: 20px 0px;
+    padding-left: 15px;
+}
+#redo:hover {
+    cursor:pointer;
+    background-color: #FF6F00;
+}
+#results.questionnaire {
+    display: none;
+}
+#overview {
+    display: none;
+}
+.questionnaire {
+    width: 788px;
+    min-height: 500px;
+    border: 2px solid #9C959B;
+    position:relative;    
+    display: none;
+}
+
 

@@ -36,9 +36,6 @@ var Questionary = {
 
   showResults: function() {
     if (this.leftQuestions.length == 0) {
-      $("#question").hide();
-      $("#answer").hide();
-      $("#results").show();
       var correct=0, incorrect=0, maybe=0;
       $.each(this.doneQuestions, function(k, q) {
         v = q.result;
@@ -49,9 +46,13 @@ var Questionary = {
         else if (v.maybe) 
             maybe += 1;
       });
-      $("#correct").html(correct);
-      $("#incorrect").html(incorrect);
-      $("#maybe").html(maybe);
+      var total = correct + incorrect + maybe;
+      $("#right .percentage").html(Math.round(correct / total * 100) + "%");
+      $("#wrong .percentage").html(Math.round(incorrect / total * 100) + "%");
+      //$("#maybe").html(maybe);
+      $(".questionnaire").fadeOut(function() {
+        $("#overview").show();
+      });
       return;
     }
   },
@@ -101,7 +102,7 @@ var Questionary = {
     });
     this.drawNumbers();
     this.next();
-    $("#questionary").fadeIn(100);
+    $("#questions").fadeIn(100);
     $("#send-button").click(function() {
       Questionary.next(self.result);
     });
@@ -187,17 +188,24 @@ var QuestionTrait = Trait({
 });
 
 
+function test_overview() {
+    $(".questionnaire").hide();
+    $("#overview").show();
+}
+
 window.addEventListener("load", function() {
   var a_name = $("question").attr("name");
   if (a_name && a_name in window) {
     var a = window[a_name];
     Questionary.create(a);
   }
+//  test_overview();
   //$(".right").show();
   //$(".feedback").show();
   //$("#question").hide();
   //$("#answer").hide();
   //$("#results").show();
+    
 });
 
 
