@@ -173,7 +173,7 @@ var QuestionTrait = Trait({
     var _question = question;
     
     $.ajax({
-      url: this.getLibUrl() + this.questionType + '.html',
+      url: this.getLibUrl() + 'base.html',
       type: 'get',
       dataType: 'html',
       async: false,

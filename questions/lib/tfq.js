@@ -1,8 +1,3 @@
-$("#button-hint").click(function() {
-   $(".hint").show(); 
-});
-
-
 var TFQ = function(question) {
   return Trait.create(
     Object.prototype,
@@ -25,10 +20,6 @@ var TFQ = function(question) {
             maybeText: "",
             hint: false,
           }
-          $(".table-feedback").hide();
-          $(".feedback-text").html("");
-          $(".right").hide();
-          $(".wrong").hide();
           this.draw_question();
           this.draw_answers();
         },
@@ -45,6 +36,10 @@ var TFQ = function(question) {
           var q = question;
           var a = q.answers;
           var self = this;
+          $(".table-feedback").hide();
+          $(".feedback-text").html("");
+          $(".right").hide();
+          $(".wrong").hide();
           $(".option").html("");
           $.each(a, function(k, v) {
             div = $("<div>").text(v.text);

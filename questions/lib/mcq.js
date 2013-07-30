@@ -1,11 +1,3 @@
-$("#button-hint").click(function() {
-   $(".hint").show(); 
-});
-
-$(".hint").click(function() {
-    $(this).hide();
-});
-
 var MCQ = function(question) {
   return Trait.create(
     Object.prototype,
@@ -30,23 +22,19 @@ var MCQ = function(question) {
         },
       
         draw_question: function() {
-          var q = question;
-          if (q.type == "text") {
-            console.log("tekst type");
-            $("#q-table").html(q.text);
-          } else if (q.type == "image") {
-            console.log("image type");
-            $("#q-table").html("<img id='concept_img' src='"+q.image+"'/>");
-            $("#q-table").append("<div>"+q.text+"</div>");
+          $("#q-text").html(question.text);
+          if (question.type == "image") {
+            $("#q-image").attr("src", question.image);
+            $("#tr-image").show();
           }
         },
       
         draw_answers: function() {
-          var q = question;
-          var a = q.answers;
-          var self = this;
-          var per = 95 / a.length
-          var selected = [];
+          var self = this,
+            q = question,
+            a = q.answers,
+            per = 95 / a.length,
+            selected = [];
           $(".option").html("");
           $.each(a, function(k, v) {
             div = $("<div>").text(v.text).css("width", "80%");
@@ -62,12 +50,15 @@ var MCQ = function(question) {
               }
             )
           });
-          $("#send-button").hide(); 
-          $("#checkanswer").show();
 
-          $("#checkanswer").click(function(){
+          $("#send-button").hide(); 
+          $(".table-feedback").show();
+          $(".table-feedback").css("border", "none");
+          $("#check-button").show();
+
+          $("#check-button").click(function(){
             self.check_answer();
-            $("#checkanswer").hide();
+            $("#check-button").hide();
             $("#send-button").show();
           });
         },
@@ -136,7 +127,7 @@ var MCQ = function(question) {
                 //self.feedback_incorrect(idx);
             }
           });
-          this.next_question();
+          //this.next_question();
         }
       
       })
