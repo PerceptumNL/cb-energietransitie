@@ -19,39 +19,28 @@ var DDQ = function(question) {
             correct: false,
             maybe: false,
             hint: false,
-    
           }
           this.draw_question();
           this.draw_answers();
         },
 
         draw_question: function() {
-          var q = question;
-          if (q.type == "text") {
-            $("#concepts").html(q.text);
-          } else if (q.type == "image") {
-            $("#concepts").html("<img id='concept_img' src='"+q.image+"'/>");
-            $("#concepts").append("<div>"+q.text+"</div>");
-          }
-        },
-
-        draw_answers: function() {
           var self = this;
+          $("#q-text").html(question.text || "");
+          //if (question.type == "image") {
+          //  $("#q-image").attr("src", question.image);
+          //$("#tr-image").html("<div>asdf</div>");
+          //$("#tr-image").show();
+          //}
+          $("#tr-text").show();
           var per = 90 / targetList.length
-          $('#activity').append("<div id='check_answer'><span>Check!</span></div>");
           $.each(targetList, function(k, v) {
             var target_div = $("<div class='target'>" + v.text + "</div>");
             target_div.idx = k
             target_div.answers = [];
             self.targets.push(target_div);
             $(target_div).css("width", per + "%");
-            $('.targets').append(target_div);
-            $.each(v.conceptList, function(_k, _v) {
-              var concept_div = $("<div class='concept'>" + _v.text + "</div>");
-              concept_div.attr("answer_idx", k);
-              $(concept_div).draggable();
-              $('.concepts').append(concept_div);
-            });
+            $('#tr-text').append(target_div);
             $(target_div).droppable({
               //accept: "",
               greedy: true,
@@ -65,6 +54,20 @@ var DDQ = function(question) {
               }
             });
           });
+          //$("#tr-image").show();
+        },
+
+        draw_answers: function() {
+          var self = this;
+          $(".option").html("");
+          $.each(targetList, function(k, v) {
+            $.each(v.conceptList, function(_k, _v) {
+              var concept_div = $("<div class='concept'>" + _v.text + "</div>");
+              concept_div.attr("answer_idx", k);
+              $(concept_div).draggable();
+              $('.option').append(concept_div);
+            });
+          });
           $('body').droppable({
             //accept: "",
             activeClass: "ui-state-hover",
@@ -74,8 +77,16 @@ var DDQ = function(question) {
             }
           });
       
-          $("#check_answer").click(function() {
-              self.check_answer();
+          $("#send-button").hide(); 
+          $(".table-feedback").show();
+          $(".table-feedback").css("border", "none");
+          $("#check-button").show();
+
+          $("#check-button").click(function(){
+            if (self.check_answer()) {
+              $("#check-button").hide();
+              $("#send-button").show();
+            }
           });
 
         },
@@ -90,8 +101,6 @@ var DDQ = function(question) {
 
           num_concepts = $('.concepts').children().length;
           if (count_answered < num_concepts) return;
-          console.log(count_answered);
-          console.log(num_concepts);
 
           result.correct = true;
           $.each(this.targets, function(k, v) {
@@ -104,7 +113,7 @@ var DDQ = function(question) {
                 $(answer).css("border-color", "green");
             });
           });
-          this.next_question();
+          return true;
         }
       })
     )
