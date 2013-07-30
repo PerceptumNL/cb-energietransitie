@@ -35,7 +35,7 @@ var MCQ = function(question) {
             a = q.answers,
             per = 95 / a.length,
             selected = [];
-          $(".option").html("");
+          $(".option").html("").addClass("mcq");
           $.each(a, function(k, v) {
             div = $("<div>").text(v.text).css("width", "80%");
             $(".option").append(div);

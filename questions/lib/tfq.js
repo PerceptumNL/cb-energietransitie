@@ -40,7 +40,7 @@ var TFQ = function(question) {
           $(".feedback-text").html("");
           $(".right").hide();
           $(".wrong").hide();
-          $(".option").html("");
+          $(".option").html("").addClass("tfq");
           $.each(a, function(k, v) {
             div = $("<div>").text(v.text);
             $(".option").append(div);

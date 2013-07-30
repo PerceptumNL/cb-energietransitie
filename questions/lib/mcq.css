@@ -1,4 +1,4 @@
-.option {
+.option.mcq {
     border:2px;
     color:white;
     font-size:17px;
@@ -7,7 +7,7 @@
     margin-top:50px;
     position:relative;
 }
-.option div {
+.option.mcq div {
     margin: 10px 10px;
     padding: 10px 10px;
     padding-left: 15px;
@@ -17,17 +17,17 @@
     margin-right:auto;
     margin-left:auto;    
 }
-.option div:hover {
+.option.mcq div:hover {
    background-color:#3A49BA;
     cursor:pointer;
 }
-.option div.disabled {
+.option.mcq div.disabled {
     background-color:#aaa;
 }
-.option div.correct {
+.option.mcq div.correct {
     background-color: green !important;   
 }
-.option div.incorrect {
+.option.mcq div.incorrect {
     background-color: red !important;   
 }
 
@@ -38,3 +38,8 @@ div.toggleon:hover {
   background-color: #FF3300;
 }
 
+#fb{
+  background-color:white;
+  text-align:left;
+  color:black;
+}

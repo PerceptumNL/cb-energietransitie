@@ -162,6 +162,12 @@ td, th {
     background-color: orange;    
     border: 1px solid orange;    
 }
+
+#submit-button,
+#check-button {
+    display:none;
+}
+
 #send-button,
 #submit-button,
 #check-button {
@@ -175,7 +181,7 @@ td, th {
 }
 #send-button:hover,
 #submit-button:hover,
-#check-button:hover, {
+#check-button:hover {
     background-color: #9C959B;
     cursor:pointer;
 }
