@@ -12,6 +12,7 @@ var Questionary = {
   leftQuestions: [],
   doneQuestions: [],
   firstLoad: true,
+  qEle: null,
 
   getLesson: function() {
     return getURLParameter("lesson");
@@ -83,16 +84,21 @@ var Questionary = {
     }
   },
 
-  create: function(a) {
+  create: function(qEle) {
     this.questionIdx = 0;
     this.results = [];
     this.leftQuestions = [];
     this.doneQuestions = [];
 
-    this.activity_original = $.extend(true, [], a);
-    this.activity = $.extend(true, [], a);
+    var a_name = $(qEle).attr("name");
+    if (a_name && a_name in window) {
+      this.activity_original = window[a_name];
+    }
+    this.qEle = qEle;
+    this.activity = a = $.extend(true, [], this.activity_original);
     this.questionsList = a.questionsList;
     this.defaultQuestionType = a.questionsType;
+
     for (var i=0; i<a.questionsList.length; i++) {
       if (typeof a.questionsList[i].questionType == "undefined") 
         a.questionsList[i].questionType = this.defaultQuestionType;
@@ -123,7 +129,7 @@ var Questionary = {
     this.leftQuestions.splice(0,1);
     this.doneQuestions.push(this.question);
     this.questionClass = this.registeredQuestionTypes[this.question.questionType];
-    this.questionClass().create(this.question);
+    this.questionClass().create(this.question, this.qEle);
     $("#questions").show();
     $("#send-button").click(function() {
       Questionary.next(self.result);
@@ -168,9 +174,10 @@ var QuestionTrait = Trait({
     }
   },
 
-  create: function(question) {
+  create: function(question, qEle) {
     var self = this;
     var _question = question;
+    var wrapperEle = qEle || $('#activityContents question');
     
     $.ajax({
       url: this.getLibUrl() + 'base.html',
@@ -178,11 +185,10 @@ var QuestionTrait = Trait({
       dataType: 'html',
       async: false,
       success: function(data) {
-        $('#activityContents').html("");
-        $('#activityContents').append(data);
+        $(wrapperEle).html("").append(data);
         self.create_question(_question);
-        $(".hint-text").html(question.hint);
-        if (typeof question.hint == "undefined") 
+        $(".hint-text").html(_question.hint);
+        if (typeof _question.hint == "undefined") 
           $("#button-hint").hide();
         else 
           $("#button-hint").show();
@@ -201,11 +207,11 @@ function test_overview() {
 }
 
 window.addEventListener("load", function() {
-  var a_name = $("question").attr("name");
-  if (a_name && a_name in window) {
-    var a = window[a_name];
-    Questionary.create(a);
-  }
+  var qs = $("question"); 
+  //could support multiple questionnaires
+  $.each(qs, function(k, q) {
+    Questionary.create(q);
+  });
 //  test_overview();
 });
 
