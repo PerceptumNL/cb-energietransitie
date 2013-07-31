@@ -25,9 +25,7 @@ Run `./apprun` to run the development server using a persistent datastorage.
   * questionary.js
 
 * From `questions/lib/` to `assets/libs` path:
-  * tfq.html
-  * ddq.html
-  * mcq.html
+  * base.html
   
 
 2. Edit the course file `activity.html`:
