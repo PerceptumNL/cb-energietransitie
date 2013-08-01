@@ -19,6 +19,7 @@ __author__ = 'Pavel Simakov (psimakov@google.com)'
 import datetime
 import os
 import urllib
+from activity import ActivityHandler
 import appengine_config
 from common import jinja_utils
 import logging
@@ -32,6 +33,7 @@ import jinja2.exceptions
 from models import config
 from models import courses
 from models import custom_modules
+from models import entities
 from models import jobs
 from models import roles
 from models import transforms
@@ -72,7 +74,7 @@ from google.appengine.api import users
 
 
 class DashboardHandler(
-    CourseSettingsHandler, FileManagerAndEditor, UnitLessonEditor,
+    ActivityHandler, CourseSettingsHandler, FileManagerAndEditor, UnitLessonEditor,
     QuestionManagerAndEditor, QuestionGroupManagerAndEditor, AssignmentManager,
     ApplicationHandler, ReflectiveRequestHandler):
     """Handles all pages and actions required for managing a course."""
@@ -84,13 +86,15 @@ class DashboardHandler(
         'edit_unit', 'edit_link', 'edit_lesson', 'edit_assessment',
         'add_asset', 'delete_asset', 'manage_text_asset', 'import_course',
         'edit_assignment', 'add_mc_question', 'add_sa_question',
-        'edit_question', 'add_question_group', 'edit_question_group']
+        'edit_question', 'add_question_group', 'edit_question_group',
+        'questionary_activity']
     # Requests to these handlers automatically go through an XSRF token check
     # that is implemented in ReflectiveRequestHandler.
     post_actions = [
         'compute_student_stats', 'create_or_edit_settings', 'add_unit',
         'add_link', 'add_assessment', 'add_lesson',
-        'edit_basic_course_settings', 'add_reviewer', 'delete_reviewer']
+        'edit_basic_course_settings', 'add_reviewer', 'delete_reviewer',
+        'questionary_activity']
 
     local_fs = vfs.LocalReadOnlyFileSystem(logical_home_folder='/')
 
@@ -697,22 +701,18 @@ class DashboardHandler(
     def get_attempt_scores(self, name, activity, unit_idx, les_idx):
         max_score = -1
         ref = 0
-        logging.info('attempt scores: %s %s', unit_idx, les_idx)
         max_date = datetime.datetime(2000, 1, 1, 1, 1, 1, 1).isoformat()
-        logging.info(activity[name])
         if activity[name].get(str(unit_idx)):
-            logging.info('1')
             if activity[name][str(unit_idx)].get(str(les_idx)):
                 for a in activity[name][str(unit_idx)].get(str(les_idx)):
                     if a['date'] > max_date:
-                        logging.info('2')
                         max_score = a['result']['score']
                         ref = a['ref']
         return [max_score, ref]
 
     def get_activity(self, inv_map):
         activity = {}
-        events = EventEntity().all().fetch(limit = 400)
+        events = EventEntity().all().run(batch_size=100)
         for e in events:
             st = Student.get_student_by_user_id(e.user_id)
             if e.source == "questionary-results" and st:
@@ -838,7 +838,6 @@ class DashboardHandler(
                                    'avg': avg})
 
                 activity = self.get_activity(inv_map)
-                logging.info(activity)
 
                 att_scores = {}
                 for name in activity.keys():
@@ -891,6 +890,32 @@ class DashboardHandler(
         return jinja2.utils.Markup(self.get_template(
             'basic_analytics.html', [os.path.dirname(__file__)]
         ).render(subtemplate_values, autoescape=True))
+
+    def get_markup_for_activity(self, ref):
+        sub_values = {}
+        ent = {}
+
+        act = EventEntity().get_by_id(int(ref))
+        if act.data:
+            entries = transforms.loads(act.data)['results']
+            for e in entries:
+                if e.get('text'):
+                    ent[e['text']] = {}
+                    ent[e['text']]['hint'] = e['result']['hint']
+                    if e['result'].get('maybe'):
+                        ent[e['text']]['answer'] = e['result']['maybeText']
+                    else:
+                        ent[e['text']]['answer'] = e['result']['correct']
+                        
+            sub_values['date'] = act.recorded_on.strftime('%d/%m/%y')
+            sub_values['ent'] = ent
+        else:
+            sub_values['date'] = 'no date'
+            sub_values['ent'] = 'no ent'
+
+        return jinja2.utils.Markup(self.get_template(
+            'activity.html', [os.path.dirname(__file__)]
+        ).render(sub_values, autoescape=True))
 
     def get_analytics(self):
         """Renders course analytics view."""

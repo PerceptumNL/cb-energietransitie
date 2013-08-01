@@ -48,7 +48,7 @@
 
   <h3>Unit Statistics</h3>
   <br></br>
-  <table>
+  <table class="table">
       <tr>
             <th>Units</th>
             {% for k, v in struct.items() %}
@@ -68,7 +68,7 @@
             <tr>
                 <th> {{ key }} </th>
                     {% for v in value %}
-                        <td ref={{ v[1] }}> {{ v[0] }} </td>
+                        <td><a href=https://cb-energietransitie.appspot.com/dashboard?action=questionary_activity&ref={{v[1]}}>{{v[0]}}</a></td>
                     {% endfor%}
             </tr>
       {% endfor %}
