@@ -100,7 +100,9 @@ td, th {
     top:50%;
     text-align:center;
     position:absolute;
-    width:100%;
+    left: 50px;
+    right: 50px;
+    line-height: 30px;
 }
 
 .table-feedback {

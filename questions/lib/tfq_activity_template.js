@@ -1,46 +1,47 @@
 var activity = [
-  '<div>True/False questionary test!</div>',
+  '<div>True-False questionary test!</div>',
   '<question name="tfq_activity"></question>',
 ];
 
 var tfq_activity = {
-  randomize: true,
   questionsType: 'tfq',
   questionsList: [
     { 
-      type: 'text',
-      text: 'Are you human?',
-      correctAnswer: 0,
+      type: 'image',
+      text: ' The transition to a sustainable world is not only unnecessary but also avoidable. ',
+      image: 'http://upload.wikimedia.org/wikipedia/commons/thumb/9/97/The_Earth_seen_from_Apollo_17.jpg/599px-The_Earth_seen_from_Apollo_17.jpg',
+      correctAnswer: 1,
       answerMaybe: true,
-      hint: 'You are stupid :P',
+       hint: 'Think about the diminishing of the global oil reserves, the risks of runaway climate change and political unrest in the Middle East',
       answers: [{
         type: 'text',
         text: 'Yes',
-        feedback: 'Correct!',
+        feedback: 'Incorrect',
+
       },{
         type: 'text',
         text: 'No',
-        feedback: 'Humans are uniquely adept at utilizing systems of symbolic communication such as language and art for self-expression, the exchange of ideas, and organization. Humans create complex social structures composed of many cooperating and competing groups, from families and kinship networks to states. Social interactions between humans have established an extremely wide variety of values, social norms, and rituals, which together form the basis of human society. The human desire to understand and influence their environment, and to explain and manipulate phenomena has been the foundation for the development of science, philosophy, mythology, and religion.',
-      }]
-    },
-    {
-      type: 'image',
-      text: 'Is this a dog?',
-      image: 'http://eofdreams.com/data_images/dreams/dog/dog-01.jpg',
-      correctAnswer: 0,
-      answerMaybe: false,
-      answers: [{
-        type: 'text',
-        text: 'True',
-      },{
-        type: 'text',
-        text: 'False',
+        feedback: 'Correct!',
+
       }]
     },
     {
       type: 'text',
-      text: 'Are you a pet?',
-      correctAnswer: 1,
+      text: 'Due to deliberate misinformation from governments and large corporations most people are still unaware of the necessity of change.',
+      correctAnswer: 0,
+      answerMaybe: true,
+      answers: [{
+        type: 'text',
+        text: 'YES',
+      },{
+        type: 'text',
+        text: 'NO',
+      }]
+    },
+    {
+      type: 'text',
+      text: 'Proper education is the first step towards a sustainable society.',
+      correctAnswer: 0,
       answerMaybe: true,
       answers: [{
         type: 'text',

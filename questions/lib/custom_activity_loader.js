@@ -110,22 +110,16 @@ var Questionary = {
 
   },
 
-  restart: function() {
-    this.create(this.activity_original);
-  },
-
   next: function(question_result) {
-
     if (this.question && question_result) {
       this.question.result = question_result;
     }
-
     if (this.leftQuestions.length == 0) {
       this.showResults();
       this.saveResults();
       return;
     }
-    this.question = this.leftQuestions[0]; //pop?
+    this.question = this.leftQuestions[0]; 
     this.leftQuestions.splice(0,1);
     this.doneQuestions.push(this.question);
     this.questionClass = this.registeredQuestionTypes[this.question.questionType];
@@ -134,7 +128,6 @@ var Questionary = {
     $("#send-button").click(function() {
       Questionary.next(self.result);
     });
-    $("#tr-image").hide();
     this.drawNumbers();
     this.questionIdx++;
     $("#button-hint").click(function() {
@@ -143,11 +136,13 @@ var Questionary = {
     $(".hint").click(function() {
       $(".hint").hide();
     });
-    var _self = this;
     $("#redo").click(function() {
-          console.log("ble");
-        _self.restart();
+        location.reload(true);
     })
+    $("#revisit").click(function() {
+        location.href = location.href.replace("activity","unit");
+    })
+
   },
 
   registerType: function(questionObj) {
