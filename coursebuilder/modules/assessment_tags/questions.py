@@ -118,8 +118,7 @@ class QuestionTag(tags.BaseTag):
         instanceid = node.attrib.get('instanceid')
 
         progress = None
-        if (hasattr(handler, 'student') and not handler.student.is_transient
-            and not handler.lesson_is_scored):
+        if hasattr(handler, 'student') and not handler.student.is_transient:
             progress = handler.get_course().get_progress_tracker(
                 ).get_component_progress(
                     handler.student, handler.unit_id, handler.lesson_id,
@@ -181,8 +180,7 @@ class QuestionGroupTag(tags.BaseTag):
         template_values['instanceid'] = group_instanceid
         template_values['resources_path'] = RESOURCES_PATH
 
-        if (hasattr(handler, 'student') and not handler.student.is_transient
-            and not handler.lesson_is_scored):
+        if hasattr(handler, 'student') and not handler.student.is_transient:
             progress = handler.get_course().get_progress_tracker(
                 ).get_component_progress(
                     handler.student, handler.unit_id, handler.lesson_id,
