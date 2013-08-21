@@ -48,22 +48,30 @@
 
   <h3>Unit Statistics</h3>
   <br></br>
-  <table>
+  <table class="table">
       <tr>
             <th>Units</th>
-            {% for s in struct %}
-            <th colspan={{ s['lesson_count'] }}> Unit {{ s['id'] }} - {{ s['title'] }} </th>
+            {% for k, v in struct.items() %}
+                <th colspan={{ v['lesson_count'] }}> Unit {{ k }} - {{ v['title'] }} </th>
             {% endfor %}
       </tr>
 
       <tr>
             <th>Lessons</th>
-            {% for s in struct %}
-                {% for sl in s['lessons'] %}
-                    <th> {{ sl['lesson_unit'] }}.{{ sl['lesson_id'] }} </th>
+            {% for k, v in struct.items() %}
+                {% for key, val in v['lessons'].items() %}
+                    <th> {{ k }}.{{ key }} </th>
                 {% endfor %}
             {% endfor %}
       </tr>
+      {% for key, value in att_scores.items() %}
+            <tr>
+                <th> {{ key }} </th>
+                    {% for v in value %}
+                        <td><a href=https://cb-energietransitie.appspot.com/dashboard?action=questionary_activity&ref={{v[1]}}>{{v[0]}}</a></td>
+                    {% endfor%}
+            </tr>
+      {% endfor %}
    </table>
   <br></br>
 

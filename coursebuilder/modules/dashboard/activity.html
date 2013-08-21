@@ -1,0 +1,16 @@
+<ul> Date: {{date }} </ul>
+
+<table>
+        <tr>
+            <th> Question </th>
+            <th> Hint </th>
+            <th> Answer </th>
+        </tr>
+    {% for key, val in ent.items() %}
+        <tr>
+            <td> {{ key }} </td>
+            <td> {{ val['hint'] }} </td>
+            <td> {{ val['answer'] }} </td>
+        </tr>
+    {% endfor %}
+</table>

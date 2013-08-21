@@ -534,6 +534,9 @@ class EventEntity(BaseEntity):
     the event. The event 'data' is a JSON object, the format of which is defined
     elsewhere and depends on the type of the event.
     """
+
+    TARGET_NAMESPACE = appengine_config.DEFAULT_NAMESPACE_NAME
+    
     recorded_on = db.DateTimeProperty(auto_now_add=True, indexed=True)
     source = db.StringProperty(indexed=False)
     user_id = db.StringProperty(indexed=False)
@@ -550,6 +553,13 @@ class EventEntity(BaseEntity):
         event.user_id = user.user_id()
         event.data = data
         event.put()
+
+    @classmethod
+    def get_activity_by_key(cls, key):
+        value = MemcacheManager.get(
+            key, namespace = cls.TARGET_NAMESPACE)
+        return value
+        
 
 
 class StudentAnswersEntity(BaseEntity):

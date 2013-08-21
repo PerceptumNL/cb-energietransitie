@@ -19,6 +19,7 @@ __author__ = 'Pavel Simakov (psimakov@google.com)'
 import datetime
 import os
 import urllib
+from activity import ActivityHandler
 import appengine_config
 from common import jinja_utils
 import logging
@@ -32,6 +33,7 @@ import jinja2.exceptions
 from models import config
 from models import courses
 from models import custom_modules
+from models import entities
 from models import jobs
 from models import roles
 from models import transforms
@@ -72,7 +74,7 @@ from google.appengine.api import users
 
 
 class DashboardHandler(
-    CourseSettingsHandler, FileManagerAndEditor, UnitLessonEditor,
+    ActivityHandler, CourseSettingsHandler, FileManagerAndEditor, UnitLessonEditor,
     QuestionManagerAndEditor, QuestionGroupManagerAndEditor, AssignmentManager,
     ApplicationHandler, ReflectiveRequestHandler):
     """Handles all pages and actions required for managing a course."""
@@ -84,13 +86,15 @@ class DashboardHandler(
         'edit_unit', 'edit_link', 'edit_lesson', 'edit_assessment',
         'add_asset', 'delete_asset', 'manage_text_asset', 'import_course',
         'edit_assignment', 'add_mc_question', 'add_sa_question',
-        'edit_question', 'add_question_group', 'edit_question_group']
+        'edit_question', 'add_question_group', 'edit_question_group',
+        'questionary_activity']
     # Requests to these handlers automatically go through an XSRF token check
     # that is implemented in ReflectiveRequestHandler.
     post_actions = [
         'compute_student_stats', 'create_or_edit_settings', 'add_unit',
         'add_link', 'add_assessment', 'add_lesson',
-        'edit_basic_course_settings', 'add_reviewer', 'delete_reviewer']
+        'edit_basic_course_settings', 'add_reviewer', 'delete_reviewer',
+        'questionary_activity']
 
     local_fs = vfs.LocalReadOnlyFileSystem(logical_home_folder='/')
 
@@ -694,6 +698,71 @@ class DashboardHandler(
         template_values['main_content'] = items
         self.render_page(template_values)
 
+    def get_attempt_scores(self, name, activity, unit_idx, les_idx):
+        max_score = -1
+        ref = 0
+        max_date = datetime.datetime(2000, 1, 1, 1, 1, 1, 1).isoformat()
+        if activity[name].get(str(unit_idx)):
+            if activity[name][str(unit_idx)].get(str(les_idx)):
+                for a in activity[name][str(unit_idx)].get(str(les_idx)):
+                    if a['date'] > max_date:
+                        max_score = a['result']['score']
+                        ref = a['ref']
+        return [max_score, ref]
+
+    def get_activity(self, inv_map):
+        activity = {}
+        events = EventEntity().all().run(batch_size=100)
+        for e in events:
+            st = Student.get_student_by_user_id(e.user_id)
+            if e.source == "questionary-results" and st:
+                email = st.key().name()
+                questionary = transforms.loads(e.data)
+                attempt = questionary['results']
+                maybeText = []
+                corrects = 0
+                incorrects = 0
+                maybes = 0
+                for a in attempt:
+                    if a['result'].get('correct') == True:
+                        corrects += 1
+                    if a['result'].get('incorrect') == True:
+                        incorrects += 1
+                    if a['result'].get('maybe') == True:
+                        maybes += 1
+                        QA = {}
+                        QA[a['text']] = a['result'].get('maybeText')
+                        maybeText.append(QA)
+                score = float(corrects) / (corrects + incorrects + maybes)
+                result = {
+                    'correct': corrects,
+                    'maybe': maybes,
+                    'incorrect': incorrects,
+                    'score': score
+                         }
+                if not activity.get(email):
+                    activity[email] = {}
+                att = {}
+                if inv_map.has_key(questionary['unit']):
+                    idxs = inv_map.get(questionary['unit']).get(questionary['lesson'])
+                else:
+                    idxs = None
+                if not idxs:
+                    idxs = [questionary['unit'], questionary['lesson']]
+                att = {}
+                att['ref'] = e.key().id()
+                att['date'] = e.recorded_on.isoformat()
+                att['result'] = result
+                att['maybeText'] = maybeText
+                if not activity[email].get(idxs[0]):
+                    activity[email][idxs[0]] = {}
+                    activity[email][idxs[0]][idxs[1]] = []
+                if not activity[email][idxs[0]].get(idxs[1]):
+                    activity[email][idxs[0]][idxs[1]] = []
+                activity[email][idxs[0]][idxs[1]].append(att)
+        return activity
+
+
     def get_markup_for_basic_analytics(self, job):
         """Renders markup for basic enrollment and assessment analytics."""
         subtemplate_values = {}
@@ -710,7 +779,6 @@ class DashboardHandler(
                 stats = transforms.loads(job.output)
                 stats_calculated = True
 
-                #event = EventEntity().all().fetch(limit=400)
                 cr = courses.Course(self).get_units()
 
                 subtemplate_values['enrolled'] = stats['enrollment']['enrolled']
@@ -732,41 +800,31 @@ class DashboardHandler(
                 problems = course.get_assessment_list()
                 assessments = dict( (a.unit_id, a.title) for a in problems)
 
-                lesson_list = []
+                struct = {}
                 unit_list = []
                 units = course.get_units()
                 for u in units:
-                    lessons = course.get_lessons(u.unit_id)    
-                    for l in lessons:
-                        single = {}
-                        single['lesson_unit'] = l.unit_id
-                        single['lesson_id'] = l.lesson_id
-                        single['lesson_title'] = l.title
-                        lesson_list.append(single)
                     if u.type == 'U':
-                        un = {}
-                        un['index'] = u._index
-                        un['id'] = u.unit_id
-                        un['title'] = u.title
-                        unit_list.append(un)
+                        lessons = course.get_lessons(u.unit_id)    
+                        lesson_dict = {}
+                        for l in lessons:
+                            single = {}
+                            single['lesson_unit_idx'] = u._index
+                            single['lesson_unit'] = l.unit_id
+                            single['lesson_id'] = l.lesson_id
+                            single['lesson_title'] = l.title
+                            lesson_dict[l._index] = single
+                        struct[u._index] = {}
+                        struct[u._index]['id'] = u.unit_id
+                        struct[u._index]['title'] = u.title
+                        struct[u._index]['lessons'] = lesson_dict
+                        struct[u._index]['lesson_count'] = len(lesson_dict)
 
-                tmp_unit = {}
-                for l in lesson_list:
-                    tmp_unit[l['lesson_unit']] = []
-
-                for l in lesson_list:
-                    tmp_unit[l['lesson_unit']].append(l)
-
-                struct = []
-                for key, value in tmp_unit.items():
-                    unit = {}
-                    for u in unit_list:
-                        if u['index'] == key:
-                            unit['id'] = u['id']
-                            unit['title'] = u['title']
-                    unit['lessons'] = value
-                    unit['lesson_count'] = len(value)
-                    struct.append(unit)
+                inv_map = {}
+                for k, v in struct.items():
+                    inv_map[v['id']] = {}
+                    for l_num, l_con in v['lessons'].items():
+                        inv_map[v['id']][l_con['lesson_id']] = [k, l_num]
 
                 for sname, sid in students.items():
                     st = Student.get_student_by_user_id(sid)
@@ -779,6 +837,25 @@ class DashboardHandler(
                     scores.append({'key': key, 'completed': value[0],
                                    'avg': avg})
 
+                activity = self.get_activity(inv_map)
+
+                att_scores = {}
+                for name in activity.keys():
+                    attempt_scores = []
+                    for k, v in struct.items():
+                        for les, les1 in v['lessons'].items():
+                            idxs = [les1['lesson_unit'], les1['lesson_id']]
+                            sc = self.get_attempt_scores(name, activity,
+                                idxs[0], idxs[1])
+                            if sc[0] == -1:
+                                sc[0] = '-'
+                                attempt_scores.append(sc)
+                            else:
+                                sc[0] = '{0:.0%}'.format(sc[0])
+                                attempt_scores.append(sc)
+                    att_scores[name] = attempt_scores
+
+                subtemplate_values['att_scores'] = att_scores
                 subtemplate_values['scores'] = scores
                 subtemplate_values['total_records'] = total_records
                 subtemplate_values['names'] = names
@@ -813,6 +890,32 @@ class DashboardHandler(
         return jinja2.utils.Markup(self.get_template(
             'basic_analytics.html', [os.path.dirname(__file__)]
         ).render(subtemplate_values, autoescape=True))
+
+    def get_markup_for_activity(self, ref):
+        sub_values = {}
+        ent = {}
+
+        act = EventEntity().get_by_id(int(ref))
+        if act.data:
+            entries = transforms.loads(act.data)['results']
+            for e in entries:
+                if e.get('text'):
+                    ent[e['text']] = {}
+                    ent[e['text']]['hint'] = e['result']['hint']
+                    if e['result'].get('maybe'):
+                        ent[e['text']]['answer'] = e['result']['maybeText']
+                    else:
+                        ent[e['text']]['answer'] = e['result']['correct']
+                        
+            sub_values['date'] = act.recorded_on.strftime('%d/%m/%y')
+            sub_values['ent'] = ent
+        else:
+            sub_values['date'] = 'no date'
+            sub_values['ent'] = 'no ent'
+
+        return jinja2.utils.Markup(self.get_template(
+            'activity.html', [os.path.dirname(__file__)]
+        ).render(sub_values, autoescape=True))
 
     def get_analytics(self):
         """Renders course analytics view."""
