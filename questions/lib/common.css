@@ -93,6 +93,7 @@ td, th {
     right:-1px;
     position: absolute;
     color:white;
+    font-size: 20px;
 }
 .hint:hover {
     cursor:pointer;
@@ -262,4 +263,9 @@ td, th {
 #redo:hover {
     cursor:pointer;
     background-color: #FF6F00;
+}
+
+#a-table {
+    height: 450px;
+    width: 100%;
 }
