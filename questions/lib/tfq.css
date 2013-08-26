@@ -13,6 +13,7 @@
     margin: 0px 2px;
     background-color:#8980FF;
 }
+.option.tfq > div.selected,
 .option.tfq > div:hover {
     background-color:#3A49BA;
     cursor: pointer;

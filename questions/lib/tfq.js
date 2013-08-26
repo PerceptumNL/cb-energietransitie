@@ -32,7 +32,7 @@ var TFQ = function(question) {
           }
         },
 
-        draw_answers: function() {
+        draw_answers: function(res) {
           var q = question;
           var a = q.answers;
           var self = this;
@@ -44,32 +44,60 @@ var TFQ = function(question) {
           $.each(a, function(k, v) {
             div = $("<div>").text(v.text);
             $(".option").append(div);
-            div.click(function() { self.check_answer(k) });
+            if (!res) {
+              div.click(function() { 
+                self.prompt_maybe(false); 
+                self.check_answer(k) 
+              });
+            }
           });
           if (q.answerMaybe) {
             div = $("<div>").text("Maybe").attr("id", "maybe-button");
             $(".option").append(div);
-            div.click(function() {
-                self.prompt_maybe()
-            });  
+            if (!res) {
+              div.click(function() {
+                  self.prompt_maybe(true)
+              });  
+              $("#submit-button").click(function() {
+                $(this).hide()
+                $("#send-button").show();
+                $("#tr-fb-input").hide();
+                $("#feedback-input").hide();
+                result.maybe = true;
+                result.maybeText = $("#feedback-input").val();
+                self.next_question();
+              });
+              $("#feedback-input").keyup(function() {
+                if ($(this).val().length > 1) {
+                  $("#submit-button").show();
+                } else {
+                  $("#submit-button").hide();
+                }
+              });
+            }
+          }
+          if (res) {
+            self.check_answer(res.answerIdx)
           }
         },
 
-        prompt_maybe: function() {
+        prompt_maybe: function(show) {
           var self = this;
-          $(".table-feedback").show();
-          $("#feedback-input").show();
-          $("#tr-fb-input").show();
-          $("#send-button").hide();
-          $("#submit-button").show().click(function() {
-            $(this).hide()
-            $("#send-button").show();
-            $("#tr-fb-input").hide();
+          if (show) {
+            $("#feedback-input").show();
+            $("#tr-fb-input").show();
+            $("#send-button").hide();
+            $("#maybe-button").addClass("selected");
+            $(".table-feedback").fadeIn();
+            $("#feedback-input").focus();
+          } else {
+            $(".table-feedback").hide();
             $("#feedback-input").hide();
-            result.maybe = true;
-            result.maybeText = $("#feedback-input").val();
-            self.next_question();
-          });
+            $("#tr-fb-input").hide();
+            $("#send-button").show();
+            $("#submit-button").hide();
+            $("#maybe-button").removeClass("selected");
+          }
         },
 
         feedback_correct: function(answer_idx) {
@@ -93,6 +121,7 @@ var TFQ = function(question) {
         },
           
         check_answer: function(answer_idx) {
+          result.answerIdx = answer_idx
           if (question.correctAnswer == answer_idx) {
             if (!result.incorrect) {
               result.correct = true;
