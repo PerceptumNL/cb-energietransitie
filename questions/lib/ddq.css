@@ -32,12 +32,20 @@
 
 }
 .target {
+  font-size: 16px;
   display: inline-block;
   text-align: center;
-  border: 1px solid black;
-  height: 100px;
+  border: 2px solid #ddd;
+  height: 100%;
   margin-left: 1%;
   margin-right: 1%;
+  margin-top: 4%;
+  float: left;
+}
+
+.target-title {
+  font-size: 20px;
+  background-color: #ddd;
 
 }
 .targets {
@@ -49,7 +57,6 @@
   text-align: center;
   border: 1px solid black;
   line-height: 50px;
-  font-size: 30px;
   cursor: pointer;
   position: relative;
 }

@@ -27,15 +27,10 @@ var DDQ = function(question) {
         draw_question: function() {
           var self = this;
           $("#q-text").html(question.text || "");
-          //if (question.type == "image") {
-          //  $("#q-image").attr("src", question.image);
-          //$("#tr-image").html("<div>asdf</div>");
-          //$("#tr-image").show();
-          //}
           $("#tr-text").show();
           var per = 90 / targetList.length
           $.each(targetList, function(k, v) {
-            var target_div = $("<div class='target'>" + v.text + "</div>");
+            var target_div = $("<div class='target'><div class='target-title'>" + v.text + "</div></div>");
             target_div.idx = k
             target_div.answers = [];
             self.targets.push(target_div);
@@ -48,8 +43,10 @@ var DDQ = function(question) {
               hoverClass: "ui-state-active",
               drop: function( event, ui ) {
                 target_div.answers.push(ui.draggable[0]);
+                $(target_div).append(ui.draggable[0]);
+                $(ui.draggable[0]).css("left", "0px");
+                $(ui.draggable[0]).css("top", "0px");
                 $(ui.draggable[0]).attr("target_idx", target_div.idx);
-                console.log(target_div.answers);
                 $(ui.draggable[0]).css("border", "2px solid orange");
               }
             });
@@ -73,7 +70,10 @@ var DDQ = function(question) {
             activeClass: "ui-state-hover",
             hoverClass: "ui-state-active",
             drop: function( event, ui ) {
+              $(".option").append(ui.draggable[0]);
               $(ui.draggable[0]).css("border", "2px dashed orange");
+              $(ui.draggable[0]).css("left", "0");
+              $(ui.draggable[0]).css("top", "0");
             }
           });
       
@@ -99,8 +99,16 @@ var DDQ = function(question) {
             });
           });
 
-          num_concepts = $('.concepts').children().length;
-          if (count_answered < num_concepts) return;
+          num_concepts = 0;
+          $.each(targetList, function(k, v) {
+            $.each(v.conceptList, function(_k, _v) {
+                num_concepts++;
+            })
+          });
+          if (count_answered < num_concepts) return false;
+          console.log(count_answered);
+          console.log(num_concepts);
+
 
           result.correct = true;
           $.each(this.targets, function(k, v) {
