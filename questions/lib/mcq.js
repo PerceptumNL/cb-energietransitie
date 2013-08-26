@@ -35,7 +35,7 @@ var MCQ = function(question) {
             a = q.answers,
             per = 95 / a.length,
             selected = [];
-          $(".option").html("").addClass("mcq");
+          $(".option").html("").addClass("mcq").addClass("enabled");
           $.each(a, function(k, v) {
             div = $("<div>").text(v.text).css("width", "80%");
             $(".option").append(div);
@@ -62,12 +62,6 @@ var MCQ = function(question) {
             $("#send-button").show();
           });
         },
-      
-        prompt_maybe: function() {
-          result.maybeText = prompt("Enter your thoughts!");
-          result.maybe = true;
-          this.next_question();
-        },
 
         feedback_correct: function(answer_idx) {
           console.log("feedback_Correct");
@@ -91,7 +85,7 @@ var MCQ = function(question) {
           $(".feedback").fadeIn();
         },
           
-   check_answer: function(answer_idx) {
+       check_answer: function(answer_idx) {
           var self = this
           var current_answers = [];
           $(".option").children().each(function(idx) {
@@ -101,11 +95,9 @@ var MCQ = function(question) {
           var anstext = answer_idx
 
           $.each(question.answers, function(idx, ans) {
-          var answer_text = answers[idx].feedback;
-          console.log(answer_text);
+            var answer_text = answers[idx].feedback || "";
             if ($.inArray(idx, question.correctAnswer) >= 0 && 
                 current_answers[idx] == true) {
-                $($(".option").children()[idx]).addClass("correct")
                 $($(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/11iXTZG'/>"+ answer_text +"</div>");
                 ans.correct = true; 
                 //self.feedback_correct(idx);
@@ -113,13 +105,11 @@ var MCQ = function(question) {
             }
             else if ($.inArray(idx, question.correctAnswer) == -1 && 
                 current_answers[idx] == false) {
-                $($(".option").children()[idx]).addClass("correct");
                 $($(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/11iXTZG'/>"+ answer_text +"</div>");
                 ans.correct = true;
                 //self.feedback_correct(idx);
             }
             else {
-                $($(".option").children()[idx]).addClass("incorrect");
                 ans.incorrect = true; 
                 $($(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/1aMHTSK'/>"+ answer_text +"</div>");
                 result.correct = false;
@@ -127,6 +117,7 @@ var MCQ = function(question) {
                 //self.feedback_incorrect(idx);
             }
           });
+          $(".option").removeClass("enabled");
           //this.next_question();
         }
       

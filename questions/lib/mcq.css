@@ -17,7 +17,7 @@
     margin-right:auto;
     margin-left:auto;    
 }
-.option.mcq div:hover {
+.option.mcq.enabled div:hover {
    background-color:#3A49BA;
     cursor:pointer;
 }
@@ -32,10 +32,7 @@
 }
 
 .option.mcq div.toggleon {
-  background-color:#FF5C33;
-}
-.option.mcq div.toggleon:hover {
-  background-color: #FF3300;
+   background-color:#3A49BA;
 }
 
 #fb{
