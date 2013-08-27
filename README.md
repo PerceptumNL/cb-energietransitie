@@ -6,7 +6,7 @@ Create the `tools` directory and unpack Google App Engine inside the directory.
 
 Create an empty `tmp` for the testing Data Store.
 
-Run `source activate` to load the environment variables, and then run GAE as usual.
+Run `source activate` to load the environment variables.
 
 Run `./apprun` to run the development server using a persistent datastorage.
 
@@ -29,7 +29,7 @@ Run `./apprun` to run the development server using a persistent datastorage.
 * From `questions/lib/` to `assets/libs` path:
   * base.html
   
-3. Insert into `main_content` block, in the course file `activity.html`:
+3. Insert into the `main_content` block, contained in the course file `activity.html`:
 ```html
     <script src="assets/lib/questionary.js"></script>
     <link rel="stylesheet" type="text/css" href="assets/css/questionary.css">
