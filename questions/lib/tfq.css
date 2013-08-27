@@ -24,10 +24,10 @@
     cursor: default;
 }
 .option.tfq > div.correct {
-    background-color: green !important;   
+    background-color: #3A49BA !important;   
     cursor: default;
 }
 .option.tfq > div.incorrect {
-    background-color: red !important;   
+    background-color: #3A49BA !important;   
     cursor: default;
 }

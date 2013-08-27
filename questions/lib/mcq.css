@@ -25,10 +25,10 @@
     background-color:#aaa;
 }
 .option.mcq div.correct {
-    background-color: green !important;   
+    background-color: #3A49BA !important;   
 }
 .option.mcq div.incorrect {
-    background-color: red !important;   
+    background-color: #3A49BA !important;   
 }
 
 .option.mcq div.toggleon {
