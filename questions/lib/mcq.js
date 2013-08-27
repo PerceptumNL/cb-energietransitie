@@ -118,7 +118,7 @@ var MCQ = function(question) {
             }
           });
           $(".option").removeClass("enabled");
-	  $(".option").children().unbind("click");
+          $(".option").children().unbind("click");
           //this.next_question();
         }
       
