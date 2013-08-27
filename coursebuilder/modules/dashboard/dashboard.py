@@ -714,52 +714,53 @@ class DashboardHandler(
         activity = {}
         events = EventEntity().all().run(batch_size=100)
         for e in events:
-            st = Student.get_student_by_user_id(e.user_id)
-            if e.source == "questionary-results" and st:
-                email = st.key().name()
-                questionary = transforms.loads(e.data)
-                attempt = questionary['results']
-                maybeText = []
-                corrects = 0
-                incorrects = 0
-                maybes = 0
-                for a in attempt:
-                    if a['result'].get('correct') == True:
-                        corrects += 1
-                    if a['result'].get('incorrect') == True:
-                        incorrects += 1
-                    if a['result'].get('maybe') == True:
-                        maybes += 1
-                        QA = {}
-                        QA[a['text']] = a['result'].get('maybeText')
-                        maybeText.append(QA)
-                score = float(corrects) / (corrects + incorrects + maybes)
-                result = {
-                    'correct': corrects,
-                    'maybe': maybes,
-                    'incorrect': incorrects,
-                    'score': score
-                         }
-                if not activity.get(email):
-                    activity[email] = {}
-                att = {}
-                if inv_map.has_key(questionary['unit']):
-                    idxs = inv_map.get(questionary['unit']).get(questionary['lesson'])
-                else:
-                    idxs = None
-                if not idxs:
-                    idxs = [questionary['unit'], questionary['lesson']]
-                att = {}
-                att['ref'] = e.key().id()
-                att['date'] = e.recorded_on.isoformat()
-                att['result'] = result
-                att['maybeText'] = maybeText
-                if not activity[email].get(idxs[0]):
-                    activity[email][idxs[0]] = {}
-                    activity[email][idxs[0]][idxs[1]] = []
-                if not activity[email][idxs[0]].get(idxs[1]):
-                    activity[email][idxs[0]][idxs[1]] = []
-                activity[email][idxs[0]][idxs[1]].append(att)
+            if e.source == "questionary-results":
+                st = Student.get_student_by_user_id(e.user_id)
+                if st:
+                    email = st.key().name()
+                    questionary = transforms.loads(e.data)
+                    attempt = questionary['results']
+                    maybeText = []
+                    corrects = 0
+                    incorrects = 0
+                    maybes = 0
+                    for a in attempt:
+                        if a['result'].get('correct') == True:
+                            corrects += 1
+                        if a['result'].get('incorrect') == True:
+                            incorrects += 1
+                        if a['result'].get('maybe') == True:
+                            maybes += 1
+                            QA = {}
+                            QA[a['text']] = a['result'].get('maybeText')
+                            maybeText.append(QA)
+                    score = float(corrects) / (corrects + incorrects + maybes)
+                    result = {
+                        'correct': corrects,
+                        'maybe': maybes,
+                        'incorrect': incorrects,
+                        'score': score
+                             }
+                    if not activity.get(email):
+                        activity[email] = {}
+                    att = {}
+                    if inv_map.has_key(questionary['unit']):
+                        idxs = inv_map.get(questionary['unit']).get(questionary['lesson'])
+                    else:
+                        idxs = None
+                    if not idxs:
+                        idxs = [questionary['unit'], questionary['lesson']]
+                    att = {}
+                    att['ref'] = e.key().id()
+                    att['date'] = e.recorded_on.isoformat()
+                    att['result'] = result
+                    att['maybeText'] = maybeText
+                    if not activity[email].get(idxs[0]):
+                        activity[email][idxs[0]] = {}
+                        activity[email][idxs[0]][idxs[1]] = []
+                    if not activity[email][idxs[0]].get(idxs[1]):
+                        activity[email][idxs[0]][idxs[1]] = []
+                    activity[email][idxs[0]][idxs[1]].append(att)
         return activity
 
 
