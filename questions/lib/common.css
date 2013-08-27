@@ -114,7 +114,8 @@ td, th {
     margin-right:20px;
     margin-bottom: 20px;
     border: 1px solid #9C959B;
-    border-radius: 2px;
+    position: absolute;
+    bottom: 0px;
     text-align: left;
     display: none;
 }
