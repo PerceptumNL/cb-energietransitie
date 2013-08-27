@@ -74,7 +74,7 @@ var Questionary = {
     }
     if (self.isTesting()) {
       console.log("Results:");
-      console.log(JSON.stringify(evt));
+      console.log(this.doneQuestions);
     } else {
       $.post('/rest/events', {request: JSON.stringify(evt)}, function() {
         console.log("Activity results sent");
@@ -85,6 +85,7 @@ var Questionary = {
   },
 
   create: function(qEle) {
+    var self = this;
     this.questionIdx = 0;
     this.results = [];
     this.leftQuestions = [];
@@ -94,6 +95,21 @@ var Questionary = {
     if (a_name && a_name in window) {
       this.activity_original = window[a_name];
     }
+
+    var a_src = $(qEle).attr("src");
+    if (a_src) {
+      $.ajax({
+        url: a_src,
+        type: 'get',
+        dataType: 'json',
+        async: false,
+        success: function(data) {
+          console.log(data);
+          self.activity_original = data;
+        } 
+      });
+    }
+
     this.qEle = qEle;
     this.activity = a = $.extend(true, [], this.activity_original);
     this.questionsList = a.questionsList;
