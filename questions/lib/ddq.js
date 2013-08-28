@@ -9,17 +9,29 @@ var DDQ = function(question) {
         question: null,
         result: {},
         targetList: [],
+        submissionList: [],
         targets: [],
 
         create_question: function(q) {
           question = q;
           targetList = q.targetList;
+          //submissionList = targetList.extend();
+          //this.activity = a = $.extend(true, [], this.activity_original);
+          submissionList = $.extend(true,[],targetList);
+          console.log(submissionList)
+          $.each(submissionList, function(k, v) {
+            submissionList[k].conceptList=[];
+            //console.log(k, v.text);
+            console.log(submissionList[k].conceptList)
+          });
+
           result = {
             incorrect: false,
             correct: false,
             maybe: false,
             hint: false,
           }
+          
           this.draw_question();
           this.draw_answers();
         },
@@ -47,6 +59,7 @@ var DDQ = function(question) {
                 $(ui.draggable[0]).css("top", "0px");
                 $(ui.draggable[0]).attr("target_idx", target_div.idx);
                 $(ui.draggable[0]).css("border", "2px solid orange");
+                //console.log(target_div[0])
                 self.check_done();
               }
             });
@@ -61,6 +74,8 @@ var DDQ = function(question) {
           $.each(targetList, function(k, v) {
             $.each(v.conceptList, function(_k, _v) {
               var concept_div = $("<div class='concept'>" + _v.text + "</div>");
+              //console.log(v.text,_v.text)
+              //console.log(v,_v)
               concept_div.attr("answer_idx", k);
               $(concept_div).draggable();
               $('.option').append(concept_div);
@@ -115,12 +130,54 @@ var DDQ = function(question) {
           result.correct = true;
           $.each(this.targets, function(k, v) {
             $.each(v.answers, function(_k, answer) {
+              console.log(k, $(answer).attr("answer_idx"), $(answer).attr("target_idx"))
+              //console.log($(answer).attr("target_idx") );
+              console.log($(answer)[0].innerText)//eg "A fridge"
+
+              newentry = submissionList[k].conceptList.length;
+              submissionList[k].conceptList[newentry]={}
+              submissionList[k].conceptList[newentry].type="text"
+              submissionList[k].conceptList[newentry].text=$(answer)[0].innerText;
+              //submissionList[k].conceptList[newentry].correct=$(answer)[0].innerText;
+
+              console.log(newentry);
+
               if ($(answer).attr("answer_idx") != $(answer).attr("target_idx")) {
                 result.correct = false;
                 result.incorrect = true;
                 $(answer).css("border-color", "red");
-              } else
+                //targetList[0].conceptList[0].correct=false;
+                //console.log(targetList[$(answer).attr("answer_idx")].text)//eg "electricity"
+                //console.log($(answer)[0].innerText)//eg "A fridge"
+
+                
+
+                $.each(targetList, function(kk, v) {
+                  $.each(v.conceptList, function(_kk, _v){
+                    if(_v.text == $(answer)[0].innerText){
+                      submissionList[k].conceptList[newentry].correct=false;
+                      _v.correct=false;
+                      _v.concept_idx=k;
+                      console.log(_v.correct, _v.concept_idx)                      
+                    }
+                  });
+                });
+              } 
+              else{
                 $(answer).css("border-color", "green");
+                //console.log($(answer)[0].innerText)
+                $.each(targetList, function(kk, v) {
+                  $.each(v.conceptList, function(_kk, _v) {
+                    if(_v.text == $(answer)[0].innerText){
+                      submissionList[k].conceptList[newentry].correct=true;
+                      _v.correct=true;
+                      _v.concept_idx=k;
+                      console.log(_v.correct, _v.concept_idx)                      
+                    }
+                  });
+                });
+              }
+                
             });
           });
           return true;
