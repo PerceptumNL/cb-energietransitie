@@ -180,6 +180,7 @@ var DDQ = function(question) {
                 
             });
           });
+          question["submissionList"] = submissionList
           return true;
         }
       })
