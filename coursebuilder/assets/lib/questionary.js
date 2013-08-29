@@ -109,7 +109,7 @@ var Questionary = {
       }),
       "xsrf_token": eventXsrfToken
     }
-    console.log(self.isTesting())
+    //console.log(self.isTesting())
     if (self.isTesting()) {
       console.log("Results:");
       console.log(JSON.stringify(evt));
@@ -303,7 +303,7 @@ var DDQ = function(question) {
                 $(ui.draggable[0]).css("top", "0px");
                 $(ui.draggable[0]).attr("target_idx", target_div.idx);
                 $(ui.draggable[0]).css("border", "2px solid orange");
-                $(ui.draggable[0]).draggable( "option", "disabled", true ); 
+                //$(ui.draggable[0]).draggable( "option", "disabled", true ); 
                 self.check_done();
               }
             });
@@ -377,6 +377,8 @@ var DDQ = function(question) {
               submissionList[k].conceptList[newentry].type="text"
               submissionList[k].conceptList[newentry].text=$(answer)[0].innerText;
               
+              $(answer).draggable( "option", "disabled", true ); //after check make items undraggable
+
               if ($(answer).attr("answer_idx") != $(answer).attr("target_idx")) {
                 result.correct = false;
                 result.incorrect = true;
