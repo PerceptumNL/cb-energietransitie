@@ -57,8 +57,9 @@ class ActivityHandler(ApplicationHandler):
         ref = self.request.get('ref')
         exit_url = self.canonicalize_url('/dashboard?action=get_activity&ref=%s') % ref
         template_values = {}
-        template_values['page_title'] = 'Unit: %s Lesson: %s' % (self.get_unit_lesson(ref)[0], self.get_unit_lesson(ref)[1])
+        template_values['page_title'] = 'Student: %s Unit: %s Lesson: %s' % (self.get_activity_student(ref), self.get_unit_lesson(ref)[0], self.get_unit_lesson(ref)[1])
         template_values['page_description'] = ''
+        
         template_values['main_content'] = self.get_activity_html(ref)
         self.render_page(template_values)
 
