@@ -23,7 +23,7 @@
   <table>
       <tr>
             <th>Student</th>
-            {% for m in data[2]['scores'] %}
+            {% for m in data[0]['scores'] %}
             <th> {{ m['title'] }} </th>
             {% endfor %}
       </tr>
@@ -68,7 +68,7 @@
             <tr>
                 <th> {{ key }} </th>
                     {% for v in value %}
-                        <td><a href=https://cb-energietransitie.appspot.com/dashboard?action=questionary_activity&ref={{v[1]}}>{{v[0]}}</a></td>
+                        <td><a href=http://localhost:8080/dashboard?action=questionary_activity&ref={{v[1]}}>{{v[0]}}</a></td>
                     {% endfor%}
             </tr>
       {% endfor %}

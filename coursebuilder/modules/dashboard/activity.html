@@ -1,16 +1,41 @@
-<ul> Date: {{date }} </ul>
+<ul> Date: {{ date }} </ul>
 
-<table>
-        <tr>
-            <th> Question </th>
-            <th> Hint </th>
-            <th> Answer </th>
-        </tr>
-    {% for key, val in ent.items() %}
-        <tr>
-            <td> {{ key }} </td>
-            <td> {{ val['hint'] }} </td>
-            <td> {{ val['answer'] }} </td>
-        </tr>
-    {% endfor %}
-</table>
+{% if raw[0]['questionType']=='ddq' %}
+     <table>
+            <tr>
+                <th> Category </th>
+                <th> Submission </th>
+                <th> Correct </th>
+            </tr>
+        {% for key, val in ent.items() %}
+            <tr>
+                <td> {{ key }} </td>
+                <td> 
+                    {% for v in val %}
+                        {{ v }} <br></br>  
+                    {% endfor %}
+                </td>
+                <td> + </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% else %}
+     <table>
+            <tr>
+                <th> Question </th>
+                <th> Hint </th>
+                <th> Answer </th>
+                <th> Correct </th>
+            </tr>
+        {% for key, val in ent.items() %}
+            <tr>
+                <td> {{ key }} </td>
+                <td> {{ val['hint'] }} </td>
+                <td> {{ val['answer'] }} </td>
+                <td> {{ val['answer'] }} </td>
+            </tr>
+        {% endfor %}
+    </table>
+    val
+{% endif %}
+{{raw}}

@@ -16,6 +16,8 @@ import jinja2
 import yaml
 import messages
 import logging
+import json
+import pprint
 from google.appengine.api import users
 
 
@@ -32,6 +34,7 @@ class ActivityHandler(ApplicationHandler):
         ent = {}
 
         act = EventEntity().get_by_id(int(ref))
+        logging.info('ref: %s', ref)
         entries = transforms.loads(act.data)['results']
         for e in entries:
             if e.get('text'):
@@ -41,9 +44,17 @@ class ActivityHandler(ApplicationHandler):
                     ent[e['text']]['answer'] = e['result']['maybeText']
                 else:
                     ent[e['text']]['answer'] = e['result']['correct']
-                    
-        sub_values['date'] = act.recorded_on.strftime('%d/%m/%y')
+            elif e.get('questionType')=='ddq':
+                for category in e['targetList']:
+                    ent[category['text']] = []
+                    for concept in category['conceptList']:
+                        ent[category['text']].append(concept['text'])
+
+        sub_values['date'] = act.recorded_on.strftime('%c')
         sub_values['ent'] = ent
+        #sub_values['raw'] = pprint.pformat(entries)
+        sub_values['raw'] = entries
+        logging.info(pprint.pprint(ent))
 
         return jinja2.utils.Markup(self.get_template(
             'activity.html', [os.path.dirname(__file__)]

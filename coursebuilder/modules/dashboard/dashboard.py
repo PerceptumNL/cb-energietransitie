@@ -707,6 +707,7 @@ class DashboardHandler(
                 for a in activity[name][str(unit_idx)].get(str(les_idx)):
                     if a['date'] > max_date:
                         max_score = a['result']['score']
+                        max_date = a['date']
                         ref = a['ref']
         return [max_score, ref]
 
@@ -914,6 +915,7 @@ class DashboardHandler(
             sub_values['date'] = 'no date'
             sub_values['ent'] = 'no ent'
 
+        sub_values['raw'] = '1'
         return jinja2.utils.Markup(self.get_template(
             'activity.html', [os.path.dirname(__file__)]
         ).render(sub_values, autoescape=True))
