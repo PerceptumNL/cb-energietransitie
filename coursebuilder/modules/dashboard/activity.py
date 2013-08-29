@@ -28,33 +28,26 @@ class ActivityHandler(ApplicationHandler):
         st = Student.get_student_by_user_id(act.user_id)
         return st.key().name()
 
+    def get_unit_lesson(self, ref):
+        act = EventEntity().get_by_id(int(ref))
+        ul = transforms.loads(act.data)
+        return ul['unit'], ul['lesson']
+
     def get_activity_html(self, ref):
 
         sub_values = {}
         ent = {}
 
         act = EventEntity().get_by_id(int(ref))
-        logging.info('ref: %s', ref)
         entries = transforms.loads(act.data)['results']
         for e in entries:
-            if e.get('text'):
-                ent[e['text']] = {}
-                ent[e['text']]['hint'] = e['result']['hint']
-                if e['result'].get('maybe'):
-                    ent[e['text']]['answer'] = e['result']['maybeText']
-                else:
-                    ent[e['text']]['answer'] = e['result']['correct']
-            elif e.get('questionType')=='ddq':
-                for category in e['targetList']:
-                    ent[category['text']] = []
+            if e.get('questionType')=='ddq':
+                for category in e['submissionList']:
                     for concept in category['conceptList']:
-                        ent[category['text']].append(concept['text'])
-
+                        ent[concept['text']] = [category['text'], concept['correct']]
         sub_values['date'] = act.recorded_on.strftime('%c')
         sub_values['ent'] = ent
-        #sub_values['raw'] = pprint.pformat(entries)
         sub_values['raw'] = entries
-        logging.info(pprint.pprint(ent))
 
         return jinja2.utils.Markup(self.get_template(
             'activity.html', [os.path.dirname(__file__)]
@@ -64,7 +57,7 @@ class ActivityHandler(ApplicationHandler):
         ref = self.request.get('ref')
         exit_url = self.canonicalize_url('/dashboard?action=get_activity&ref=%s') % ref
         template_values = {}
-        template_values['page_title'] = self.get_activity_student(ref)
+        template_values['page_title'] = 'Unit: %s Lesson: %s' % (self.get_unit_lesson(ref)[0], self.get_unit_lesson(ref)[1])
         template_values['page_description'] = ''
         template_values['main_content'] = self.get_activity_html(ref)
         self.render_page(template_values)

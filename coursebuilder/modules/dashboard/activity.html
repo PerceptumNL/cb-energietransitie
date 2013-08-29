@@ -1,41 +1,44 @@
 <ul> Date: {{ date }} </ul>
 
-{% if raw[0]['questionType']=='ddq' %}
-     <table>
-            <tr>
-                <th> Category </th>
-                <th> Submission </th>
-                <th> Correct </th>
-            </tr>
-        {% for key, val in ent.items() %}
-            <tr>
-                <td> {{ key }} </td>
-                <td> 
-                    {% for v in val %}
-                        {{ v }} <br></br>  
-                    {% endfor %}
-                </td>
-                <td> + </td>
-            </tr>
-        {% endfor %}
-    </table>
-{% else %}
-     <table>
-            <tr>
-                <th> Question </th>
-                <th> Hint </th>
-                <th> Answer </th>
-                <th> Correct </th>
-            </tr>
-        {% for key, val in ent.items() %}
-            <tr>
-                <td> {{ key }} </td>
-                <td> {{ val['hint'] }} </td>
-                <td> {{ val['answer'] }} </td>
-                <td> {{ val['answer'] }} </td>
-            </tr>
-        {% endfor %}
-    </table>
-    val
-{% endif %}
-{{raw}}
+{% for r in raw%}
+    {% if r['questionType']=='ddq' %}
+         <table id="activity">
+                <tr>
+                    <th> Item </th>
+                    <th> Category </th>
+                    <th> Correct </th>
+                </tr>
+            {% for key, val in ent.items() %}
+                <tr>
+                    <td> {{ key }} </td>
+                    <td> 
+                        {{ val[0] }}
+                    </td>
+                    <td> {{ val[1] }} </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <br></br>
+    {% else %}
+         <table id="activity">
+                <tr>
+                    <th> Question </th>
+                    <th> Correct </th>
+                    <th> MaybeText </th>
+                    <th> Hint </th>
+                </tr>
+                <tr>
+                    <td> {{ r['text'] }} </td>
+                    {% if r['result']['maybeText'] %}
+                        <td> Maybe </td>
+                        <td> {{ r['result']['maybeText'] }} </td>
+                    {% else %}
+                        <td> {{ r['result']['correct'] }} </td>
+                        <td>  </td>
+                    {% endif %}
+                    <td> {{ r['result']['hint'] }} </td>
+                </tr>
+        </table>
+        <br></br>
+    {% endif %}
+{% endfor %}

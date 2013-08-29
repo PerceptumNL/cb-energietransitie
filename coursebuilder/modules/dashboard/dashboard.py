@@ -915,7 +915,6 @@ class DashboardHandler(
             sub_values['date'] = 'no date'
             sub_values['ent'] = 'no ent'
 
-        sub_values['raw'] = '1'
         return jinja2.utils.Markup(self.get_template(
             'activity.html', [os.path.dirname(__file__)]
         ).render(sub_values, autoescape=True))
