@@ -18,11 +18,11 @@ var DDQ = function(question) {
           //submissionList = targetList.extend();
           //this.activity = a = $.extend(true, [], this.activity_original);
           submissionList = $.extend(true,[],targetList);
-          console.log(submissionList)
+          //console.log(submissionList)
           $.each(submissionList, function(k, v) {
             submissionList[k].conceptList=[];
             //console.log(k, v.text);
-            console.log(submissionList[k].conceptList)
+            //console.log(submissionList[k].conceptList)
           });
 
           result = {
@@ -130,9 +130,9 @@ var DDQ = function(question) {
           result.correct = true;
           $.each(this.targets, function(k, v) {
             $.each(v.answers, function(_k, answer) {
-              console.log(k, $(answer).attr("answer_idx"), $(answer).attr("target_idx"))
+              //console.log(k, $(answer).attr("answer_idx"), $(answer).attr("target_idx"))
               //console.log($(answer).attr("target_idx") );
-              console.log($(answer)[0].innerText)//eg "A fridge"
+              //console.log($(answer)[0].innerText)//eg "A fridge"
 
               newentry = submissionList[k].conceptList.length;
               submissionList[k].conceptList[newentry]={}
@@ -140,7 +140,7 @@ var DDQ = function(question) {
               submissionList[k].conceptList[newentry].text=$(answer)[0].innerText;
               //submissionList[k].conceptList[newentry].correct=$(answer)[0].innerText;
 
-              console.log(newentry);
+              //console.log(newentry);
 
               if ($(answer).attr("answer_idx") != $(answer).attr("target_idx")) {
                 result.correct = false;
@@ -158,7 +158,7 @@ var DDQ = function(question) {
                       submissionList[k].conceptList[newentry].correct=false;
                       _v.correct=false;
                       _v.concept_idx=k;
-                      console.log(_v.correct, _v.concept_idx)                      
+                      //console.log(_v.correct, _v.concept_idx)                      
                     }
                   });
                 });
@@ -172,7 +172,7 @@ var DDQ = function(question) {
                       submissionList[k].conceptList[newentry].correct=true;
                       _v.correct=true;
                       _v.concept_idx=k;
-                      console.log(_v.correct, _v.concept_idx)                      
+                      //console.log(_v.correct, _v.concept_idx)                      
                     }
                   });
                 });
