@@ -115,7 +115,7 @@ var Questionary = {
       console.log(JSON.stringify(evt));
     } else {
       $.post('/rest/events', {request: JSON.stringify(evt)}, function() {
-        console.log("Activity results sent bla");
+        console.log("Activity results sent");
       }).fail(function() { 
         console.log("Error sending activity results");
       });
@@ -262,14 +262,28 @@ var DDQ = function(question) {
         targetList: [],
         submissionList: [],
         targets: [],
+        positions:[],
 
         create_question: function(q) {
           question = q;
           targetList = q.targetList;
+          var self=this;
           submissionList = $.extend(true,[],targetList);
           $.each(submissionList, function(k, v) {
             submissionList[k].conceptList=[];
           });
+
+          var poscnt=0;
+          $.each(targetList, function(k, v) {
+            $.each(v.conceptList, function(_k, _v) {
+              self.positions[poscnt]={}
+              self.positions[poscnt].name=_v.text;
+              self.positions[poscnt].pos=-1;
+              poscnt++;
+            })
+          });
+          //console.log(self.positions)
+
           result = {
             incorrect: false,
             correct: false,
@@ -302,6 +316,17 @@ var DDQ = function(question) {
                 $(ui.draggable[0]).css("left", "0px");
                 $(ui.draggable[0]).css("top", "0px");
                 $(ui.draggable[0]).attr("target_idx", target_div.idx);
+
+                var poscnt=0;
+                $.each(targetList, function(k, v) {
+                  $.each(v.conceptList, function(_k, _v) {
+                    if(self.positions[poscnt].name == $(ui.draggable[0])[0].innerText){
+                      self.positions[poscnt].pos = $(ui.draggable[0]).attr("target_idx");
+                    }                    
+                    poscnt++;
+                  })
+                });
+
                 $(ui.draggable[0]).css("border", "2px solid orange");
                 //$(ui.draggable[0]).draggable( "option", "disabled", true ); 
                 self.check_done();
@@ -347,19 +372,24 @@ var DDQ = function(question) {
         },
 
         check_done: function() {
-          var count_answered = 0;
-          $.each(this.targets, function(k, v) {
-            $.each(v.answers, function(_k, answer) {
-                count_answered++;
-            });
-          });
+          var self =this;
           num_concepts = 0;
           $.each(targetList, function(k, v) {
             $.each(v.conceptList, function(_k, _v) {
                 num_concepts++;
             })
           });
-          if (count_answered < num_concepts) {
+          tot_placed=0
+          for (var i=0; i<self.positions.length; i++){
+            //console.log(self.positions[i].pos)
+            if(self.positions[i].pos >=0 ){
+              tot_placed++;
+            }
+          }
+          //console.log("placed: " + tot_placed)
+          //console.log("-----")
+
+          if (tot_placed < num_concepts) {
             $("#check-button").hide();
             return false;
           } else {
@@ -370,46 +400,56 @@ var DDQ = function(question) {
       
         check_answer: function() {
           result.correct = true;
+          var self = this;
+          for (var i=0; i<self.positions.length;i++){
+            //console.log(i, self.positions[i].name, self.positions[i].pos*1)
+            newentry2 = submissionList[self.positions[i].pos*1].conceptList.length;
+            submissionList[self.positions[i].pos*1].conceptList[newentry2]={}
+            submissionList[self.positions[i].pos*1].conceptList[newentry2].type="text"
+            submissionList[self.positions[i].pos*1].conceptList[newentry2].text=self.positions[i].name
+          }
+
+
           $.each(this.targets, function(k, v) {
             $.each(v.answers, function(_k, answer) {
-              newentry = submissionList[k].conceptList.length;
-              submissionList[k].conceptList[newentry]={}
-              submissionList[k].conceptList[newentry].type="text"
-              submissionList[k].conceptList[newentry].text=$(answer)[0].innerText;
-              
-              $(answer).draggable( "option", "disabled", true ); //after check make items undraggable
+
+              $(answer).draggable( "option", "disabled", true );
 
               if ($(answer).attr("answer_idx") != $(answer).attr("target_idx")) {
                 result.correct = false;
                 result.incorrect = true;
                 $(answer).css("border-color", "red");
-                //targetList[0].conceptList[0].correct=false;
-                //console.log(targetList[$(answer).attr("answer_idx")].text)//eg "electricity"
-                //console.log($(answer)[0].innerText)//eg "A fridge"
-
                 
-
                 $.each(targetList, function(kk, v) {
                   $.each(v.conceptList, function(_kk, _v){
                     if(_v.text == $(answer)[0].innerText){
-                      submissionList[k].conceptList[newentry].correct=false;
-                      _v.correct=false;
-                      _v.concept_idx=k;
-                      //console.log(_v.correct, _v.concept_idx)                      
+                      $.each(submissionList, function(k2, v2) {
+                        $.each(v2.conceptList, function(_k2, _v2) {
+                          if(_v2.text == _v.text){
+                            _v2.correct = false
+                            _v.concept_idx=k2;
+                          }
+                        })
+                      });
+                      _v.correct=false;                 
                     }
                   });
                 });
               } 
               else{
                 $(answer).css("border-color", "green");
-                //console.log($(answer)[0].innerText)
                 $.each(targetList, function(kk, v) {
                   $.each(v.conceptList, function(_kk, _v) {
                     if(_v.text == $(answer)[0].innerText){
-                      submissionList[k].conceptList[newentry].correct=true;
-                      _v.correct=true;
-                      _v.concept_idx=k;
-                      //console.log(_v.correct, _v.concept_idx)                      
+                      $.each(submissionList, function(k2, v2) {
+                        $.each(v2.conceptList, function(_k2, _v2) {
+                          if(_v2.text == _v.text){
+                            _v2.correct = true
+                            _v.concept_idx=k2;
+                          }
+                        })
+                      });
+                      _v.correct=true;                    
                     }
                   });
                 });
