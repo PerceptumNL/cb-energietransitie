@@ -484,6 +484,7 @@ var MCQ = function(question) {
             incorrect: false,
             correct: false,
             hint: false,
+            selections: [],
           }
           this.draw_question();
           this.draw_answers();
@@ -509,12 +510,7 @@ var MCQ = function(question) {
             $(".option").append(div);
             $(div).click(
               function(evt) {
-                if(!$(evt.target).hasClass("toggleon")){
-                  $(evt.target).addClass("toggleon");
-                }
-                else {
-                  $(evt.target).removeClass("toggleon");
-                }
+                $(this).toggleClass("toggleon")
               }
             )
           });
@@ -564,21 +560,31 @@ var MCQ = function(question) {
 
           $.each(question.answers, function(idx, ans) {
             var answer_text = answers[idx].feedback || "";
-            if ($.inArray(idx, question.correctAnswer) >= 0 && 
-                current_answers[idx] == true) {
+            newentry = result.selections.length;
+            if ($.inArray(idx, question.correctAnswer) >= 0 && current_answers[idx] == true) {
+                //console.log("aa "+idx) //selected correctly
+                result.selections[newentry] = idx;
                 $($(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/11iXTZG'/>"+ answer_text +"</div>");
                 ans.correct = true; 
                 //self.feedback_correct(idx);
 
             }
-            else if ($.inArray(idx, question.correctAnswer) == -1 && 
-                current_answers[idx] == false) {
+            else if ($.inArray(idx, question.correctAnswer) == -1 && current_answers[idx] == false) {
+                //console.log(idx)
+                $($(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/11iXTZG'/>"+ answer_text +"</div>");
+                ans.correct = true;
+                //self.feedback_correct(idx);
+            }
+            else if ($.inArray(idx, question.correctAnswer) == -1 && current_answers[idx] == true) {
+                //console.log("bb "+idx) //selected wrongly
+                result.selections[newentry] = idx;
                 $($(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/11iXTZG'/>"+ answer_text +"</div>");
                 ans.correct = true;
                 //self.feedback_correct(idx);
             }
             else {
                 ans.incorrect = true; 
+                //console.log(idx)                
                 $($(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/1aMHTSK'/>"+ answer_text +"</div>");
                 result.correct = false;
                 result.incorrect = true;
@@ -586,6 +592,7 @@ var MCQ = function(question) {
             }
           });
           $(".option").removeClass("enabled");
+          $(".option").children().unbind("click");
           //this.next_question();
         }
       
@@ -595,6 +602,7 @@ var MCQ = function(question) {
 }
 
 Questionary.registerType(MCQ);
+
 var TFQ = function(question) {
   return Trait.create(
     Object.prototype,
@@ -606,6 +614,8 @@ var TFQ = function(question) {
         question: null,
         answers: null,
         result: {},
+        questioncnt: 0,
+        st_answers: [],
 
         create_question: function(q) {
           question = q;
@@ -615,6 +625,7 @@ var TFQ = function(question) {
             correct: false,
             maybe: false,
             maybeText: "",
+            ans_index: "",
             hint: false,
           }
           this.draw_question();
@@ -622,6 +633,7 @@ var TFQ = function(question) {
         },
 
         draw_question: function() {
+
           $("#q-text").html(question.text);
           if (question.type == "image") {
             $("#q-image").attr("src", question.image);
@@ -638,6 +650,7 @@ var TFQ = function(question) {
           $(".right").hide();
           $(".wrong").hide();
           $(".option").html("").addClass("tfq");
+
           $.each(a, function(k, v) {
             div = $("<div>").text(v.text);
             $(".option").append(div);
@@ -652,6 +665,7 @@ var TFQ = function(question) {
             div = $("<div>").text("Maybe").attr("id", "maybe-button");
             $(".option").append(div);
             if (!res) {
+              
               div.click(function() {
                   self.prompt_maybe(true)
               });  
@@ -661,11 +675,13 @@ var TFQ = function(question) {
                 $("#tr-fb-input").hide();
                 $("#feedback-input").hide();
                 result.maybe = true;
+                result.ans_index=2;
+                console.log(result)
                 result.maybeText = $("#feedback-input").val();
                 self.next_question();
               });
               $("#feedback-input").keyup(function() {
-                if ($(this).val().length > 1) {
+                if ($(this).val().length > 0) {
                   $("#submit-button").show();
                 } else {
                   $("#submit-button").hide();
@@ -673,9 +689,9 @@ var TFQ = function(question) {
               });
             }
           }
-          if (res) {
-            self.check_answer(res.answerIdx)
-          }
+          //if (res) {
+          //  self.check_answer(res.answerIdx)           
+          //}
         },
 
         prompt_maybe: function(show) {
@@ -718,16 +734,18 @@ var TFQ = function(question) {
         },
           
         check_answer: function(answer_idx) {
-          result.answerIdx = answer_idx
+          result.ans_index = answer_idx;
+          console.log(result)
           if (question.correctAnswer == answer_idx) {
             if (!result.incorrect) {
               result.correct = true;
             }
-            console.log("Good! continue with next concept");
+            
+            //console.log("Good! continue with next concept");
             this.feedback_correct(answer_idx);
           } else {
             result.incorrect = true;
-            console.log("Wrong... Try again!");
+            //console.log("Wrong... Try again!");
             this.feedback_incorrect(answer_idx);
           }
           
@@ -737,6 +755,7 @@ var TFQ = function(question) {
             }
           });
           $(".option").children().unbind("click");
+          
         }
      })
     )
@@ -744,4 +763,6 @@ var TFQ = function(question) {
 }
 
 Questionary.registerType(TFQ);
+
+
 
