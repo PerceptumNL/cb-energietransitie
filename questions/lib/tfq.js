@@ -9,6 +9,8 @@ var TFQ = function(question) {
         question: null,
         answers: null,
         result: {},
+        questioncnt: 0,
+        st_answers: [],
 
         create_question: function(q) {
           question = q;
@@ -18,6 +20,7 @@ var TFQ = function(question) {
             correct: false,
             maybe: false,
             maybeText: "",
+            ans_index: "",
             hint: false,
           }
           this.draw_question();
@@ -25,6 +28,7 @@ var TFQ = function(question) {
         },
 
         draw_question: function() {
+
           $("#q-text").html(question.text);
           if (question.type == "image") {
             $("#q-image").attr("src", question.image);
@@ -41,6 +45,7 @@ var TFQ = function(question) {
           $(".right").hide();
           $(".wrong").hide();
           $(".option").html("").addClass("tfq");
+
           $.each(a, function(k, v) {
             div = $("<div>").text(v.text);
             $(".option").append(div);
@@ -55,6 +60,7 @@ var TFQ = function(question) {
             div = $("<div>").text("Maybe").attr("id", "maybe-button");
             $(".option").append(div);
             if (!res) {
+              
               div.click(function() {
                   self.prompt_maybe(true)
               });  
@@ -64,11 +70,13 @@ var TFQ = function(question) {
                 $("#tr-fb-input").hide();
                 $("#feedback-input").hide();
                 result.maybe = true;
+                result.ans_index=2;
+                console.log(result)
                 result.maybeText = $("#feedback-input").val();
                 self.next_question();
               });
               $("#feedback-input").keyup(function() {
-                if ($(this).val().length > 1) {
+                if ($(this).val().length > 0) {
                   $("#submit-button").show();
                 } else {
                   $("#submit-button").hide();
@@ -78,6 +86,7 @@ var TFQ = function(question) {
           }
           if (res) {
             self.check_answer(res.answerIdx)
+            
           }
         },
 
@@ -121,16 +130,18 @@ var TFQ = function(question) {
         },
           
         check_answer: function(answer_idx) {
-          result.answerIdx = answer_idx
+          result.ans_index = answer_idx;
+          console.log(result)
           if (question.correctAnswer == answer_idx) {
             if (!result.incorrect) {
               result.correct = true;
             }
-            console.log("Good! continue with next concept");
+            
+            //console.log("Good! continue with next concept");
             this.feedback_correct(answer_idx);
           } else {
             result.incorrect = true;
-            console.log("Wrong... Try again!");
+            //console.log("Wrong... Try again!");
             this.feedback_incorrect(answer_idx);
           }
           
@@ -140,6 +151,7 @@ var TFQ = function(question) {
             }
           });
           $(".option").children().unbind("click");
+          
         }
      })
     )

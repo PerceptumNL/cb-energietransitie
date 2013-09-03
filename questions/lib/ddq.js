@@ -11,19 +11,27 @@ var DDQ = function(question) {
         targetList: [],
         submissionList: [],
         targets: [],
+        positions:[],
 
         create_question: function(q) {
           question = q;
           targetList = q.targetList;
-          //submissionList = targetList.extend();
-          //this.activity = a = $.extend(true, [], this.activity_original);
+          var self = this;
           submissionList = $.extend(true,[],targetList);
-          //console.log(submissionList)
           $.each(submissionList, function(k, v) {
             submissionList[k].conceptList=[];
-            //console.log(k, v.text);
-            //console.log(submissionList[k].conceptList)
           });
+
+          var poscnt=0;
+          $.each(targetList, function(k, v) {
+            $.each(v.conceptList, function(_k, _v) {
+              self.positions[poscnt]={}
+              self.positions[poscnt].name=_v.text;
+              self.positions[poscnt].pos=-1;
+              poscnt++;
+            })
+          });
+          //console.log(self.positions)
 
           result = {
             incorrect: false,
@@ -35,6 +43,30 @@ var DDQ = function(question) {
           this.draw_question();
           this.draw_answers();
         },
+
+        //-----------------------------
+        //$.fn.draggable2 = function() {        
+        //    var offset = null;        
+        //    var start = function(e) {          
+        //        var orig = e.originalEvent;          
+        //        var pos = $(this).position();          
+        //        offset = {            
+        //            x: orig.changedTouches[0].pageX - pos.left,            
+        //            y: orig.changedTouches[0].pageY - pos.top          
+        //        };        
+        //    };        
+        //    var moveMe = function(e) {          
+        //        e.preventDefault();          
+        //        var orig = e.originalEvent;          
+        //        $(this).css({            
+        //            top: orig.changedTouches[0].pageY - offset.y,            
+        //            left: orig.changedTouches[0].pageX - offset.x          
+        //        });        
+        //    };        
+        //    this.bind("touchstart", start);        
+        //   this.bind("touchmove", moveMe);      
+        //};          
+        //-----------------------------
 
         draw_question: function() {
           var self = this;
@@ -48,6 +80,7 @@ var DDQ = function(question) {
             self.targets.push(target_div);
             $(target_div).css("width", per + "%");
             $('#tr-text').append(target_div);
+
             $(target_div).droppable({
               greedy: true,
               activeClass: "ui-state-hover",
@@ -58,8 +91,20 @@ var DDQ = function(question) {
                 $(ui.draggable[0]).css("left", "0px");
                 $(ui.draggable[0]).css("top", "0px");
                 $(ui.draggable[0]).attr("target_idx", target_div.idx);
+                //console.log($(ui.draggable[0]).attr("target_idx"), $(ui.draggable[0])[0].innerText )
+
+                var poscnt=0;
+                $.each(targetList, function(k, v) {
+                  $.each(v.conceptList, function(_k, _v) {
+                    if(self.positions[poscnt].name == $(ui.draggable[0])[0].innerText){
+                      self.positions[poscnt].pos = $(ui.draggable[0]).attr("target_idx");
+                    }                    
+                    poscnt++;
+                  })
+                });
+
                 $(ui.draggable[0]).css("border", "2px solid orange");
-                //console.log(target_div[0])
+
                 self.check_done();
               }
             });
@@ -74,8 +119,6 @@ var DDQ = function(question) {
           $.each(targetList, function(k, v) {
             $.each(v.conceptList, function(_k, _v) {
               var concept_div = $("<div class='concept'>" + _v.text + "</div>");
-              //console.log(v.text,_v.text)
-              //console.log(v,_v)
               concept_div.attr("answer_idx", k);
               $(concept_div).draggable();
               $('.option').append(concept_div);
@@ -87,6 +130,7 @@ var DDQ = function(question) {
             drop: function( event, ui ) {
               $(".option").append(ui.draggable[0]);
               $(ui.draggable[0]).css("border", "2px dashed orange");
+              //console.log("aa " + $(ui.draggable[0]))
               $(ui.draggable[0]).css("left", "0");
               $(ui.draggable[0]).css("top", "0");
             }
@@ -105,19 +149,26 @@ var DDQ = function(question) {
         },
 
         check_done: function() {
-          var count_answered = 0;
-          $.each(this.targets, function(k, v) {
-            $.each(v.answers, function(_k, answer) {
-                count_answered++;
-            });
-          });
+          var self = this;
+
           num_concepts = 0;
           $.each(targetList, function(k, v) {
             $.each(v.conceptList, function(_k, _v) {
                 num_concepts++;
             })
           });
-          if (count_answered < num_concepts) {
+
+          tot_placed=0
+          for (var i=0; i<self.positions.length; i++){
+            //console.log(self.positions[i].pos)
+            if(self.positions[i].pos >=0 ){
+              tot_placed++;
+            }
+          }
+          //console.log("placed: " + tot_placed)
+          //console.log("-----")
+
+          if (tot_placed < num_concepts) {
             $("#check-button").hide();
             return false;
           } else {
@@ -128,51 +179,57 @@ var DDQ = function(question) {
       
         check_answer: function() {
           result.correct = true;
+          
+          var self = this;
+          for (var i=0; i<self.positions.length;i++){
+            //console.log(i, self.positions[i].name, self.positions[i].pos*1)
+            newentry2 = submissionList[self.positions[i].pos].conceptList.length;
+            submissionList[self.positions[i].pos].conceptList[newentry2]={}
+            submissionList[self.positions[i].pos].conceptList[newentry2].type="text"
+            submissionList[self.positions[i].pos].conceptList[newentry2].text=self.positions[i].name
+          }
+
+
           $.each(this.targets, function(k, v) {
             $.each(v.answers, function(_k, answer) {
-              //console.log(k, $(answer).attr("answer_idx"), $(answer).attr("target_idx"))
-              //console.log($(answer).attr("target_idx") );
-              //console.log($(answer)[0].innerText)//eg "A fridge"
 
-              newentry = submissionList[k].conceptList.length;
-              submissionList[k].conceptList[newentry]={}
-              submissionList[k].conceptList[newentry].type="text"
-              submissionList[k].conceptList[newentry].text=$(answer)[0].innerText;
-              //submissionList[k].conceptList[newentry].correct=$(answer)[0].innerText;
-
-              //console.log(newentry);
+              $(answer).draggable( "option", "disabled", true );
 
               if ($(answer).attr("answer_idx") != $(answer).attr("target_idx")) {
                 result.correct = false;
                 result.incorrect = true;
                 $(answer).css("border-color", "red");
-                //targetList[0].conceptList[0].correct=false;
-                //console.log(targetList[$(answer).attr("answer_idx")].text)//eg "electricity"
-                //console.log($(answer)[0].innerText)//eg "A fridge"
-
                 
-
                 $.each(targetList, function(kk, v) {
                   $.each(v.conceptList, function(_kk, _v){
                     if(_v.text == $(answer)[0].innerText){
-                      submissionList[k].conceptList[newentry].correct=false;
-                      _v.correct=false;
-                      _v.concept_idx=k;
-                      //console.log(_v.correct, _v.concept_idx)                      
+                      $.each(submissionList, function(k2, v2) {
+                        $.each(v2.conceptList, function(_k2, _v2) {
+                          if(_v2.text == _v.text){
+                            _v2.correct = false
+                            _v.concept_idx=k2;
+                          }
+                        })
+                      });
+                      _v.correct=false;                 
                     }
                   });
                 });
               } 
               else{
                 $(answer).css("border-color", "green");
-                //console.log($(answer)[0].innerText)
                 $.each(targetList, function(kk, v) {
                   $.each(v.conceptList, function(_kk, _v) {
                     if(_v.text == $(answer)[0].innerText){
-                      submissionList[k].conceptList[newentry].correct=true;
-                      _v.correct=true;
-                      _v.concept_idx=k;
-                      //console.log(_v.correct, _v.concept_idx)                      
+                      $.each(submissionList, function(k2, v2) {
+                        $.each(v2.conceptList, function(_k2, _v2) {
+                          if(_v2.text == _v.text){
+                            _v2.correct = true
+                            _v.concept_idx=k2;
+                          }
+                        })
+                      });
+                      _v.correct=true;                    
                     }
                   });
                 });

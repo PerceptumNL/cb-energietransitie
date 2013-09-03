@@ -7,15 +7,18 @@ var MCQ = function(question) {
         answers: null,
         questionType: "mcq",
         question: null,
+        //submissionList: [],
         result: {},
       
         create_question: function(q) {
           question = q;
           answers= q.answers;
+          //console.log(q)
           result = {
             incorrect: false,
             correct: false,
             hint: false,
+            selections: [],
           }
           this.draw_question();
           this.draw_answers();
@@ -41,12 +44,7 @@ var MCQ = function(question) {
             $(".option").append(div);
             $(div).click(
               function(evt) {
-                if(!$(evt.target).hasClass("toggleon")){
-                  $(evt.target).addClass("toggleon");
-                }
-                else {
-                  $(evt.target).removeClass("toggleon");
-                }
+                $(this).toggleClass("toggleon")
               }
             )
           });
@@ -64,7 +62,7 @@ var MCQ = function(question) {
         },
 
         feedback_correct: function(answer_idx) {
-          console.log("feedback_Correct");
+          //console.log("feedback_Correct");
           var ele = $(".option").children()[answer_idx];
           $(ele).addClass("correct");
           $(".right").show();
@@ -75,7 +73,7 @@ var MCQ = function(question) {
         },
         
         feedback_incorrect: function(answer_idx) {
-          console.log("feedback_Incorrect");
+          //console.log("feedback_Incorrect");
           var ele = $(".option").children()[answer_idx];
           $(ele).addClass("incorrect");        
           $(".wrong").show();
@@ -95,33 +93,47 @@ var MCQ = function(question) {
           var anstext = answer_idx
 
           $.each(question.answers, function(idx, ans) {
+            //console.log(question.answers)
+            //console.log("aa "+idx, ans)
             var answer_text = answers[idx].feedback || "";
-            if ($.inArray(idx, question.correctAnswer) >= 0 && 
-                current_answers[idx] == true) {
+            newentry = result.selections.length;
+            if ($.inArray(idx, question.correctAnswer) >= 0 && current_answers[idx] == true) {
+                //console.log("aa "+idx) //selected correctly
+                result.selections[newentry] = idx;
                 $($(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/11iXTZG'/>"+ answer_text +"</div>");
                 ans.correct = true; 
                 //self.feedback_correct(idx);
 
             }
-            else if ($.inArray(idx, question.correctAnswer) == -1 && 
-                current_answers[idx] == false) {
+            else if ($.inArray(idx, question.correctAnswer) == -1 && current_answers[idx] == false) {
+                //console.log(idx)
+                $($(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/11iXTZG'/>"+ answer_text +"</div>");
+                ans.correct = true;
+                //self.feedback_correct(idx);
+            }
+            else if ($.inArray(idx, question.correctAnswer) == -1 && current_answers[idx] == true) {
+                //console.log("bb "+idx) //selected wrongly
+                result.selections[newentry] = idx;
                 $($(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/11iXTZG'/>"+ answer_text +"</div>");
                 ans.correct = true;
                 //self.feedback_correct(idx);
             }
             else {
                 ans.incorrect = true; 
+                //console.log(idx)                
                 $($(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/1aMHTSK'/>"+ answer_text +"</div>");
                 result.correct = false;
                 result.incorrect = true;
                 //self.feedback_incorrect(idx);
             }
+            //console.log("aa "+idx, ans.incorrect)
           });
+          //console.log(result)
           $(".option").removeClass("enabled");
           $(".option").children().unbind("click");
-////
           //this.next_question();
         }
+
       
       })
     )
