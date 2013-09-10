@@ -12,8 +12,10 @@ td, th {
     width: 788px;
     min-height: 500px;
     border: 2px solid #9C959B;
-    position:relative;    
+    top: 0px;
     display: none;
+    background-color: white;
+    position: absolute;
 }
 
 .right-col {
@@ -267,4 +269,8 @@ td, th {
 #a-table {
     height: 450px;
     width: 100%;
+}
+
+#template {
+    display: none;
 }

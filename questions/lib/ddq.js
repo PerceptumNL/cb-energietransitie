@@ -245,4 +245,4 @@ var DDQ = function(question) {
   )
 }
 
-Questionary.registerType(DDQ);
+Questionnaire.registerType(DDQ);

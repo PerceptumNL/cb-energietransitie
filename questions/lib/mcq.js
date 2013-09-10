@@ -140,4 +140,4 @@ var MCQ = function(question) {
   )
 }
 
-Questionary.registerType(MCQ);
+Questionnaire.registerType(MCQ);

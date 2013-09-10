@@ -2,17 +2,36 @@ function getURLParameter(name) {
   return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
 }
 
-var Questionary = {
+function getLibUrl() {
+  if (isTesting()) {
+    return "lib/";
+  } else {
+    return "assets/lib/";
+  }
+}
+
+function isTesting() {
+  return (typeof testing !== "undefined" && testing);
+}
+
+if (isTesting()) {
+//    console.log = function() {};
+}
+    
+
+var Questionnaire = {
   registeredQuestionTypes: {},
   defaultQuestionType: null,
   questionsList: [],
-  questionIdx: 0,
+  questionInstances: [],
+  index: 0,
   activity: null,
   results: [],
   leftQuestions: [],
   doneQuestions: [],
   firstLoad: true,
   qEle: null,
+  evts: {},
 
   getLesson: function() {
     return getURLParameter("lesson");
@@ -22,24 +41,27 @@ var Questionary = {
     return getURLParameter("unit");
   },
 
-  isTesting: function() {
-    return (typeof testing !== "undefined" && testing);
-  },
-
   drawNumbers: function() {
+    var self = this;
     var nquestions = this.questionsList.length;
     var ntmpl = $("#number").children()[0].outerHTML;
     $("#number").html("");
     for (var i=0; i<nquestions; i++) {
-      qnumber = $(ntmpl).html(i+1)
+      var qnumber;
+      (function(j) { 
+        qnumber = $(ntmpl).html(j+1).click(function() {
+            self.jumpTo(j);
+            self.drawNumbers();
+        });
+      })(i);
       $("#number").append(qnumber);
     }
     $("#number").children().removeClass("sel-number");
-    $("#number").children().eq(this.questionIdx).addClass("sel-number");
+    $("#number").children().eq(this.index).addClass("sel-number");
   },
 
-  showResults: function() {
-    if (this.leftQuestions.length == 0) {
+  showOverview: function() {
+    if (this.remaining().length == 0) {
       var correct=0, incorrect=0, maybe=0;
       $.each(this.doneQuestions, function(k, q) {
         v = q.result;
@@ -56,11 +78,14 @@ var Questionary = {
       //$("#maybe").html(maybe);
       $(".questionnaire").hide()
       $("#overview").show();
-      return;
+      return true;
+    } else {
+      alert("Missing " + this.leftQuestions.length + " questions");
+      return false;
     }
   },
 
-  saveResults: function(results) {
+  sendResults: function(results) {
     var self = this;
     var evt = {
       //Find Unit
@@ -72,7 +97,7 @@ var Questionary = {
       }),
       "xsrf_token": eventXsrfToken
     }
-    if (self.isTesting()) {
+    if (isTesting()) {
       console.log("Results:");
       console.log(this.doneQuestions);
     } else {
@@ -83,13 +108,32 @@ var Questionary = {
       });
     }
   },
+  
+  video_question: function(time) {
+    var self = this;
+    var m = Math.floor(time/60.0);
+    var h = Math.floor(time/60.0/60);
+    var s = Math.floor(time%60);
+    var time = m + ":" + 
+                (s.toString().length == 1 ? "0":"") +
+                s.toString();
+    for (var i=0; i<this.leftQuestions.length; i++) {
+      if (this.leftQuestions[i].time == time) {
+        Questionnaire.next(self.result)
+        $(self.qEle).show();
+        return true;
+      }
+    }
+    return false;
+  },
 
   create: function(qEle) {
     var self = this;
-    this.questionIdx = 0;
+    this.index = -1;
     this.results = [];
     this.leftQuestions = [];
     this.doneQuestions = [];
+    this.qEle = qEle;
 
     var a_name = $(qEle).attr("name");
     if (a_name && a_name in window) {
@@ -104,7 +148,7 @@ var Questionary = {
         dataType: 'json',
         async: false,
         success: function(data) {
-          console.log(data);
+          console.log("Activity loaded:", data);
           self.activity_original = data;
         } 
       });
@@ -116,36 +160,22 @@ var Questionary = {
     this.defaultQuestionType = a.questionsType;
 
     for (var i=0; i<a.questionsList.length; i++) {
-      if (typeof a.questionsList[i].questionType == "undefined") 
-        a.questionsList[i].questionType = this.defaultQuestionType;
-      this.leftQuestions.push(a.questionsList[i]);
+        
+      if (typeof this.questionsList[i].questionType == "undefined") 
+        this.questionsList[i].questionType = this.defaultQuestionType;
+      this.leftQuestions[i] = this.questionsList[i];
+      this.doneQuestions[i] = undefined;
     }
-
-    $("#overview").hide();
-    this.next();
-
-  },
-
-  next: function(question_result) {
-    if (this.question && question_result) {
-      this.question.result = question_result;
-    }
-    if (this.leftQuestions.length == 0) {
-      this.showResults();
-      this.saveResults();
-      return;
-    }
-    this.question = this.leftQuestions[0]; 
-    this.leftQuestions.splice(0,1);
-    this.doneQuestions.push(this.question);
-    this.questionClass = this.registeredQuestionTypes[this.question.questionType];
-    this.questionClass().create(this.question, this.qEle);
-    $("#questions").show();
-    $("#send-button").click(function() {
-      Questionary.next(self.result);
+    $.ajax({
+      url: getLibUrl() + 'base.html',
+      type: 'get',
+      dataType: 'html',
+      async: false,
+      success: function(data) {
+        $(self.qEle).html(data);
+      } 
     });
-    this.drawNumbers();
-    this.questionIdx++;
+
     $("#button-hint").click(function() {
       $(".hint").show();
     });
@@ -153,11 +183,108 @@ var Questionary = {
       $(".hint").hide();
     });
     $("#redo").click(function() {
-        location.reload(true);
+      location.reload(true);
     })
     $("#revisit").click(function() {
-        location.href = location.href.replace("activity","unit");
+      location.href = location.href.replace("activity","unit");
     })
+
+    $("#overview").hide();
+    this.trigger("load");
+
+  },
+
+  on: function(evtName, fnc) {
+    if (this.evts[evtName] === undefined) {
+      this.evts[evtName] = [];
+    }
+    this.evts[evtName].push(fnc);
+  },
+
+  trigger: function(evtName, params) {
+    if (this.evts[evtName]) {
+      for (var i=0;i<this.evts[evtName].length;i++) {
+        this.evts[evtName][i].apply(this, params);
+      }
+      return true;
+    } else
+      return false;
+  },
+
+  fadeOut: function() {
+    $(this.qEle).fadeOut();
+  },
+
+  fadeIn: function() {
+    $(this.qEle).fadeIn();
+  },
+
+  remaining: function() {
+    var ret = [];
+    for (i=0; i<this.leftQuestions.length; i++) {
+        if (this.leftQuestions[i] !== undefined)
+            ret.push(i);
+    }
+    return ret;
+  },
+
+  jumpNext: function() {
+    this.index++; 
+    this.jumpTo(this.index);
+  },
+
+  jumpTo: function(index) {
+    var self = this;
+    this.index = index;
+    this.drawNumbers();
+
+    $(".question-wrapper").hide();
+    if (this.questionInstances[index]) {
+      this.questionInstances[index].show();
+      return;
+    }
+    
+    if (this.remaining().length == 0) {
+      this.showOverview();
+      this.sendResults();
+      return;
+    }
+
+    this.question = this.leftQuestions[this.index]; 
+
+    //if (self.question.time) {
+    //  $(self.qEle).hide();
+    //  //var ytplayer = document.getElementById("myytplayer");
+    //  //ytplayer.playVideo();
+    //  //this.fadeOut();
+    //  return;
+    //} else {
+
+    //} 
+    var template = $(this.qEle).find('#template').clone();
+    $(template).attr({id: "q"+this.index, index: this.index}).appendTo('#questions');
+
+    $("#questions").show();
+
+    this.questionClass = this.registeredQuestionTypes[this.question.questionType];
+    this.questionInstances[index] = this.questionClass(this.question, template)
+    this.questionInstances[index].create();
+    $(template).show();
+
+    $(".hint-text").html(this.question.hint);
+    if (typeof this.question.hint == "undefined") 
+      $("#button-hint").hide();
+    else 
+      $("#button-hint").show();
+
+    $(template).find("#send-button").click(function() {
+      if (self.leftQuestions[self.index] !== undefined) {
+        self.doneQuestions[self.index] = self.leftQuestions[self.index];
+        self.doneQuestions[self.index].result = self.questionInstances[self.index].getResult();
+        self.leftQuestions[self.index] = undefined;
+      }
+      self.jumpNext();
+    });
 
   },
 
@@ -172,58 +299,35 @@ var QuestionTrait = Trait({
   questionType: Trait.required,
   create: Trait.required,
   result: Trait.required,
+  $q: Trait.required,
+  qEle: Trait.required,
 
-  isTesting: function() {
-    return (typeof testing !== "undefined" && testing);
-  },
 
-  getLibUrl: function() {
-    if (this.isTesting()) {
-      return "lib/";
-    } else {
-      return "assets/lib/";
-    }
-  },
-
-  create: function(question, qEle) {
-    var self = this;
-    var _question = question;
-    var wrapperEle = qEle || $('#activityContents question');
-    
-    $.ajax({
-      url: this.getLibUrl() + 'base.html',
-      type: 'get',
-      dataType: 'html',
-      async: false,
-      success: function(data) {
-        $(wrapperEle).html("").append(data);
-        self.create_question(_question);
-        $(".hint-text").html(_question.hint);
-        if (typeof _question.hint == "undefined") 
-          $("#button-hint").hide();
-        else 
-          $("#button-hint").show();
-      } 
-    });
+  create: function() {
+    this.create_question();
   }, 
 
-  next_question: function() {
-    Questionary.next(result);
-  }
-});
+  jumpNext: function() {
+    Questionnaire.jumpNext(result);
+  },
 
-function test_overview() {
-  $(".questionnaire").hide();
-  $("#overview").show();
-}
+  getResult: function() {
+    return result;
+  },
+  show: function() {
+    var self = this;
+    $q = function(sel) {
+      //console.log(self.__qEle);
+      return $(self.qEle).find(sel);
+    }
+    $(this.qEle).show();
+  },
+});
 
 window.addEventListener("load", function() {
   var qs = $("question"); 
   //could support multiple questionnaires
   $.each(qs, function(k, q) {
-    Questionary.create(q);
+    Questionnaire.create(q);
   });
-//  test_overview();
 });
-
-

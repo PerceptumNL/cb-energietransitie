@@ -3,7 +3,13 @@ window.addEventListener("load", function() {
     $('body').append(activity[i]);
   }
   $('body').append("<div id='activityContents'></div><div id='cover'></div>");
+
+  Questionnaire.on("load", function() { 
+    this.jumpNext();
+  });
+ 
 })
 
 var testing = true;
 var eventXsrfToken = true;
+
