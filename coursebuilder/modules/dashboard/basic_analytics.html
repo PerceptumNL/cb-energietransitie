@@ -54,6 +54,7 @@
             {% for k, v in struct.items() %}
                 <th colspan={{ v['lesson_count'] }}> Unit {{ k }} - {{ v['title'] }} </th>
             {% endfor %}
+            <th> Total </th>
       </tr>
 
       <tr>
@@ -63,18 +64,26 @@
                     <th> {{ k }}.{{ key }} </th>
                 {% endfor %}
             {% endfor %}
+            <th> Average </th>
       </tr>
       {% for key, value in att_scores.items() %}
             <tr>
                 <th> {{ key }} </th>
                     {% for v in value %}
-                        <td><a href=/dashboard?action=questionary_activity&ref={{v[1]}}>{{v[0]}}</a></td>
+                        {% set sum = v[1]+1 %}
+                        <td><a href=/dashboard?action=questionary_activity&ref={{v[1]}}>{{ v[0] }}</a></td>
                     {% endfor%}
+                <th>{{ averages_st[key] }}</th>
             </tr>
       {% endfor %}
+      <tr>
+        <th> Average per activity </th>
+        {% for v in averages_ex %}
+            <th> {{ v }} </th>
+        {% endfor %}
+      </tr>
    </table>
   <br></br>
-
 {% endif %}
 
 {% if errors %}
