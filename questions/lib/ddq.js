@@ -1,4 +1,4 @@
-var DDQ = function(question) {
+var DDQ = function(question, qEle) {
   return Trait.create(
     Object.prototype,
     Trait.compose(
@@ -6,16 +6,16 @@ var DDQ = function(question) {
       Trait({
 
         questionType: "ddq",
-        question: null,
+        question: question,
         result: {},
         targetList: [],
         submissionList: [],
         targets: [],
         positions:[],
+        qEle: qEle,
 
-        create_question: function(q) {
-          question = q;
-          targetList = q.targetList;
+        create_question: function() {
+          targetList = question.targetList;
           var self = this;
           submissionList = $.extend(true,[],targetList);
           $.each(submissionList, function(k, v) {
@@ -31,7 +31,6 @@ var DDQ = function(question) {
               poscnt++;
             })
           });
-          //console.log(self.positions)
 
           result = {
             incorrect: false,
@@ -70,8 +69,8 @@ var DDQ = function(question) {
 
         draw_question: function() {
           var self = this;
-          $("#q-text").html(question.text || "");
-          $("#tr-text").show();
+          $q("#q-text").html(question.text || "");
+          $q("#tr-text").show();
           var per = 90 / targetList.length
           $.each(targetList, function(k, v) {
             var target_div = $("<div class='target'><div class='target-title'>"+v.text+"</div></div>");
@@ -79,7 +78,7 @@ var DDQ = function(question) {
             target_div.answers = [];
             self.targets.push(target_div);
             $(target_div).css("width", per + "%");
-            $('#tr-text').append(target_div);
+            $q('#tr-text').append(target_div);
 
             $(target_div).droppable({
               greedy: true,
@@ -115,20 +114,20 @@ var DDQ = function(question) {
 
         draw_answers: function() {
           var self = this;
-          $(".option").html("");
+          $q(".option").html("");
           $.each(targetList, function(k, v) {
             $.each(v.conceptList, function(_k, _v) {
               var concept_div = $("<div class='concept'>" + _v.text + "</div>");
               concept_div.attr("answer_idx", k);
               $(concept_div).draggable();
-              $('.option').append(concept_div);
+              $q('.option').append(concept_div);
             });
           });
           $('body').droppable({
             activeClass: "ui-state-hover",
             hoverClass: "ui-state-active",
             drop: function( event, ui ) {
-              $(".option").append(ui.draggable[0]);
+              $q(".option").append(ui.draggable[0]);
               $(ui.draggable[0]).css("border", "2px dashed orange");
               //console.log("aa " + $(ui.draggable[0]))
               $(ui.draggable[0]).css("left", "0");
@@ -136,14 +135,14 @@ var DDQ = function(question) {
             }
           });
       
-          $("#send-button").hide(); 
-          $(".table-feedback").show();
-          $(".table-feedback").css("border", "none");
+          $q("#send-button").hide(); 
+          $q(".table-feedback").show();
+          $q(".table-feedback").css("border", "none");
 
-          $("#check-button").click(function(){
+          $q("#check-button").click(function(){
             if (self.check_answer()) {
-              $("#check-button").hide();
-              $("#send-button").show();
+              $q("#check-button").hide();
+              $q("#send-button").show();
             }
           });
         },
@@ -169,10 +168,10 @@ var DDQ = function(question) {
           //console.log("-----")
 
           if (tot_placed < num_concepts) {
-            $("#check-button").hide();
+            $q("#check-button").hide();
             return false;
           } else {
-            $("#check-button").show();
+            $q("#check-button").show();
             return true;
           }
         },

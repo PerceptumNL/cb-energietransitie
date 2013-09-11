@@ -10,13 +10,9 @@ var TFQ = function(question, qEle) {
         result: {},
         questioncnt: 0,
         st_answers: [],
-        $q: null,
         qEle: qEle,
       
         create_question: function() {
-          var self = this;
-          self.show()
-          
           answers = question.answers;
           result = {
             incorrect: false,

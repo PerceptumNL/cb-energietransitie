@@ -299,11 +299,12 @@ var QuestionTrait = Trait({
   questionType: Trait.required,
   create: Trait.required,
   result: Trait.required,
-  $q: Trait.required,
   qEle: Trait.required,
+  $q: null,
 
 
   create: function() {
+    this.show()
     this.create_question();
   }, 
 

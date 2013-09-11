@@ -1,4 +1,4 @@
-var MCQ = function(question) {
+var MCQ = function(question, qEle) {
   return Trait.create(
     Object.prototype,
     Trait.compose(
@@ -9,11 +9,10 @@ var MCQ = function(question) {
         question: null,
         //submissionList: [],
         result: {},
+        qEle: qEle,
       
-        create_question: function(q) {
-          question = q;
-          answers= q.answers;
-          //console.log(q)
+        create_question: function() {
+          answers= question.answers;
           result = {
             incorrect: false,
             correct: false,
@@ -25,10 +24,10 @@ var MCQ = function(question) {
         },
       
         draw_question: function() {
-          $("#q-text").html(question.text);
+          $q("#q-text").html(question.text);
           if (question.type == "image") {
-            $("#q-image").attr("src", question.image);
-            $("#tr-image").show();
+            $q("#q-image").attr("src", question.image);
+            $q("#tr-image").show();
           }
         },
       
@@ -38,10 +37,10 @@ var MCQ = function(question) {
             a = q.answers,
             per = 95 / a.length,
             selected = [];
-          $(".option").html("").addClass("mcq").addClass("enabled");
+          $q(".option").html("").addClass("mcq").addClass("enabled");
           $.each(a, function(k, v) {
             div = $("<div>").text(v.text).css("width", "80%");
-            $(".option").append(div);
+            $q(".option").append(div);
             $(div).click(
               function(evt) {
                 $(this).toggleClass("toggleon")
@@ -49,44 +48,44 @@ var MCQ = function(question) {
             )
           });
 
-          $("#send-button").hide(); 
-          $(".table-feedback").show();
-          $(".table-feedback").css("border", "none");
-          $("#check-button").show();
+          $q("#send-button").hide(); 
+          $q(".table-feedback").show();
+          $q(".table-feedback").css("border", "none");
+          $q("#check-button").show();
 
-          $("#check-button").click(function(){
+          $q("#check-button").click(function(){
             self.check_answer();
-            $("#check-button").hide();
-            $("#send-button").show();
+            $q("#check-button").hide();
+            $q("#send-button").show();
           });
         },
 
         feedback_correct: function(answer_idx) {
           //console.log("feedback_Correct");
-          var ele = $(".option").children()[answer_idx];
+          var ele = $q(".option").children()[answer_idx];
           $(ele).addClass("correct");
-          $(".right").show();
+          $q(".right").show();
           answer_text = answers[answer_idx].feedback;
           if (typeof answer_text != "undefined")
-            $(".feedback-text").append("<div>" + answer_text + "</div>")
-          $(".feedback").fadeIn();
+            $q(".feedback-text").append("<div>" + answer_text + "</div>")
+          $q(".feedback").fadeIn();
         },
         
         feedback_incorrect: function(answer_idx) {
           //console.log("feedback_Incorrect");
-          var ele = $(".option").children()[answer_idx];
+          var ele = $q(".option").children()[answer_idx];
           $(ele).addClass("incorrect");        
-          $(".wrong").show();
+          $q(".wrong").show();
           answer_text = answers[answer_idx].feedback;
           if (typeof answer_text != "undefined")
-            $(".feedback-text").append("<div>" + answer_text + "</div>")
-          $(".feedback").fadeIn();
+            $q(".feedback-text").append("<div>" + answer_text + "</div>")
+          $q(".feedback").fadeIn();
         },
           
        check_answer: function(answer_idx) {
           var self = this
           var current_answers = [];
-          $(".option").children().each(function(idx) {
+          $q(".option").children().each(function(idx) {
             current_answers[idx] = $(this).hasClass("toggleon");
           });
           result.correct = true;
@@ -100,28 +99,28 @@ var MCQ = function(question) {
             if ($.inArray(idx, question.correctAnswer) >= 0 && current_answers[idx] == true) {
                 //console.log("aa "+idx) //selected correctly
                 result.selections[newentry] = idx;
-                $($(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/11iXTZG'/>"+ answer_text +"</div>");
+                $($q(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/11iXTZG'/>"+ answer_text +"</div>");
                 ans.correct = true; 
                 //self.feedback_correct(idx);
 
             }
             else if ($.inArray(idx, question.correctAnswer) == -1 && current_answers[idx] == false) {
                 //console.log(idx)
-                $($(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/11iXTZG'/>"+ answer_text +"</div>");
+                $($q(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/11iXTZG'/>"+ answer_text +"</div>");
                 ans.correct = true;
                 //self.feedback_correct(idx);
             }
             else if ($.inArray(idx, question.correctAnswer) == -1 && current_answers[idx] == true) {
                 //console.log("bb "+idx) //selected wrongly
                 result.selections[newentry] = idx;
-                $($(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/11iXTZG'/>"+ answer_text +"</div>");
+                $($q(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/11iXTZG'/>"+ answer_text +"</div>");
                 ans.correct = true;
                 //self.feedback_correct(idx);
             }
             else {
                 ans.incorrect = true; 
                 //console.log(idx)                
-                $($(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/1aMHTSK'/>"+ answer_text +"</div>");
+                $($q(".option").children()[idx]).append("<div id='fb'><img src='http://bit.ly/1aMHTSK'/>"+ answer_text +"</div>");
                 result.correct = false;
                 result.incorrect = true;
                 //self.feedback_incorrect(idx);
@@ -129,8 +128,8 @@ var MCQ = function(question) {
             //console.log("aa "+idx, ans.incorrect)
           });
           //console.log(result)
-          $(".option").removeClass("enabled");
-          $(".option").children().unbind("click");
+          $q(".option").removeClass("enabled");
+          $q(".option").children().unbind("click");
           //this.next_question();
         }
 
