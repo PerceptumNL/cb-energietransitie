@@ -2,6 +2,7 @@
     "questionsType": "tfq",
     "questionsList": [
         {
+            "time": "0:02.00",
             "type": "text",
             "text": "The transition to a sustainable world is not only unnecessary but also avoidable.",
             "correctAnswer": 1,
@@ -21,6 +22,7 @@
             ]
         },
         {
+            "time": "0:10.00",
             "type": "text",
             "text": "Due to deliberate misinformation from governments and large corporations most people are still unaware of the necessity of change.",
             "correctAnswer": 0,
@@ -40,6 +42,7 @@
             ]
         },
         {
+            "time": "0:15.00",
             "type": "text",
             "text": "Proper education is the first step towards a sustainable society.",
             "correctAnswer": 0,

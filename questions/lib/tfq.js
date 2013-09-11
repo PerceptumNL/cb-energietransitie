@@ -9,7 +9,6 @@ var TFQ = function(question, qEle) {
         answers: null,
         result: {},
         questioncnt: 0,
-        st_answers: [],
         qEle: qEle,
       
         create_question: function() {

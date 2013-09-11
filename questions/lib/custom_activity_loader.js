@@ -32,6 +32,7 @@ var Questionnaire = {
   firstLoad: true,
   qEle: null,
   evts: {},
+  videoIndex: -1,
 
   getLesson: function() {
     return getURLParameter("lesson");
@@ -111,19 +112,33 @@ var Questionnaire = {
   
   video_question: function(time) {
     var self = this;
+    
+    //decimals part
+    var d = time - Math.floor(time)
+    //1/10 of second resolution
+    d = Math.floor(d*10);
+    d = (d.toString().length == 1 ? "0":"") + d.toString();
+
     var m = Math.floor(time/60.0);
     var h = Math.floor(time/60.0/60);
     var s = Math.floor(time%60);
-    var time = m + ":" + 
-                (s.toString().length == 1 ? "0":"") +
-                s.toString();
-    for (var i=0; i<this.leftQuestions.length; i++) {
-      if (this.leftQuestions[i].time == time) {
-        Questionnaire.next(self.result)
-        $(self.qEle).show();
+    s = (s.toString().length == 1 ? "0":"") + s.toString();
+    var time = m + ":" + s + "." + d
+
+    for (var i=0; i<this.questionsList.length; i++) {
+      if (this.questionsList[i].time == time && 
+          this.videoIndex != i) {
+        this.videoIndex = i;
+        Questionnaire.jumpTo(i);
+        Questionnaire.fadeIn();
         return true;
-      }
+      }     
     }
+    if (this.videoIndex > -1 &&
+        this.questionsList[this.videoIndex].time != time) {
+      this.videoIndex = -1;
+    }
+
     return false;
   },
 
@@ -212,11 +227,13 @@ var Questionnaire = {
   },
 
   fadeOut: function() {
-    $(this.qEle).fadeOut();
+    $(this.qEle).children().fadeOut();
   },
 
   fadeIn: function() {
-    $(this.qEle).fadeIn();
+    $(this.qEle).children().hide();
+    $(this.qEle).show();
+    $(this.qEle).children().fadeIn();
   },
 
   remaining: function() {
@@ -283,7 +300,15 @@ var Questionnaire = {
         self.doneQuestions[self.index].result = self.questionInstances[self.index].getResult();
         self.leftQuestions[self.index] = undefined;
       }
-      self.jumpNext();
+      self.trigger("next");
+      if (self.questionsList[self.index+1] &&
+          self.questionsList[self.index+1].time === undefined)
+        self.jumpNext();
+      else if (self.questionsList[self.index+1] === undefined && 
+               self.questionsList[self.index].time === undefined) 
+        self.jumpNext();
+
+      
     });
 
   },
