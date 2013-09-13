@@ -32,12 +32,8 @@ class ActivityHandler(ApplicationHandler):
         act = EventEntity().get_by_id(int(ref))
         ul = transforms.loads(act.data)
         uni = courses.Course(self).get_units()
-        logging.info(pprint.pprint(ul))
         for u in uni:
-            logging.info(u._index)
             les = courses.Course(self).get_lessons(u.unit_id)
-            for l in les:
-                logging.info(l._index)
         return ul['unit'], ul['lesson']
 
     def get_activity_html(self, ref):
