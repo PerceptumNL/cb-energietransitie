@@ -1,43 +1,118 @@
-<ul> Date: {{ date }} </ul>
-
-{% for r in raw%}
+Date: {{ date }}
+<br></br>
+{% for r in raw %}
     {% if r['questionType']=='ddq' %}
+        {{ loop.index }}.Drag & Drop
          <table id="activity">
                 <tr>
-                    <th> Item </th>
                     <th> Category </th>
-                    <th> Correct </th>
+                    <th> Item </th>
+                    <th width="10%"> Correct </th>
                 </tr>
-            {% for key, val in ent.items() %}
-                <tr>
-                    <td> {{ key }} </td>
-                    <td> 
-                        {{ val[0] }}
-                    </td>
-                    <td> {{ val[1] }} </td>
-                </tr>
+            {% for sub in r['submissionList'] %}
+                {% for con in sub['conceptList'] %}
+                    {% if loop.first %}
+                        <tr>
+                            <td rowspan={{ sub['conceptList']|length }}> 
+                                {{ sub['text'] }}
+                            </td>
+                            <td> {{ con['text'] }} </td>
+                            {% if con['correct'] %}
+                                <td id="yes"> Yes </td>
+                            {% else %}
+                                <td id="no"> No </td>
+                            {% endif %}
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td> {{ con['text'] }} </td>
+                            {% if con['correct'] %}
+                                <td id="yes"> Yes </td>
+                            {% else %}
+                                <td id="no"> No </td>
+                            {% endif %}
+                        </tr>
+                    {% endif %}
+                {% endfor %}
             {% endfor %}
         </table>
         <br></br>
-    {% else %}
+    {% elif r['questionType']=='tfq' %}
+        {{loop.index}}.True False
          <table id="activity">
                 <tr>
-                    <th> Question </th>
-                    <th> Correct </th>
-                    <th> MaybeText </th>
-                    <th> Hint </th>
+                    <th width="50%"> Question </th>
+                    <th> Answer </th>
+                    <th width="10%"> Hint </th>
+                    <th width="10%"> Correct </th>
                 </tr>
                 <tr>
                     <td> {{ r['text'] }} </td>
                     {% if r['result']['maybeText'] %}
-                        <td> Maybe </td>
                         <td> {{ r['result']['maybeText'] }} </td>
                     {% else %}
                         <td> {{ r['result']['correct'] }} </td>
-                        <td>  </td>
                     {% endif %}
                     <td> {{ r['result']['hint'] }} </td>
+                    {% if r['result']['correct'] %}
+                        <td id="yes"> Yes </td>
+                    {% elif r['result']['maybe'] %}
+                        <td id="maybe"> Maybe </td>
+                    {% else %}
+                        <td id="no"> No </td>
+                    {% endif %}
                 </tr>
+        </table>
+        <br></br>
+    {% else %}
+        {{loop.index}}.Multiple Choice
+         <table id="activity">
+                <tr>
+                    <th width="40%"> Question </th>
+                    <th width="10%"> Hint </th>
+                    <th> Choices </th>
+                    <th width="10%"> Selected </th>
+                    <th width="10%"> Correct </th>
+                </tr>
+                {% for ans in r['answers'] %}
+                    {% if loop.first %}
+                    <tr>
+                        <td rowspan={{ r['answers']|length }}> {{ r['text'] }} </td>
+                        <td rowspan={{ r['answers']|length }}> {{ r['result']['hint'] }} </td>
+                        <td> {{ ans['text'] }} </td>
+                        {% if loop.index0 in r['result']['selections'] %}
+                            {% set selected = True %}
+                            <td> Yes </td>
+                        {% else %}
+                            {% set selected = False %}
+                            <td> No </td>
+                        {% endif %}
+                        {% if (selected and loop.index0 in r['correctAnswer']) 
+                            or (not selected and loop.index0 not in r['correctAnswer']) %}
+                            <td id="yes"> Yes </td>
+                        {% else %}
+                            <td id="no"> No </td>
+                        {% endif %}
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td> {{ ans['text'] }} </td>
+                        {% if loop.index0 in r['result']['selections'] %}
+                            {% set selected = True %}
+                            <td> Yes </td>
+                        {% else %}
+                            {% set selected = False %}
+                            <td> No </td>
+                        {% endif %}
+                        {% if selected and loop.index0 in r['correctAnswer'] 
+                            or (not selected and loop.index0 not in r['correctAnswer']) %}
+                            <td id="yes"> Yes </td>
+                        {% else %}
+                            <td id="no"> No </td>
+                        {% endif %}
+                    </tr>
+                    {% endif %}
+                {% endfor %}
         </table>
         <br></br>
     {% endif %}

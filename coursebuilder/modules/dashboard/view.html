@@ -56,6 +56,15 @@
           border-color: gray;
           text-align: center;
         }
+        table td#yes {
+          background-color: #81F79F;
+        }
+          table td#no{
+          background-color: #F7819F;
+        }
+        table td#maybe {
+          background-color: #81BEF7;
+        }
         table tr {
           width: 6;
         }
@@ -99,9 +108,18 @@
           width: 40em;
           text-align: left;
         }
+        p.student-ul {
+          margin-left: 32px;
+          padding: 0px;
+          text-align: left;
+        }
         p.page-description, p.description {
           font-size: 80%;
           color: #666;
+        }
+        p.student-ul {
+          font-size: 110%;
+          font-weight: bold;
         }
         div#gcb-alerts-bar {
           background-color: #ffffB7;
@@ -177,6 +195,11 @@
     {% if page_description %}
       <p class="page-description">
         {{ page_description }}
+      </p>
+    {% endif %}
+    {% if student_ul %}
+      <p class="student-ul">
+        {{ student_ul }}
       </p>
     {% endif %}
     {% if sections %}

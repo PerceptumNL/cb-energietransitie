@@ -842,8 +842,11 @@ class DashboardHandler(
                 activity = self.get_activity(inv_map)
 
                 att_scores = {}
+                avs_st = {}
                 for name in activity.keys():
                     attempt_scores = []
+                    av_sum = 0
+                    count = 0
                     for k, v in struct.items():
                         for les, les1 in v['lessons'].items():
                             idxs = [les1['lesson_unit'], les1['lesson_id']]
@@ -853,11 +856,39 @@ class DashboardHandler(
                                 sc[0] = '-'
                                 attempt_scores.append(sc)
                             else:
+                                av_sum += sc[0]
+                                count += 1
                                 sc[0] = '{0:.0%}'.format(sc[0])
                                 attempt_scores.append(sc)
                     att_scores[name] = attempt_scores
+                    if count != 0:
+                        avs_st[name] = '{0:.0%}'.format(av_sum/count)
+                    else:
+                        avs_st[name] = '-'
+
+                count = len(att_scores.itervalues().next())
+                sums = [0] * count
+                counts = [0] * count
+                avs_ex = [0] * count
+                for k, v in att_scores.items():
+                    exer = 0
+                    for entry in v:
+                        if entry[0] != '-':
+                            entry = entry[0].strip('%')
+                            sums[exer] += float(entry)
+                            counts[exer] += 1
+                        exer += 1
+
+                for i in range(0,count):
+                    if counts[i] != 0:
+                        avs_ex[i] = float(sums[i]) / float(counts[i])
+                        avs_ex[i] = '{0:.0%}'.format(avs_ex[i] / float(100))
+                    else:
+                        avs_ex[i] = '-'
 
                 subtemplate_values['att_scores'] = att_scores
+                subtemplate_values['averages_st'] = avs_st
+                subtemplate_values['averages_ex'] = avs_ex
                 subtemplate_values['scores'] = scores
                 subtemplate_values['total_records'] = total_records
                 subtemplate_values['names'] = names

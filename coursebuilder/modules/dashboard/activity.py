@@ -31,6 +31,9 @@ class ActivityHandler(ApplicationHandler):
     def get_unit_lesson(self, ref):
         act = EventEntity().get_by_id(int(ref))
         ul = transforms.loads(act.data)
+        uni = courses.Course(self).get_units()
+        for u in uni:
+            les = courses.Course(self).get_lessons(u.unit_id)
         return ul['unit'], ul['lesson']
 
     def get_activity_html(self, ref):
@@ -57,9 +60,9 @@ class ActivityHandler(ApplicationHandler):
         ref = self.request.get('ref')
         exit_url = self.canonicalize_url('/dashboard?action=get_activity&ref=%s') % ref
         template_values = {}
-        template_values['page_title'] = 'Student: %s Unit: %s Lesson: %s' % (self.get_activity_student(ref), self.get_unit_lesson(ref)[0], self.get_unit_lesson(ref)[1])
-        template_values['page_description'] = ''
-        
+        template_values['page_title'] = 'Analytics > Activity > Unit %s > Lesson %s' % (self.get_unit_lesson(ref)[0], self.get_unit_lesson(ref)[1])
+#        template_values['page_description'] = ''
+        template_values['student_ul'] = 'Student: %s' % (self.get_activity_student(ref))
         template_values['main_content'] = self.get_activity_html(ref)
         self.render_page(template_values)
 
