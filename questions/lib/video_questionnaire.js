@@ -1,6 +1,7 @@
 
-function loadVideoQuestionnaire(eleId, youtubeid) {
-  $wrapper = $("#"+eleId);
+function loadVideoQuestionnaire(ele, youtubeid) {
+  console.log("loadVideoQuestionnaire: " + youtubeid);
+  $wrapper = $(ele);
   $wrapper.append(
   '<div id="ytapiplayer">'+
   '  You need Flash player 8+ and JavaScript enabled to view this video.'+
@@ -22,7 +23,9 @@ function loadVideoQuestionnaire(eleId, youtubeid) {
 
 var inter;
 var ytplayer;
+
 function onYouTubePlayerReady(playerId) {
+  console.log("onYouTubePlayerReady: " + playerId);
   ytplayer = document.getElementById("myytplayer");
   ytplayer.addEventListener("onStateChange", 
     "onytplayerStateChange");
@@ -30,7 +33,7 @@ function onYouTubePlayerReady(playerId) {
   $('question').hide();
   $('question').css({
     position: "relative", 
-    top: "-536px", 
+//    top: "-536px", 
     "z-index": "-1" 
   });
   Questionnaire.on("next", function() {

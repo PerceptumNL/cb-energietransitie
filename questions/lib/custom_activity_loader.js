@@ -1,3 +1,4 @@
+
 function getURLParameter(name) {
   return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
 }
@@ -149,7 +150,7 @@ var Questionnaire = {
     this.leftQuestions = [];
     this.doneQuestions = [];
     this.qEle = qEle;
-
+    
     var a_name = $(qEle).attr("name");
     if (a_name && a_name in window) {
       this.activity_original = window[a_name];
@@ -163,9 +164,16 @@ var Questionnaire = {
         dataType: 'json',
         async: false,
         success: function(data) {
+          console.log(data);
+          console.log("Activity loaded:", data);
+          self.activity_original = data;
+        },
+        error: function(data) {
+          console.log(data);
           console.log("Activity loaded:", data);
           self.activity_original = data;
         } 
+
       });
     }
 
@@ -173,9 +181,12 @@ var Questionnaire = {
     this.activity = a = $.extend(true, [], this.activity_original);
     this.questionsList = a.questionsList;
     this.defaultQuestionType = a.questionsType;
+    if  (this.activity.videoId) {
+        $(qEle).hide();
+        loadVideoQuestionnaire($(qEle).parent(), this.activity.videoId);
+    }
 
     for (var i=0; i<a.questionsList.length; i++) {
-        
       if (typeof this.questionsList[i].questionType == "undefined") 
         this.questionsList[i].questionType = this.defaultQuestionType;
       this.leftQuestions[i] = this.questionsList[i];
@@ -187,7 +198,7 @@ var Questionnaire = {
       dataType: 'html',
       async: false,
       success: function(data) {
-        $(self.qEle).html(data);
+        $(self.qEle).append(data);
       } 
     });
 
