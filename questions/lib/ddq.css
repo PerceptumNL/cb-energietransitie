@@ -18,34 +18,44 @@
   border: 1px blue solid;
   padding: 10px;
 }
-.concepts {
+.ddq .top-row {
   text-align: center;
 }
-.concept:hover {
-  cursor: pointer;
+
+.ddq .ui-state-active {
+  background-color: orange;
 }
-.concept {
+
+.ddq .concept {
   display: inline-block;
   border: 2px dashed orange;
   margin: 10px;
   padding: 10px;
-
+  font-size: 14px;
+  text-align: center;
+  background-color: white;
 }
-.target {
-  font-size: 16px;
+.ddq .concept:hover {
+  cursor: pointer;
+}
+.ddq .target {
+  font-size: 10px;
   display: inline-block;
   text-align: center;
-  border: 2px solid #ddd;
+  border: 1px solid #ddd;
   height: 100%;
   margin-left: 1%;
   margin-right: 1%;
   margin-top: 4%;
   float: left;
+  vertical-align: top;
 }
 
 .target-title {
-  font-size: 20px;
+  font-size: 15px;
+  line-height: 20px;
   background-color: #ddd;
+  padding: 10px 0px;
 
 }
 .targets {
@@ -62,4 +72,27 @@
 }
 #targets div:hover {
   background-color: gray;
+}
+
+.ddq .left-col {
+    width: 100%;
+    float: none;
+}
+.ddq .right-col {
+    display: none;
+    width: 236px;
+}
+
+.ddq #send-button,
+.ddq #check-button {
+    float: none;
+    margin: 0 auto;
+}
+
+.ddq .target-image {
+    width: 100%;
+}
+.ddq .concept img {
+    width: 100px;
+    display: block;
 }

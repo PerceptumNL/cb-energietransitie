@@ -1,3 +1,22 @@
+function shuffle(array) {
+    var counter = array.length, temp, index;
+
+    // While there are elements in the array
+    while (counter > 0) {
+        // Pick a random index
+        index = Math.floor(Math.random() * (counter + 1));
+
+        // Decrease counter by 1
+        counter--;
+
+        // And swap the last element with it
+        temp = array[counter];
+        array[counter] = array[index];
+        array[index] = temp;
+    }
+
+    return array;
+}
 
 function getURLParameter(name) {
   return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
@@ -82,6 +101,7 @@ var Questionnaire = {
       $("#overview").show();
       return true;
     } else {
+      $("#rewatch").show();
       alert("Missing " + this.leftQuestions.length + " questions");
       return false;
     }
@@ -181,9 +201,9 @@ var Questionnaire = {
     this.activity = a = $.extend(true, [], this.activity_original);
     this.questionsList = a.questionsList;
     this.defaultQuestionType = a.questionsType;
-    if  (this.activity.videoId) {
-        $(qEle).hide();
-        loadVideoQuestionnaire($(qEle).parent(), this.activity.videoId);
+    if (this.activity.videoId) {
+      $(qEle).hide();
+      loadVideoQuestionnaire($(qEle).parent(), this.activity.videoId);
     }
 
     for (var i=0; i<a.questionsList.length; i++) {
@@ -203,6 +223,8 @@ var Questionnaire = {
     });
 
     $("#button-hint").click(function() {
+      self.questionInstances[self.index].hintAsked();
+      $(".hint-text").css("height", $(".hint").height());
       $(".hint").show();
     });
     $(".hint").click(function() {
@@ -217,6 +239,15 @@ var Questionnaire = {
 
     $("#overview").hide();
     this.trigger("load");
+
+    if (this.activity.videoId == undefined) {
+        this.fadeIn();
+        this.jumpNext();
+    } else {
+        //$(".questionnaire").css("position", "absolute");
+        $(".questionnaire").css("position", "relative");
+        $(".questionnaire").css("top", "-536px");
+    }
 
   },
 
@@ -279,36 +310,35 @@ var Questionnaire = {
     }
 
     this.question = this.leftQuestions[this.index]; 
-
-    //if (self.question.time) {
-    //  $(self.qEle).hide();
-    //  //var ytplayer = document.getElementById("myytplayer");
-    //  //ytplayer.playVideo();
-    //  //this.fadeOut();
-    //  return;
-    //} else {
-
-    //} 
     var template = $(this.qEle).find('#template').clone();
-    $(template).attr({id: "q"+this.index, index: this.index}).appendTo('#questions');
+    $(template).attr({
+      id: "q"+this.index, 
+      index: this.index
+    }).appendTo('#questions');
 
     $("#questions").show();
 
     this.questionClass = this.registeredQuestionTypes[this.question.questionType];
-    this.questionInstances[index] = this.questionClass(this.question, template)
+    this.questionInstances[index] = new this.questionClass(this.question, template)
+    console.log("1");
+    console.log(this.questionInstances[index]);
+    console.log("2");
     this.questionInstances[index].create();
+    console.log("3");
     $(template).show();
+    console.log("4");
 
     $(".hint-text").html(this.question.hint);
     if (typeof this.question.hint == "undefined") 
       $("#button-hint").hide();
-    else 
+    else { 
       $("#button-hint").show();
+    }
 
     $(template).find("#send-button").click(function() {
       if (self.leftQuestions[self.index] !== undefined) {
         self.doneQuestions[self.index] = self.leftQuestions[self.index];
-        self.doneQuestions[self.index].result = self.questionInstances[self.index].getResult();
+        self.doneQuestions[self.index].result = self.questionInstances[self.index].result;
         self.leftQuestions[self.index] = undefined;
       }
       self.trigger("next");
@@ -325,41 +355,25 @@ var Questionnaire = {
   },
 
   registerType: function(questionObj) {
-    this.registeredQuestionTypes[questionObj().questionType] = questionObj;
+    this.registeredQuestionTypes[questionObj.questionType] = questionObj;
   }
 }
 
-var QuestionTrait = Trait({
+function QuestionBase(question, qEle) {
   // the trait requires these properties
-  question: Trait.required,
-  questionType: Trait.required,
-  create: Trait.required,
-  result: Trait.required,
-  qEle: Trait.required,
-  $q: null,
+  this.question = question;
+  this.$q = qEler;
+  this.result = {
+    incorrect: false,
+    correct: false,
+    maybe: false,
+    hint: false,
+  }
 
-
-  create: function() {
-    this.show()
+  this.create = function() {
     this.create_question();
-  }, 
-
-  jumpNext: function() {
-    Questionnaire.jumpNext(result);
-  },
-
-  getResult: function() {
-    return result;
-  },
-  show: function() {
-    var self = this;
-    $q = function(sel) {
-      //console.log(self.__qEle);
-      return $(self.qEle).find(sel);
-    }
-    $(this.qEle).show();
-  },
-});
+  } 
+}
 
 window.addEventListener("load", function() {
   var qs = $("question"); 

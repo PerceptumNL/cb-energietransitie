@@ -3,10 +3,12 @@
     "questionsList": [
         {
             "questionType": "ddq",
+            "text": "Drag and drop the things",
             "targetList": [
                 {
                     "type": "text",
                     "text": "electricity",
+                    "image": "samples/concept-1.png",
                     "conceptList": [
                         {
                             "type": "text",
@@ -20,6 +22,7 @@
                     "conceptList": [
                         {
                             "type": "text",
+                            "image": "samples/concept-2.png",
                             "text": "car"
                         },
                         {
