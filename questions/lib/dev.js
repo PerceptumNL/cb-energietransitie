@@ -5,7 +5,7 @@ window.addEventListener("load", function() {
   $('body').append("<div id='activityContents'></div><div id='cover'></div>");
 
   Questionnaire.on("load", function() { 
-    this.jumpNext();
+    //this.jumpNext();
   });
  
 })
