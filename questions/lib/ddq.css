@@ -25,6 +25,10 @@
 .ddq .ui-state-active {
   background-color: orange;
 }
+.ddq #question-text {
+    padding-top: 15px;
+    font-size: 20px;
+}
 
 .ddq .concept {
   display: inline-block;
