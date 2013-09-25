@@ -15,7 +15,7 @@ td, th {
     top: 0px;
     display: none;
     background-color: white;
-    position: absolute;
+    position: relative;
 }
 
 .right-col {
@@ -96,17 +96,18 @@ td, th {
     position: absolute;
     color:white;
     font-size: 20px;
+    z-index: 10;
 }
 .hint:hover {
     cursor:pointer;
 }
 .hint-text {
-    top:50%;
     text-align:center;
-    position:absolute;
-    left: 50px;
-    right: 50px;
+    display: table-cell;
+    padding-left: 50px;
+    padding-right: 50px;
     line-height: 30px;
+    vertical-align: middle;
 }
 
 .table-feedback {
