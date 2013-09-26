@@ -1,4 +1,5 @@
 import os
+import datetime
 
 directory="./build"
 if not os.path.exists(directory):
@@ -7,6 +8,7 @@ if not os.path.exists(directory):
 
 filenames = ['js_vendor/swfobject.js', 'js_vendor/jquery-ui-1.10.3.custom.min.js', 'js_vendor/traits-0.4.mini.js', 'lib/custom_activity_loader.js', 'lib/ddq.js', 'lib/mcq.js', 'lib/tfq.js', 'lib/ddq_tree.js', 'lib/video_questionnaire.js']
 with open('build/questionary.js', 'w') as outfile:
+    outfile.write("//Build time: %s\n\n" % datetime.datetime.now().isoformat())
     for fname in filenames:
         with open(fname) as infile:
             for line in infile:

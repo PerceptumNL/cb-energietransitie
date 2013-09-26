@@ -223,7 +223,7 @@ var Questionnaire = {
     });
 
     $("#button-hint").click(function() {
-      self.questionInstances[self.index].hintAsked();
+      self.questionInstances[self.index].result.hint = true;
       $(".hint-text").css("height", $(".hint").height());
       $(".hint").show();
     });
@@ -319,14 +319,10 @@ var Questionnaire = {
     $("#questions").show();
 
     this.questionClass = this.registeredQuestionTypes[this.question.questionType];
+    
     this.questionInstances[index] = new this.questionClass(this.question, template)
-    console.log("1");
-    console.log(this.questionInstances[index]);
-    console.log("2");
     this.questionInstances[index].create();
-    console.log("3");
     $(template).show();
-    console.log("4");
 
     $(".hint-text").html(this.question.hint);
     if (typeof this.question.hint == "undefined") 
@@ -348,13 +344,12 @@ var Questionnaire = {
       else if (self.questionsList[self.index+1] === undefined && 
                self.questionsList[self.index].time === undefined) 
         self.jumpNext();
-
-      
     });
 
   },
 
   registerType: function(questionObj) {
+    console.log("registerType");
     this.registeredQuestionTypes[questionObj.questionType] = questionObj;
   }
 }

@@ -1,157 +1,153 @@
-var TFQ = function(question, qEle) {
-  return Trait.create(
-    Object.prototype,
-    Trait.compose(
-      QuestionTrait,
-      Trait({
-        questionType: "tfq",
-        question: question,
-        answers: null,
-        result: {},
-        questioncnt: 0,
-        qEle: qEle,
-      
-        create_question: function() {
-          answers = question.answers;
-          result = {
-            incorrect: false,
-            correct: false,
-            maybe: false,
-            maybeText: "",
-            ans_index: "",
-            hint: false,
-          }
-          this.draw_question();
-          this.draw_answers();
-        },
-      
-        draw_question: function() {
-          $q("#q-text").html(question.text);
-          if (question.type == "image") {
-            $q("#q-image").attr("src", question.image);
-            $q("#tr-image").show();
-          }
-        },
-      
-        draw_answers: function(res) {
-          var q = question;
-          var a = q.answers;
-          var self = this;
-          $q(".table-feedback").hide();
-          $q(".feedback-text").html("");
-          $q(".right").hide();
-          $q(".wrong").hide();
-          $q(".option").html("").addClass("tfq");
-      
-          $.each(a, function(k, v) {
-            div = $("<div>").text(v.text);
-            $q(".option").append(div);
-            if (!res) {
-              div.click(function() { 
-                self.prompt_maybe(false); 
-                self.check_answer(k) 
-              });
-            }
-          });
-          if (q.answerMaybe) {
-            div = $("<div>").text("Maybe").attr("id", "maybe-button");
-            $q(".option").append(div);
-            if (!res) {
-              
-              div.click(function() {
-                  self.prompt_maybe(true)
-              });  
-              $q("#submit-button").click(function() {
-                $(this).hide()
-                $q("#send-button").show();
-                $q("#tr-fb-input").hide();
-                $q("#feedback-input").hide();
-                result.maybe = true;
-                result.ans_index=2;
-                console.log(result)
-                result.maybeText = $q("#feedback-input").val();
-                console.log("Blibibib");
-                //self.next_question();
-              });
-              $q("#feedback-input").keyup(function() {
-                if ($(this).val().length > 0) {
-                  $q("#submit-button").show();
-                } else {
-                  $q("#submit-button").hide();
-                }
-              });
-            }
-          }
-          if (res) {
-            self.check_answer(res.answerIdx)
-            
-          }
-        },
-      
-        prompt_maybe: function(show) {
-          var self = this;
-          if (show) {
-            $q("#feedback-input").show();
-            $q("#tr-fb-input").show();
-            $q("#send-button").hide();
-            $q("#maybe-button").addClass("selected");
-            $q(".table-feedback").fadeIn();
-            $q("#feedback-input").focus();
-          } else {
-            $q(".table-feedback").hide();
-            $q("#feedback-input").hide();
-            $q("#tr-fb-input").hide();
-            $q("#send-button").show();
-            $q("#submit-button").hide();
-            $q("#maybe-button").removeClass("selected");
-          }
-        },
-      
-        feedback_correct: function(answer_idx) {
-          var ele = $q(".option").children()[answer_idx];
-          $(ele).addClass("correct");
-          $q(".right").show();
-          answer_text = answers[answer_idx].feedback;
-          if (typeof answer_text != "undefined")
-            $q(".feedback-text").html("<div>" + answer_text + "</div>")
-          $q(".table-feedback").fadeIn();
-        },
+function TFQ(question, qEle) {
+  this.question = question;
+  this.qEle = qEle;
+  this.result = {
+    incorrect: false,
+    correct: false,
+    maybe: false,
+    hint: false,
+    selections: [],
+  }
+  this.$q = function(selector) {
+    return $(this.qEle).find(selector);
+  }
+}
+
+TFQ.questionType = "tfq";
+TFQ.prototype = {
+  answers: null,
+  questioncnt: 0,
+  
+  create: function() {
+    $(this.qEle).addClass("tfq");
+    this.answers = this.question.answers;
+    this.drawQuestion();
+    this.drawAnswers();
+  },
+  
+  drawQuestion: function() {
+    var self = this;
+    this.$q("#q-text").html(self.question.text);
+    if (self.question.type == "image") {
+      self.$q("#q-image").attr("src", self.question.image);
+      self.$q("#tr-image").show();
+    }
+  },
+  
+  drawAnswers: function(res) {
+    var self = this;
+    var q = self.question;
+    var a = q.answers;
+    self.$q(".table-feedback").hide();
+    self.$q(".feedback-text").html("");
+    self.$q(".right").hide();
+    self.$q(".wrong").hide();
+    self.$q(".option").html("").addClass("tfq");
+  
+    $.each(a, function(k, v) {
+      var div = $("<div>").text(v.text);
+      self.$q(".option").append(div);
+      if (!res) {
+        div.click(function() { 
+          self.prompt_maybe(false); 
+          self.checkAnswer(k) 
+        });
+      }
+    });
+    if (q.answerMaybe) {
+      var div = $("<div>").text("Maybe").attr("id", "maybe-button");
+      self.$q(".option").append(div);
+      if (!res) {
         
-        feedback_incorrect: function(answer_idx) {
-          var ele = $q(".option").children()[answer_idx];
-          $(ele).addClass("incorrect");        
-          $q(".wrong").show();
-          answer_text = answers[answer_idx].feedback;
-          if (typeof answer_text != "undefined")
-            $q(".feedback-text").html("<div>" + answer_text + "</div>")
-          $q(".table-feedback").fadeIn();
-        },
-          
-        check_answer: function(answer_idx) {
-          result.ans_index = answer_idx;
-          console.log($q(".feedback-text")[0]);
-          if (question.correctAnswer == answer_idx) {
-            if (!result.incorrect) {
-              result.correct = true;
-            }
-            //console.log("Good! continue with next concept");
-            this.feedback_correct(answer_idx);
+        div.click(function() {
+            self.prompt_maybe(true)
+        });  
+        self.$q("#submit-button").click(function() {
+          $(this).hide()
+          self.$q("#send-button").show();
+          self.$q("#tr-fb-input").hide();
+          self.$q("#feedback-input").hide();
+          self.result.maybe = true;
+          self.result.ans_index=2;
+          self.result.maybeText = $q("#feedback-input").val();
+        });
+        self.$q("#feedback-input").keyup(function() {
+          if ($(this).val().length > 0) {
+            self.$q("#submit-button").show();
           } else {
-            result.incorrect = true;
-            //console.log("Wrong... Try again!");
-            this.feedback_incorrect(answer_idx);
+            self.$q("#submit-button").hide();
           }
-          
-          $q(".option").children().each(function(idx, ele) {
-            if (idx != answer_idx) {
-              $q(ele).addClass("disabled");
-            }
-          });
-          $q(".option").children().unbind("click");
-        },
-      })
-    )
-  )
+        });
+      }
+    }
+    if (res) {
+      self.checkAnswer(res.answerIdx)
+    }
+  },
+  
+  prompt_maybe: function(show) {
+    var self = this;
+    if (show) {
+      self.$q("#feedback-input").show();
+      self.$q("#tr-fb-input").show();
+      self.$q("#send-button").hide();
+      self.$q("#maybe-button").addClass("selected");
+      self.$q(".table-feedback").fadeIn();
+      self.$q("#feedback-input").focus();
+    } else {
+      self.$q(".table-feedback").hide();
+      self.$q("#feedback-input").hide();
+      self.$q("#tr-fb-input").hide();
+      self.$q("#send-button").show();
+      self.$q("#submit-button").hide();
+      self.$q("#maybe-button").removeClass("selected");
+    }
+  },
+  
+  feedback_correct: function(answer_idx) {
+    var self = this;
+    var ele = self.$q(".option").children()[answer_idx];
+    $(ele).addClass("correct");
+    self.$q(".right").show();
+    answer_text = self.answers[answer_idx].feedback;
+    if (typeof answer_text != "undefined")
+      self.$q(".feedback-text").html("<div>" + answer_text + "</div>")
+    self.$q(".table-feedback").fadeIn();
+  },
+  
+  feedback_incorrect: function(answer_idx) {
+    var self = this;
+    var ele = self.$q(".option").children()[answer_idx];
+    $(ele).addClass("incorrect");        
+    self.$q(".wrong").show();
+    answer_text = self.answers[answer_idx].feedback;
+    if (typeof answer_text != "undefined")
+      self.$q(".feedback-text").html("<div>" + answer_text + "</div>")
+    self.$q(".table-feedback").fadeIn();
+  },
+    
+  checkAnswer: function(answer_idx) {
+    var self = this;
+    self.result.ans_index = answer_idx;
+    if (self.question.correctAnswer == answer_idx) {
+      if (!self.result.incorrect) {
+        self.result.correct = true;
+      }
+      //console.log("Good! continue with next concept");
+      this.feedback_correct(answer_idx);
+    } else {
+      self.result.incorrect = true;
+      //console.log("Wrong... Try again!");
+      this.feedback_incorrect(answer_idx);
+    }
+    
+    self.$q(".option").children().each(function(idx, ele) {
+      if (idx != answer_idx) {
+        self.$q(ele).addClass("disabled");
+      }
+    });
+    self.$q(".option").children().unbind("click");
+  },
 }
 
 Questionnaire.registerType(TFQ);

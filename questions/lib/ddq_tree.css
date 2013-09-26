@@ -90,3 +90,30 @@
 .concept {
   
 }
+
+.ddqtree .right-col {
+  display: none;
+}
+.ddqtree .ddqt-col {
+  height: 100%;
+  position: relative;
+  display: inline-block;
+}
+.ddqtree .ddqt-arrow-cell {
+  height: 100%;
+  float: left;
+  width: 100%;
+}
+
+.ddqtree .ui-state-active {
+  background-color: orange;
+}
+
+.ddqtree .ddqt-cell {
+  width: 100%;
+  display: block;
+  position: relative;
+}
+
+.ddqtree .option .ui-draggable-dragging {
+}
