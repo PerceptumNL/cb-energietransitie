@@ -26,9 +26,9 @@ MCQ.prototype = {
   
   drawQuestion: function() {
     var self = this;
-    self.$q("#q-text").html(question.text);
-    if (question.type == "image") {
-      self.$q("#q-image").attr("src", question.image);
+    self.$q("#q-text").html(this.question.text);
+    if (this.question.type == "image") {
+      self.$q("#q-image").attr("src", this.question.image);
       self.$q("#tr-image").show();
     }
   },
