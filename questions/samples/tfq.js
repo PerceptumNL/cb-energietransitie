@@ -6,17 +6,17 @@
             "type": "text",
             "text": "The transition to a sustainable world is not only unnecessary but also avoidable.",
             "correctAnswer": 1,
-            "answerMaybe": true,
+            "answerMaybe": false,
             "hint": "Think about the diminishing of the global oil reserves, the risks of runaway climate change and political unrest in the Middle East",
             "answers": [
                 {
                     "type": "text",
-                    "text": "True",
+                    "text": "Waar",
                     "feedback": "Next time, read more carefully the question. "
                 },
                 {
                     "type": "text",
-                    "text": "False",
+                    "text": "Niet waar",
                     "feedback": "The transition is necessary and unavoidable!"
                 }
             ]

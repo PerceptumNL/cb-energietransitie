@@ -6,11 +6,10 @@
     margin-right:10px;
     text-align:center;
 }
-.option.tfq > div {
-    width: 70px;
+.tfq.option > div {
     display: inline-block;
-    padding: 10px 10px;
-    margin: 0px 2px;
+    padding: 10px 0px;
+    margin: 0px 7px;
     background-color:#8980FF;
 }
 .option.tfq > div.selected,
@@ -30,4 +29,7 @@
 .option.tfq > div.incorrect {
     background-color: #3A49BA !important;   
     cursor: default;
+}
+.tfq .table-feedback {
+    margin-top: 14px;
 }
