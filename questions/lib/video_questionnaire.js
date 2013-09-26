@@ -2,7 +2,7 @@
 function loadVideoQuestionnaire(ele, youtubeid) {
   console.log("loadVideoQuestionnaire: " + youtubeid);
   $wrapper = $(ele);
-  $wrapper.append(
+  $wrapper.prepend(
   '<div id="ytapiplayer">'+
   '  You need Flash player 8+ and JavaScript enabled to view this video.'+
   '</div>'

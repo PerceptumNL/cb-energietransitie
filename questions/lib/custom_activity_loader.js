@@ -138,7 +138,7 @@ var Questionnaire = {
     var d = time - Math.floor(time)
     //1/10 of second resolution
     d = Math.floor(d*10);
-    d = (d.toString().length == 1 ? "0":"") + d.toString();
+    d = (d.toString().length == 1 ? "":"") + d.toString();
 
     var m = Math.floor(time/60.0);
     var h = Math.floor(time/60.0/60);
@@ -246,7 +246,7 @@ var Questionnaire = {
     } else {
         //$(".questionnaire").css("position", "absolute");
         $(".questionnaire").css("position", "relative");
-        $(".questionnaire").css("top", "-536px");
+        $(".questionnaire").css("top", "-542px");
     }
 
   },
@@ -322,6 +322,9 @@ var Questionnaire = {
     
     this.questionInstances[index] = new this.questionClass(this.question, template)
     this.questionInstances[index].create();
+    this.questionInstances[index].show = function() {
+        $(this.qEle).show();
+    }
     $(template).show();
 
     $(".hint-text").html(this.question.hint);
