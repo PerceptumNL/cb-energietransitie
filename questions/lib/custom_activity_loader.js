@@ -225,6 +225,7 @@ var Questionnaire = {
     $("#button-hint").click(function() {
       self.questionInstances[self.index].result.hint = true;
       $(".hint-text").css("height", $(".hint").height());
+      $(".hint-text").css("width", $(".hint").width());
       $(".hint").show();
     });
     $(".hint").click(function() {
@@ -296,7 +297,8 @@ var Questionnaire = {
     var self = this;
     this.index = index;
     this.drawNumbers();
-
+    this.question = this.leftQuestions[this.index]; 
+    $(".hint-text").html(this.question.hint);
     $(".question-wrapper").hide();
     if (this.questionInstances[index]) {
       this.questionInstances[index].show();
@@ -309,7 +311,6 @@ var Questionnaire = {
       return;
     }
 
-    this.question = this.leftQuestions[this.index]; 
     var template = $(this.qEle).find('#template').clone();
     $(template).attr({
       id: "q"+this.index, 
@@ -327,7 +328,6 @@ var Questionnaire = {
     }
     $(template).show();
 
-    $(".hint-text").html(this.question.hint);
     if (typeof this.question.hint == "undefined") 
       $("#button-hint").hide();
     else { 

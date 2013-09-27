@@ -60,14 +60,18 @@ td, th {
 
 #number {
     text-align:left;
-    margin-left: 20px;
+    margin-left: 10px;
     margin-top:5px;
-    font-size:17px;
+    font-size:20px;
     position:absolute; 
     display:block;
 }
 #number span {
     margin-right: 3px;
+}
+#number span:hover {
+    margin-right: 3px;
+    cursor: pointer;
 }
 #number span.sel-number {
     font-weight: bold;
@@ -76,9 +80,9 @@ td, th {
 
 #button-hint {
     text-align:right;
-    right:20px;
+    right:10px;
     margin-top:5px;
-    font-size:17px;
+    font-size:20px;
     position:absolute;
     display:inline-block; 
 }
