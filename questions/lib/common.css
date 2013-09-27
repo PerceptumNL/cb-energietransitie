@@ -63,8 +63,8 @@ td, th {
     margin-left: 10px;
     margin-top:5px;
     font-size:20px;
-    position:absolute; 
-    display:block;
+    display:inline-block;
+    line-height: none;
 }
 #number span {
     margin-right: 3px;
@@ -278,4 +278,12 @@ td, th {
 
 #template {
     display: none;
+}
+
+#statistics-button {
+    display: inline-block;
+}
+#statistics-button img {
+    width: 22px;
+    cursor: pointer;
 }

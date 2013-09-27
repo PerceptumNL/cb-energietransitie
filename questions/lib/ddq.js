@@ -7,6 +7,7 @@ function DDQ(question, qEle) {
     maybe: false,
     hint: false,
   }
+  this.lastAnswerHeight = 0;
   this.$q = function(selector) {
     return $(this.qEle).find(selector);
   }
@@ -40,7 +41,7 @@ DDQ.prototype = {
 
     this.drawQuestion();
     this.drawAnswers();
-    self.$q(".table-feedback").appendTo(self.$q("#question-text"));
+    self.$q(".table-feedback").appendTo(self.$q("#top-answer"));
     self.$q(".table-feedback").hide();
 
     //self.test();
@@ -73,27 +74,34 @@ DDQ.prototype = {
         activeClass: "ui-state-hover",
         hoverClass: "ui-state-active",
         drop: function( event, ui ) {
-          target_div.answers.push(ui.draggable[0]);
-          $(target_div).append(ui.draggable[0]);
-          $(ui.draggable[0]).css("left", "0px")
-          $(ui.draggable[0]).css("top", "0px");
-          $(ui.draggable[0]).attr("target_idx", target_div.idx);
-
-          var poscnt=0;
-          $.each(self.targetList, function(k, v) {
-            $.each(v.conceptList, function(_k, _v) {
-              if(self.positions[poscnt].name == $(ui.draggable[0])[0].innerText){
-                self.positions[poscnt].pos = $(ui.draggable[0]).attr("target_idx");
-              }                    
-              poscnt++;
-            })
-          });
-
-          $(ui.draggable[0]).css("border", "2px solid orange");
-          self.checkDone();
+          self.addConcept(ui.draggable[0], target_div);
         }
       });
     });
+  },
+
+  addConcept: function(concept, target) {
+    var self = this;
+    self.lastAnswerHeight = self.$q("#top-answer").height();
+    target.answers.push(concept);
+    $(target).append(concept);
+    $(concept)
+      .css("left", "0px")
+      .css("top", "0px");
+    $(concept).attr("target_idx", target.idx);
+
+    var poscnt=0;
+    $.each(self.targetList, function(k, v) {
+      $.each(v.conceptList, function(_k, _v) {
+        if(self.positions[poscnt].name == $(concept)[0].innerText){
+          self.positions[poscnt].pos = $(concept).attr("target_idx");
+        }                    
+        poscnt++;
+      })
+    });
+
+    $(concept).css("border", "2px solid orange");
+    self.checkDone();
   },
 
   drawAnswers: function() {
@@ -160,6 +168,8 @@ DDQ.prototype = {
     });
     self.$q("#check-button").toggle(done);
     self.$q(".table-feedback").toggle(done);
+    if (done)
+        self.$q("#top-answer").height(self.lastAnswerHeight);
     return done;
   },
   
@@ -228,9 +238,10 @@ DDQ.prototype = {
   
   test: function() {
     var self = this;
-    $('.concept').appendTo($(".target")[0]);
-    $('.concept').each(function(k,v) {
-        self.positions[k].pos = 0;
+    $('.concept').each(function(k,concept) {
+        setTimeout(function() {
+            self.addConcept(concept, self.targets[0]);
+        }, 1);
     });
     this.checkDone();
   }

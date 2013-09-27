@@ -78,10 +78,21 @@ var Questionnaire = {
       $("#number").append(qnumber);
     }
     $("#number").children().removeClass("sel-number");
-    $("#number").children().eq(this.index).addClass("sel-number");
+    if (this.index > -1)
+      $("#number").children().eq(this.index).addClass("sel-number");
   },
 
   showOverview: function() {
+    var self = this;
+
+    function _showOverview() {
+      self.index = -1;
+      self.drawNumbers();
+      $(".question-wrapper").hide()
+      $("#overview").show();
+    }
+
+    $("#statistics-button").click(_showOverview);
     if (this.remaining().length == 0) {
       var correct=0, incorrect=0, maybe=0;
       $.each(this.doneQuestions, function(k, q) {
@@ -96,9 +107,8 @@ var Questionnaire = {
       var total = correct + incorrect + maybe;
       $("#right .percentage").html(Math.round(correct / total * 100) + "%");
       $("#wrong .percentage").html(Math.round(incorrect / total * 100) + "%");
+      _showOverview();
       //$("#maybe").html(maybe);
-      $(".questionnaire").hide()
-      $("#overview").show();
       return true;
     } else {
       $("#rewatch").show();
@@ -298,7 +308,12 @@ var Questionnaire = {
     this.index = index;
     this.drawNumbers();
     this.question = this.leftQuestions[this.index]; 
-    $(".hint-text").html(this.question.hint);
+
+
+    if (this.question && this.question.hint) {
+      $(".hint-text").html(this.question.hint);
+    } 
+    $("#overview").hide();
     $(".question-wrapper").hide();
     if (this.questionInstances[index]) {
       this.questionInstances[index].show();
@@ -308,7 +323,10 @@ var Questionnaire = {
     if (this.remaining().length == 0) {
       this.showOverview();
       this.sendResults();
+      $("#statistics-button").show();
       return;
+    } else {
+      $("#statistics-button").hide();
     }
 
     var template = $(this.qEle).find('#template').clone();
@@ -328,11 +346,10 @@ var Questionnaire = {
     }
     $(template).show();
 
-    if (typeof this.question.hint == "undefined") 
-      $("#button-hint").hide();
-    else { 
+    if (this.question.hint) 
       $("#button-hint").show();
-    }
+    else 
+      $("#button-hint").hide();
 
     $(template).find("#send-button").click(function() {
       if (self.leftQuestions[self.index] !== undefined) {

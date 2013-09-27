@@ -50,9 +50,16 @@
   height: 100%;
   margin-left: 1%;
   margin-right: 1%;
-  margin-top: 4%;
-  float: left;
   vertical-align: top;
+}
+
+.ddq #question {
+  width: 100%;
+  text-align: center;
+}
+
+.ddq #q-table {
+  width: 100%;
 }
 
 .target-title {
@@ -99,4 +106,19 @@
 .ddq .concept img {
     width: 100px;
     display: block;
+}
+.ddq #q-text {
+    display: none;
+}
+.ddq #tr-fb {
+    display: none;
+}
+.ddq .table-feedback {
+    height: 100%;
+}
+.ddq #td-fb-next {
+    vertical-align: middle;
+}
+.ddq .concept.ui-state-disabled:hover {
+  cursor: auto;
 }
