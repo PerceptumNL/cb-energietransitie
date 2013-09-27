@@ -44,7 +44,6 @@ DDQ.prototype = {
     self.$q(".table-feedback").appendTo(self.$q("#top-answer"));
     self.$q(".table-feedback").hide();
 
-    self.test();
   },
 
   drawQuestion: function() {
@@ -78,7 +77,6 @@ DDQ.prototype = {
   },
 
   addConcept: function(concept, target) {
-    console.error("addConcept ", concept, target);
     var self = this;
     self.lastAnswerHeight = self.$q("#top-answer").height();
     $(target).append(concept);
@@ -174,8 +172,6 @@ DDQ.prototype = {
     this.result.correct = true;
     
     var self = this;
-    console.error(self.positions)
-    console.error(self.submissionList)
     for (var i=0; i<self.positions.length;i++){
       var newentry2 = self.submissionList[self.positions[i].pos].conceptList.length;
       self.submissionList[self.positions[i].pos].conceptList[newentry2]={}
