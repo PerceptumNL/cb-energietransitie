@@ -44,7 +44,7 @@ DDQ.prototype = {
     self.$q(".table-feedback").appendTo(self.$q("#top-answer"));
     self.$q(".table-feedback").hide();
 
-    //self.test();
+    self.test();
   },
 
   drawQuestion: function() {
@@ -54,7 +54,7 @@ DDQ.prototype = {
     this.$q("#tr-text").show();
     var per = 90 / this.targetList.length
     $.each(this.targetList, function(k, v) {
-      var target_div = $("<td>").addClass("target")
+      var target_div = $("<td>").addClass("target").data("index", k)
       if (v.image) {
         $("<img>").addClass('target-image')
             .attr("src", v.image)
@@ -63,9 +63,6 @@ DDQ.prototype = {
       $("<div>").addClass('target-title')
             .html(v.text)
             .appendTo(target_div);
-      target_div.idx = k
-      target_div.answers = [];
-      self.targets.push(target_div);
       $(target_div).css("width", per + "%");
       self.$q('#tr-text').append(target_div);
 
@@ -74,21 +71,21 @@ DDQ.prototype = {
         activeClass: "ui-state-hover",
         hoverClass: "ui-state-active",
         drop: function( event, ui ) {
-          self.addConcept(ui.draggable[0], target_div);
+          self.addConcept(ui.draggable[0], event.target);
         }
       });
     });
   },
 
   addConcept: function(concept, target) {
+    console.error("addConcept ", concept, target);
     var self = this;
     self.lastAnswerHeight = self.$q("#top-answer").height();
-    target.answers.push(concept);
     $(target).append(concept);
     $(concept)
       .css("left", "0px")
       .css("top", "0px");
-    $(concept).attr("target_idx", target.idx);
+    $(concept).attr("target_idx", $(target).data("index"));
 
     var poscnt=0;
     $.each(self.targetList, function(k, v) {
@@ -132,7 +129,7 @@ DDQ.prototype = {
       $a.append(concept_div);
     });
 
-    $('body').droppable({
+    this.$q('.questionnaire-wrapper').droppable({
       activeClass: "ui-state-hover",
       hoverClass: "ui-state-active",
       drop: function( event, ui ) {
@@ -168,7 +165,7 @@ DDQ.prototype = {
     });
     self.$q("#check-button").toggle(done);
     self.$q(".table-feedback").toggle(done);
-    if (done)
+    if (done && self.lastAnswerHeight > 0)
         self.$q("#top-answer").height(self.lastAnswerHeight);
     return done;
   },
@@ -177,18 +174,20 @@ DDQ.prototype = {
     this.result.correct = true;
     
     var self = this;
+    console.error(self.positions)
+    console.error(self.submissionList)
     for (var i=0; i<self.positions.length;i++){
-      newentry2 = self.submissionList[self.positions[i].pos].conceptList.length;
+      var newentry2 = self.submissionList[self.positions[i].pos].conceptList.length;
       self.submissionList[self.positions[i].pos].conceptList[newentry2]={}
       self.submissionList[self.positions[i].pos].conceptList[newentry2].type="text"
       self.submissionList[self.positions[i].pos].conceptList[newentry2].text=self.positions[i].name
     }
 
 
-    $.each(this.targets, function(k, v) {
-      $.each(v.answers, function(_k, answer) {
+    $(".target").each(function(k, v) {
+      $(v).find(".concept").each(function(_k, answer) {
 
-        $(answer).draggable( "option", "disabled", true );
+        $(answer).draggable( "destroy" );
 
         if ($(answer).attr("answer_idx") != $(answer).attr("target_idx")) {
           self.result.correct = false;
@@ -196,8 +195,8 @@ DDQ.prototype = {
           $(answer).css("border-color", "red");
           
           $.each(self.targetList, function(kk, v) {
-            $.each(v.conceptList, function(_kk, _v){
-              if(_v.text == $(answer)[0].innerText){
+            $(v).find(".concept").each(function(_kk, _v){
+              if($(_v).text() == $(answer)[0].innerText){
                 $.each(self.submissionList, function(k2, v2) {
                   $.each(v2.conceptList, function(_k2, _v2) {
                     if(_v2.text == _v.text){
@@ -238,9 +237,9 @@ DDQ.prototype = {
   
   test: function() {
     var self = this;
-    $('.concept').each(function(k,concept) {
+    self.$q('.concept').each(function(k,concept) {
         setTimeout(function() {
-            self.addConcept(concept, self.targets[0]);
+            self.addConcept(concept, $(".target").first());
         }, 1);
     });
     this.checkDone();

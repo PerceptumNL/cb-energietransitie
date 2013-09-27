@@ -39,7 +39,7 @@
   text-align: center;
   background-color: white;
 }
-.ddq .concept:hover {
+.ddq .concept.ui-draggable:hover {
   cursor: pointer;
 }
 .ddq .target {

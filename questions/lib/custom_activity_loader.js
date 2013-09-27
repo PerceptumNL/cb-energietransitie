@@ -173,14 +173,29 @@ var Questionnaire = {
     return false;
   },
 
+  redo: function() {
+    $(this.qEle).html("");
+    this.create(this.qEle);
+  //  this.fadeIn();
+  //  $('.questionnaire').show();
+   // this.jumpTo(0);
+  },
+
   create: function(qEle) {
     var self = this;
     this.index = -1;
     this.results = [];
     this.leftQuestions = [];
     this.doneQuestions = [];
+    this.question = null;
+    this.questionsList = [];
+    this.questionInstances =  [];
+    this.activity =  null;
+    this.results =  [];
+    this.firstLoad =  true;
+    this.videoIndex =  -1;
     this.qEle = qEle;
-    
+
     var a_name = $(qEle).attr("name");
     if (a_name && a_name in window) {
       this.activity_original = window[a_name];
@@ -242,7 +257,7 @@ var Questionnaire = {
       $(".hint").hide();
     });
     $("#redo").click(function() {
-      location.reload(true);
+      self.redo();
     })
     $("#revisit").click(function() {
       location.href = location.href.replace("activity","unit");
