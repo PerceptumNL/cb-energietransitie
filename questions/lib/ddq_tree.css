@@ -21,7 +21,7 @@
 .concepts {
   text-align: center;
 }
-.concept:hover {
+.concept.ui-draggable:hover {
   cursor: pointer;
 }
 .concept {
@@ -64,7 +64,7 @@
 }
 .ddqt-table {
   border:none;
-  font-size: 12px;
+  font-size: 16px;
   text-align:center;
   display:table;
   width:100%; 
@@ -117,3 +117,20 @@
 
 .ddqtree .option .ui-draggable-dragging {
 }
+
+.ddqtree .concept {
+  background-color: white;
+}
+
+.ddqtree .option .concept {
+  margin: 5px;
+  font-size: 16px;
+}
+.ddqtree .option {
+  text-align: center;
+}
+
+.ddqtree #feedback {
+  margin: 0 auto;
+}
+

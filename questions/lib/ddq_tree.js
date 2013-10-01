@@ -1,3 +1,151 @@
+var drawHead=function(ctx,x0,y0,x1,y1,x2,y2,style)
+{
+  'use strict';
+  x0=parseInt(x0);
+  y0=parseInt(y0);
+  x1=parseInt(x1);
+  y1=parseInt(y1);
+  x1=parseInt(x1);
+  y2=parseInt(y2);
+  var radius=3;
+  var twoPI=2*Math.PI;
+
+  // all cases do this.
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(x0,y0);
+  ctx.lineTo(x1,y1);
+  ctx.lineTo(x2,y2);
+  switch(style){
+    case 0:
+      // curved filled, add the bottom as an arcTo curve and fill
+      var backdist=Math.sqrt(((x2-x0)*(x2-x0))+((y2-y0)*(y2-y0)));
+      ctx.arcTo(x1,y1,x0,y0,.55*backdist);
+      ctx.fill();
+      break;
+    case 1:
+      // straight filled, add the bottom as a line and fill.
+      ctx.beginPath();
+      ctx.moveTo(x0,y0);
+      ctx.lineTo(x1,y1);
+      ctx.lineTo(x2,y2);
+      ctx.lineTo(x0,y0);
+      ctx.fill();
+      break;
+    case 2:
+      // unfilled head, just stroke.
+      ctx.stroke();
+      break;
+    case 3:
+      //filled head, add the bottom as a quadraticCurveTo curve and fill
+      var cpx=(x0+x1+x2)/3;
+      var cpy=(y0+y1+y2)/3;
+      ctx.quadraticCurveTo(cpx,cpy,x0,y0);
+      ctx.fill();
+      break;
+    case 4:
+      //filled head, add the bottom as a bezierCurveTo curve and fill
+      var cp1x, cp1y, cp2x, cp2y,backdist;
+      var shiftamt=5;
+      if(x2==x0){
+    // Avoid a divide by zero if x2==x0
+    backdist=y2-y0;
+    cp1x=(x1+x0)/2;
+    cp2x=(x1+x0)/2;
+    cp1y=y1+backdist/shiftamt;
+    cp2y=y1-backdist/shiftamt;
+      }else{
+    backdist=Math.sqrt(((x2-x0)*(x2-x0))+((y2-y0)*(y2-y0)));
+    var xback=(x0+x2)/2;
+    var yback=(y0+y2)/2;
+    var xmid=(xback+x1)/2;
+    var ymid=(yback+y1)/2;
+
+    var m=(y2-y0)/(x2-x0);
+    var dx=(backdist/(2*Math.sqrt(m*m+1)))/shiftamt;
+    var dy=m*dx;
+    cp1x=xmid-dx;
+    cp1y=ymid-dy;
+    cp2x=xmid+dx;
+    cp2y=ymid+dy;
+      }
+
+      ctx.bezierCurveTo(cp1x,cp1y,cp2x,cp2y,x0,y0);
+      ctx.fill();
+      break;
+  }
+  ctx.restore();
+};
+
+var drawArrow=function(ctx,x1,y1,x2,y2,style,which,angle,d)
+{
+  'use strict';
+  // Ceason pointed to a problem when x1 or y1 were a string, and concatenation
+  // would happen instead of addition
+  if(typeof(x1)=='string') x1=parseInt(x1);
+  if(typeof(y1)=='string') y1=parseInt(y1);
+  if(typeof(x2)=='string') x2=parseInt(x2);
+  if(typeof(y2)=='string') y2=parseInt(y2);
+  style=typeof(style)!='undefined'? style:3;
+  which=typeof(which)!='undefined'? which:1; // end point gets arrow
+  angle=typeof(angle)!='undefined'? angle:Math.PI/8;
+  d    =typeof(d)    !='undefined'? d    :10;
+  // default to using drawHead to draw the head, but if the style
+  // argument is a function, use it instead
+  var toDrawHead=typeof(style)!='function'?drawHead:style;
+
+  // For ends with arrow we actually want to stop before we get to the arrow
+  // so that wide lines won't put a flat end on the arrow.
+  //
+  var dist=Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
+  var ratio=(dist-d/3)/dist;
+  var tox, toy,fromx,fromy;
+  if(which&1){
+    tox=Math.round(x1+(x2-x1)*ratio);
+    toy=Math.round(y1+(y2-y1)*ratio);
+  }else{
+    tox=x2;
+    toy=y2;
+  }
+  if(which&2){
+    fromx=x1+(x2-x1)*(1-ratio);
+    fromy=y1+(y2-y1)*(1-ratio);
+  }else{
+    fromx=x1;
+    fromy=y1;
+  }
+
+  // Draw the shaft of the arrow
+  ctx.beginPath();
+  ctx.moveTo(fromx,fromy);
+  ctx.lineTo(tox,toy);
+  ctx.stroke();
+
+  // calculate the angle of the line
+  var lineangle=Math.atan2(y2-y1,x2-x1);
+  // h is the line length of a side of the arrow head
+  var h=Math.abs(d/Math.cos(angle));
+
+  if(which&1){  // handle far end arrow head
+    var angle1=lineangle+Math.PI+angle;
+    var topx=x2+Math.cos(angle1)*h;
+    var topy=y2+Math.sin(angle1)*h;
+    var angle2=lineangle+Math.PI-angle;
+    var botx=x2+Math.cos(angle2)*h;
+    var boty=y2+Math.sin(angle2)*h;
+    toDrawHead(ctx,topx,topy,x2,y2,botx,boty,style);
+  }
+  if(which&2){ // handle near end arrow head
+    var angle1=lineangle+angle;
+    var topx=x1+Math.cos(angle1)*h;
+    var topy=y1+Math.sin(angle1)*h;
+    var angle2=lineangle-angle;
+    var botx=x1+Math.cos(angle2)*h;
+    var boty=y1+Math.sin(angle2)*h;
+    toDrawHead(ctx,topx,topy,x1,y1,botx,boty,style);
+  }
+}
+
 function canvas_arrow(context, fromx, fromy, tox, toy){
     var headlen = 10;   // length of head in pixels
     var angle = Math.atan2(toy-fromy,tox-fromx);
@@ -18,6 +166,7 @@ function DDQTREE(question, qEle) {
     hint: false,
     selections: [],
   }
+  this.lastAnswerHeight = 0;
   this.$q = function(selector) {
     return $(this.qEle).find(selector);
   }
@@ -36,8 +185,14 @@ DDQTREE.prototype = {
     $(this.qEle).addClass("ddqtree");
     tree = self.question.tree[0];
     
+    $(this.qEle).prepend(self.$q("#answer"));
     this.drawQuestion();
-    this.drawAnswers();
+    setTimeout(function() {
+        self.drawAnswers();
+        self.$q(".table-feedback").hide();
+        //self.test();
+    }, 10);
+    
   },
 
 
@@ -49,6 +204,7 @@ DDQTREE.prototype = {
     var ele_id = 0;
   
     function tree_walk(ele) {
+      ele.depth = depth
       if (depth == 0) ele.parent_id = -1;
       ele.ele_id = ele_id;
       ele_id++;
@@ -88,49 +244,30 @@ DDQTREE.prototype = {
       var $tr = $("<div>")
         .addClass("ddqt-col target-col")
         .css("width", 70/depth_ele.length + "%")
+        .data("depth", i)
         .appendTo($t);
     }
 
-    var height = $("#q-table").height()
+    this.height = $("#q-table").height()
+    this.cell_height = 0.80*this.height/max_depth;
     for (var i=depth_ele.length-1;i>=0;i--) {
       $tr = $($(".target-col")[i]);
       var top = -1/max_depth/2.0-1/depth_ele[i].length/2;
       for (var j=0;j<depth_ele[i].length;j++) {
         var $target = $("<div>")
             .addClass("ddqt-cell")
-            .css("height", (0.80*height/max_depth))
-            .css("margin-bottom", (0.20*height/max_depth))
+            .css("height", this.cell_height + "px")
+            .css("margin", "20px 0px")
             .appendTo($tr)  
             .attr("data-ele_id", depth_ele[i][j].ele_id)
             .attr("data-parent_id", depth_ele[i][j].parent_id)
+            .data("depth", i)
             .droppable({
-              tolerance: "pointer",
-              greedy: true,
               activeClass: "ui-state-hover",
               hoverClass: "ui-state-active",
               drop: function( event, ui ) {
-                try {
-                  console.log("Dropped");
-                  $(event.target).append(ui.draggable[0]);
-                  console.log(event.target);
-                  console.log(ui.draggable[0]);
-                  //$(event.target).css("height", "");
-                  $(event.target).height($(ui.draggable[0]).height()+5);
-                  ui.draggable[0].dataset.top = $(ui.draggable[0]).position().top;
-                  ui.draggable[0].dataset.left = $(ui.draggable[0]).position().left;
-                  $(ui.draggable[0])
-                    .css("position", "absolute")
-                    .css("width", "")
-                    .css("top", "0px")
-                    .css("left", "0px")
-                    .css("right", "0px")
-                    .css("bottom", "0px")
-                    .css("border", "2px solid orange");
-                  self.check_done();
-                  self.redrawQuestions();
-                } catch(e) {
-                  console.error(e);
-                }
+                self.addConcept(ui.draggable[0], event.target);
+                return false;
               },
             });
 
@@ -142,27 +279,65 @@ DDQTREE.prototype = {
     }, 10);
   },
 
+  addConcept: function(concept, target) {
+    var self = this;
+    self.lastAnswerHeight = self.$q("#top-answer").height();
+    if ($(target).children().length) {
+      $(target).children()
+          .css("position", "relative")
+          .css("border", "2px dashed orange")
+      self.$q(".option").append($(target).children()[0]);
+    }
+    $(target).height($(concept).height());
+    $(target).append(concept);
+    $(concept)
+      .css("border", "0px solid orange")
+      .css("position", "absolute")
+      .css("top", "0px")
+      .css("left", "0px")
+      .css("right", "0px")
+      .css("bottom", "0px")
+      .css("z-index", "0")
+      .data("dragged", "true")
+    setTimeout(function() {
+    $(concept)
+      .data("dragged", "")
+    },100);
+
+    self.checkDone();
+    self.redrawQuestions();
+  },
+
+  resizeHeight: function() {
+    var self = this;
+    this.$q(".ddqt-cell").each(function(k,ele) {
+        if ($(ele).children().length == 0)
+            $(ele).height(self.cell_height);
+    });
+
+  },
+
   drawArrows: function(canvas, y1, y2) {
 
     var h = canvas.height;
     var w = canvas.width;
     var ctx= canvas.getContext("2d");
 
-    ctx.lineWidth = 5;
+    //ctx.lineWidth = 5;
     ctx.fillStyle = ctx.strokeStyle = '#999';
     var padding = 5;
     
     x1 = padding;
     x2 = w-padding;
     ctx.beginPath();
-    canvas_arrow(ctx, x1, y1, x2, y2);
+    drawArrow(ctx, x1, y1, x2, y2);
     ctx.stroke();
   },
 
   redrawQuestions: function() {
     var self = this;
+    self.resizeHeight();
     var depth_ele = this.depth_ele;
-    
     var canvas = $("canvas");
     for (var i=depth_ele.length-2;i>=0;i--) {
       $(canvas[i]).attr("width",$(canvas[i]).parent().width())
@@ -172,7 +347,7 @@ DDQTREE.prototype = {
         var min=1000;
         var max=0;
         $eles.each(function(k,ele) {
-          $ele=$(ele);
+          var $ele=$(ele);
           if ($ele.position().top + $ele.height() > max)
               max = $ele.position().top + $ele.height();
           if ($ele.position().top < min)
@@ -181,15 +356,14 @@ DDQTREE.prototype = {
         ele = $(".ddqt-cell[data-ele_id='"+depth_ele[i][j].ele_id+"']");
         var _top = 0;
         if (j>0) {
-         _top = $(".ddqt-cell[data-ele_id='"+depth_ele[i][j-1].ele_id+"']").position().top;
-         _top-=$(ele).height()/2;
+         _top -= $(".ddqt-cell[data-ele_id='"+depth_ele[i][j-1].ele_id+"']").height() + 20;
         }      
-        var top = (max + min) / 2 - $(ele).height() / 2 - _top;
+        var top = (max + min) / 2 - $(ele).height() / 2 + _top ;
         $(ele).css("top", top + "px");
 
-        var y1 = $(ele).position().top + $(ele).height() / 2;
+        var y1 = $(ele).position().top + $(ele).height() / 2 + 20;
         $eles.each(function(k,ele) {
-          y2 = $(ele).position().top + $(ele).height() / 2
+          y2 = $(ele).position().top + $(ele).height() / 2 + 20;
           self.drawArrows(canvas[i], y1, y2);
         });
       }
@@ -201,7 +375,7 @@ DDQTREE.prototype = {
     var depth_ele = this.depth_ele;
     self.$q(".option").html("");
     self.$q("#answer").removeClass("right-col");
-    self.$q("#a-table").attr("id", "").css("margin", "20px auto");
+    self.$q("#a-table").attr("id", "feedback");
 
     var concepts = [];
     for (var i=0;i<depth_ele.length;i++) {
@@ -211,9 +385,9 @@ DDQTREE.prototype = {
       }
     }
     concepts = shuffle(concepts);
+    this.cell_width = this.$q(".ddqt-cell").width();
 
     $.each(concepts, function(i, concept) {
-
       var concept_div = $("<div>")
             .text(concept.text)
             .addClass('concept')
@@ -221,7 +395,8 @@ DDQTREE.prototype = {
             .attr("data-ele_id", concept.ele_id)
             .css("text-align", "center")
             .css("display", "inline-block")
-            .css("width", "150")
+            .css("width", self.cell_width)
+            .data("depth", concept.depth)
 
       if (concept.image) {
         $("<img>").attr("src", concept.image)
@@ -232,33 +407,34 @@ DDQTREE.prototype = {
       }
 
       $(concept_div).draggable({ 
+        containment: self.qEle,
         start: function( event, ui ) {
-            var top = event.target.dataset.top
-            var left = event.target.dataset.left
-            console.log(top);
-            console.log(left);
             $(event.target)
-            .css("text-align", "center")
-            .css("display", "inline-block")
-            .css("width", "150")
-            .css("position", "relative")
-            .css("top", top)
-            .css("left", left)
+                    .css("border", "2px dashed orange")
+                    .css("bottom", "")
+                    .css("right", "")
+                    .css("z-index", "100")
         },
       });
       self.$q('.option').append(concept_div);
     });
 
-    $('body').droppable({
-      tolerance: "pointer",
+    $(self.qEle).droppable({
       activeClass: "ui-state-hover",
       hoverClass: "ui-state-active",
       drop: function( event, ui ) {
-        self.$q(".option").append(ui.draggable[0]);
-        $(ui.draggable[0])
-          .css("border", "2px dashed orange")
-          .css("left", "0")
-          .css("top", "0");
+        console.error($(ui.draggable[0]).data("dragged"))
+        if ($(ui.draggable[0]).data("dragged")) {
+            $(ui.draggable[0]).data("dragged", ""); 
+        } else {
+            self.$q(".option").append(ui.draggable[0]);
+            $(ui.draggable[0])
+              .css("border", "2px dashed orange")
+              .css("position", "relative")
+              .css("left", "0")
+              .css("top", "0");
+            self.redrawQuestions();
+        }
       }
     });
   
@@ -267,136 +443,60 @@ DDQTREE.prototype = {
     self.$q(".table-feedback").css("border", "none");
 
     self.$q("#check-button").click(function(){
-      if (self.check_answer()) {
-        self.$q("#check-button").hide();
-        self.$q("#send-button").show();
-      }
+      self.checkAnswer();
+      self.$q("#check-button").hide();
+      self.$q("#send-button").show();
     });
   },
 
-  draw_question: function() {
+  checkDone: function() {
     var self = this;
-    var depth = 0,    
-        max_depth = 0;
-    var depth_ele = this.depth_ele;
-    var ele_id = 0;
-  
-    function tree_walk(ele) {
-      if (depth == 0) ele.parent_id = -1;
-      ele.ele_id = ele_id;
-      ele_id++;
-      depth_ele[depth] = depth_ele[depth] || [];
-      depth_ele[depth].push(ele);
-      if (ele.children === undefined) {
-      } else { 
-        for (var i=0;i<ele.children.length; i++) {
-          depth++;
-          ele.children[i].parent_id = ele.ele_id;
-          tree_walk(ele.children[i]);
-        }
-      }
-      depth--;
-      return;
-    }
-  
-    tree_walk(tree);
-    $t = $("<div>").attr("class","ddqt-table");
-    this.$q("#q-text").html("");
-    $t.appendTo(this.$q("#q-text"));
-    for (var i=0;i<depth_ele.length;i++) {
-      $tr = $("<div>").attr("class", "ddqt-row").css("height",(20/depth_ele.length)+"%").appendTo($t);
-      
-      var cells = [];
-      for (var j=0;i>0 && j<depth_ele[i].length;j++) {
-        var $cell = $("<div>").attr("class","ddqt-arrow-cell").css("width", (100/depth_ele[i].length)+"%").appendTo($tr);  
-        cells.push($cell);
-      }
-      for (var j=0;j<cells.length;j++) {
-        var $cell = cells[j];
-        var $canvas = $("<canvas width='"+$cell.width()+"' height='"+$cell.height()+"'>").appendTo($cell)[0];
-        var h = $canvas.height;
-        var w = $canvas.width;
-        var ctx=$canvas.getContext("2d");
-
-        ctx.lineWidth = 5;
-        ctx.fillStyle = ctx.strokeStyle = '#999';
-        var padding = 5;
-        if (j % 2 == 0) {
-          y1 = padding;
-          y2 = h-padding;
-          x1 = w-padding;
-          x2 = w/1.5;
-        } else {
-          y1 = padding;
-          y2 = h-padding;
-          x1 = padding;
-          x2 = w/3;
-        }
-        ctx.beginPath();
-        canvas_arrow(ctx, x1, y1, x2, y2);
-        ctx.stroke();
-      }
-      $tr = $("<div>").attr("class", "ddqt-row").css("height", (80/depth_ele.length)+"%").appendTo($t);
-      for (var j=0;j<depth_ele[i].length;j++) {
-          var $target = $("<div>")
-              .attr("class", "ddqt-cell")
-              .css("width", (100/depth_ele[i].length)+"%")
-              .appendTo($tr)  
-              .attr("data-ele_id", depth_ele[i][j].ele_id)
-              .attr("data-parent_id", depth_ele[i][j].parent_id)
-              .droppable({
-            tolerance: "pointer",
-            greedy: true,
-            activeClass: "ui-state-hover",
-            hoverClass: "ui-state-active",
-            drop: function( event, ui ) {
-              //$target.answers.push(ui.draggable[0]);
-              $(event.target).append(ui.draggable[0]);
-              $(ui.draggable[0]).css("left", "0px");
-              $(ui.draggable[0]).css("top", "0px");
-              $(ui.draggable[0]).css("border", "2px solid orange");
-
-              self.check_done();
-            }
-          });
-          self.targets.push($target);
-      }
-    }
-  },
-
-  check_done: function() {
-    var self = this;
-    var end = true;
+    var done = true;
     for (var i=0;i<this.targets.length;i++) {
       if (this.targets[i].children().length != 1) 
-        end = false;
+        done = false;
     }
 
-    if (!end) {
-      self.$q("#check-button").hide();
-      return false;
-    } else {
-      self.$q("#check-button").show();
-      return true;
-    }
+    self.$q("#check-button").toggle(done);
+    self.$q(".table-feedback").toggle(done);
+    if (done && self.lastAnswerHeight > 0)
+        self.$q("#top-answer").height(self.lastAnswerHeight);
+    return done;
+  },
+
+  _checkDepth: function(ele) {
+    return $(ele).parent().data("depth") == $(ele).data("depth");
   },
   
-  check_answer: function() {
+  checkAnswer: function() {
     var self = this;
     this.result.correct = true;
     $(".ddqt-cell").each(function(k,cell) {
       parent_cell = $(".ddqt-cell[data-ele_id='"+cell.dataset.parent_id+"']");
       parent_ans = $(parent_cell).children()[0];
       ans = $(cell).children()[0]; 
+      $(ans).parent().css("border", "2px solid");
       if ((ans.dataset.parent_id == -1 && parent_ans !== undefined) ||
-          (parent_ans && ans.dataset.parent_id != parent_ans.dataset.ele_id)) {
+          (parent_ans && ans.dataset.parent_id != parent_ans.dataset.ele_id) ||
+           self._checkDepth(ans) == false) {
         self.result.correct = false;
-        $(ans).css("border-color", "red");
+        $(ans).parent().css("border-color", "red");
       } else {
-        $(ans).css("border-color", "green");
+        $(ans).parent().css("border-color", "green");
       }
+      $(ans).draggable( "destroy" );
     })
-    return result.correct;
+    return this.result.correct;
+  },
+  
+  test: function() {
+    var self = this;
+    setTimeout(function() {
+    $(".concept").each(function(i, concept) {
+        self.addConcept(concept, $(".ddqt-cell")[i]);
+    });
+    }, 100);
+
   }
 }
 

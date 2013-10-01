@@ -127,7 +127,7 @@ DDQ.prototype = {
       $a.append(concept_div);
     });
 
-    this.$q('.questionnaire-wrapper').droppable({
+    $(self.qEle).droppable({
       activeClass: "ui-state-hover",
       hoverClass: "ui-state-active",
       drop: function( event, ui ) {
@@ -146,10 +146,8 @@ DDQ.prototype = {
         .show();
 
     self.$q("#check-button").click(function(){
-      if (self.checkAnswer()) {
-        self.$q("#check-button").hide();
-        self.$q("#send-button").show();
-      }
+      self.$q("#check-button").hide();
+      self.$q("#send-button").show();
     });
   },
 
