@@ -480,6 +480,9 @@ function renderActivity(contentsLst, domRoot) {
       else if (e.questionType == 'freetext') {
         generateFreetextQuestion(e, domRoot, i);
       }
+      else if (e.questionType == 'tfq') {
+        generateTrueFalseQuestion(e, domRoot, i);
+      }
       else {
         alert('Error in renderActivity: e.questionType is not in ' +
               '{\'multiple choice\', \'multiple choice group\', \'freetext\'}');

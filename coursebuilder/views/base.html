@@ -7,6 +7,7 @@
     {% block title %}
     {% endblock %}
 
+
     <!-- The following translated strings are used in activity-generic.js and should be
     declared before that file is imported. -->
     <script>
@@ -106,6 +107,9 @@
 
     {% block assets %}
     {% endblock %}
+
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:Condensed" />
+
 
     <script>
       var eventXsrfToken = '{{ event_xsrf_token }}';
@@ -223,5 +227,13 @@
       </div>
     </div>
     {{course_info.base.before_body_tag_ends | safe}}
+<script type='text/javascript'>
+(function (d, t) {
+  var bh = d.createElement(t), s = d.getElementsByTagName(t)[0];
+  bh.type = 'text/javascript';
+  bh.src = '//www.bugherd.com/sidebarv2.js?apikey=alyxnwajj6ic5g7jbrixtw';
+  s.parentNode.insertBefore(bh, s);
+  })(document, 'script');
+</script>
  </body>
 </html>
