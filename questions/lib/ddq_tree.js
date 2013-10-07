@@ -184,8 +184,10 @@ DDQTREE.prototype = {
     var self = this;
     $(this.qEle).addClass("ddqtree");
     tree = self.question.tree[0];
-    
     $(this.qEle).prepend(self.$q("#answer"));
+    if (this.question && this.question.text) {
+        $(this.qEle).prepend($("<div>").addClass("title").html(this.question.text));
+    }
     this.drawQuestion();
     setTimeout(function() {
         self.drawAnswers();

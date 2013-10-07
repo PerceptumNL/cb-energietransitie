@@ -14,7 +14,7 @@
                 {
                     "type": "text",
                     "text": "The Earth will become warmer",
-                    "feedback": "On average, Earth will become warmer. Some regions may welcome warmer temperatures, but others may not."
+                    "feedback": false
                 },
                 {
                     "type": "text",

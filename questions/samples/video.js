@@ -23,7 +23,7 @@
             ]
         },
         {
-            "time": "0:10.0",
+            "time": "0:02.0",
             "type": "text",
             "text": "Due to deliberate misinformation from governments and large corporations most people are still unaware of the necessity of change.",
             "correctAnswer": 0,

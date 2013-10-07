@@ -10,7 +10,6 @@
 .option.mcq div {
     margin: 10px 10px;
     padding: 10px 10px;
-    padding-left: 15px;
     background-color:#8980FF;
     color:white;
     text-align:center;
@@ -31,12 +30,18 @@
     background-color: #3A49BA !important;   
 }
 
+.option.mcq div {
+    border: 5px solid white;
+}
 .option.mcq div.toggleon {
-   background-color:#3A49BA;
+    border: 5px solid black;
 }
 
 #fb{
   background-color:white;
-  text-align:left;
+  text-align:center;
   color:black;
+}
+#fb.fill {
+  text-align: left;
 }

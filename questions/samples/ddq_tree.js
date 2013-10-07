@@ -2,6 +2,7 @@
     "questionsType": "ddqtree",
     "questionsList": [
         {
+            "text": "Drag the concepts to the correct box",
             "questionType": "ddqtree",
             "tree": [
                 {

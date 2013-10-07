@@ -16,6 +16,7 @@ with open('build/questionary.js', 'w') as outfile:
 
 filenames = ['lib/common.css', 'lib/ddq.css', 'lib/mcq.css', 'lib/tfq.css', 'lib/ddq_tree.css']
 with open('build/questionary.css', 'w') as outfile:
+    outfile.write("/* Build time: %s*/\n\n" % datetime.datetime.now().isoformat())
     for fname in filenames:
         with open(fname) as infile:
             for line in infile:

@@ -13,7 +13,8 @@ function loadVideoQuestionnaire(ele, youtubeid) {
     wmode: "transparent" 
   };
   var atts = { 
-    id: "myytplayer" 
+    id: "myytplayer",
+    style: "position:absolute" 
   };
   swfobject.embedSWF("http://www.youtube.com/v/"+youtubeid+
                         "?enablejsapi=1&playerapiid=ytplayer&version=3",
@@ -30,11 +31,9 @@ function onYouTubePlayerReady(playerId) {
   ytplayer.addEventListener("onStateChange", 
     "onytplayerStateChange");
 
-  $('question').hide();
-  $('question').css({
-    position: "relative", 
-//    top: "-536px", 
-    "z-index": "-1" 
+  $("question").show()
+  Questionnaire.on("load", function() {
+    this.fadeIn();
   });
   Questionnaire.on("next", function() {
     this.fadeOut();

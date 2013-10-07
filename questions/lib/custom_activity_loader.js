@@ -84,7 +84,7 @@ var Questionnaire = {
 
   showOverview: function() {
     var self = this;
-
+    $("#button-hint").hide()
     function _showOverview() {
       self.index = -1;
       self.drawNumbers();
@@ -176,9 +176,6 @@ var Questionnaire = {
   redo: function() {
     $(this.qEle).html("");
     this.create(this.qEle);
-  //  this.fadeIn();
-  //  $('.questionnaire').show();
-   // this.jumpTo(0);
   },
 
   create: function(qEle) {
@@ -243,6 +240,7 @@ var Questionnaire = {
       dataType: 'html',
       async: false,
       success: function(data) {
+        $(self.qEle).hide();
         $(self.qEle).append(data);
       } 
     });
@@ -270,9 +268,8 @@ var Questionnaire = {
         this.fadeIn();
         this.jumpNext();
     } else {
-        //$(".questionnaire").css("position", "absolute");
-        $(".questionnaire").css("position", "relative");
-        $(".questionnaire").css("top", "-542px");
+        $(".questionnaire").css("zIndex", -1)
+        $(".questionnaire").show()
     }
 
   },
@@ -295,10 +292,16 @@ var Questionnaire = {
   },
 
   fadeOut: function() {
-    $(this.qEle).children().fadeOut();
+    var self = this;
+    $(this.qEle).children().fadeOut(function() {
+        $(".questionnaire").css("zIndex", -1);
+        $(self.qEle).children().show();
+    });
   },
 
   fadeIn: function() {
+    $(".questionnaire").css("zIndex", 1);
+    $("question").show()
     $(this.qEle).children().hide();
     $(this.qEle).show();
     $(this.qEle).children().fadeIn();
@@ -324,10 +327,13 @@ var Questionnaire = {
     this.drawNumbers();
     this.question = this.leftQuestions[this.index]; 
 
-
     if (this.question && this.question.hint) {
+      $("#button-hint").show();
       $(".hint-text").html(this.question.hint);
     } 
+    else 
+      $("#button-hint").hide();
+
     $("#overview").hide();
     $(".question-wrapper").hide();
     if (this.questionInstances[index]) {
@@ -361,10 +367,6 @@ var Questionnaire = {
     }
     $(template).show();
 
-    if (this.question.hint) 
-      $("#button-hint").show();
-    else 
-      $("#button-hint").hide();
 
     $(template).find("#send-button").click(function() {
       if (self.leftQuestions[self.index] !== undefined) {
@@ -372,13 +374,18 @@ var Questionnaire = {
         self.doneQuestions[self.index].result = self.questionInstances[self.index].result;
         self.leftQuestions[self.index] = undefined;
       }
-      self.trigger("next");
       if (self.questionsList[self.index+1] &&
-          self.questionsList[self.index+1].time === undefined)
+          self.questionsList[self.index+1].time === undefined) {
         self.jumpNext();
-      else if (self.questionsList[self.index+1] === undefined && 
+      } else if (self.questionsList[self.index+1] === undefined && 
                self.questionsList[self.index].time === undefined) 
         self.jumpNext();
+      else {
+        self.trigger("next");
+      }
+      $(document.body).animate({
+          'scrollTop':   $('question').eq(0).offset().top
+      }, 500);
     });
 
   },
