@@ -19,10 +19,8 @@ __author__ = 'Pavel Simakov (psimakov@google.com)'
 import datetime
 import os
 import urllib
-from activity import ActivityHandler
 import appengine_config
 from common import jinja_utils
-import logging
 from common import safe_dom
 from controllers import sites
 from controllers.utils import ApplicationHandler
@@ -33,17 +31,14 @@ import jinja2.exceptions
 from models import config
 from models import courses
 from models import custom_modules
-from models import entities
 from models import jobs
 from models import roles
 from models import transforms
 from models import utils
 from models import vfs
-from models import student_work
 from models.models import QuestionDAO
 from models.models import QuestionGroupDAO
 from models.models import Student
-from models.models import EventEntity
 from tools import verify
 from course_settings import CourseSettingsHandler
 from course_settings import CourseSettingsRESTHandler
@@ -74,7 +69,7 @@ from google.appengine.api import users
 
 
 class DashboardHandler(
-    ActivityHandler, CourseSettingsHandler, FileManagerAndEditor, UnitLessonEditor,
+    CourseSettingsHandler, FileManagerAndEditor, UnitLessonEditor,
     QuestionManagerAndEditor, QuestionGroupManagerAndEditor, AssignmentManager,
     ApplicationHandler, ReflectiveRequestHandler):
     """Handles all pages and actions required for managing a course."""
@@ -86,15 +81,13 @@ class DashboardHandler(
         'edit_unit', 'edit_link', 'edit_lesson', 'edit_assessment',
         'add_asset', 'delete_asset', 'manage_text_asset', 'import_course',
         'edit_assignment', 'add_mc_question', 'add_sa_question',
-        'edit_question', 'add_question_group', 'edit_question_group',
-        'questionary_activity']
+        'edit_question', 'add_question_group', 'edit_question_group']
     # Requests to these handlers automatically go through an XSRF token check
     # that is implemented in ReflectiveRequestHandler.
     post_actions = [
         'compute_student_stats', 'create_or_edit_settings', 'add_unit',
         'add_link', 'add_assessment', 'add_lesson',
-        'edit_basic_course_settings', 'add_reviewer', 'delete_reviewer',
-        'questionary_activity']
+        'edit_basic_course_settings', 'add_reviewer', 'delete_reviewer']
 
     local_fs = vfs.LocalReadOnlyFileSystem(logical_home_folder='/')
 
@@ -698,73 +691,6 @@ class DashboardHandler(
         template_values['main_content'] = items
         self.render_page(template_values)
 
-    def get_attempt_scores(self, name, activity, unit_idx, les_idx):
-        max_score = -1
-        ref = 0
-        max_date = datetime.datetime(2000, 1, 1, 1, 1, 1, 1).isoformat()
-        if activity[name].get(str(unit_idx)):
-            if activity[name][str(unit_idx)].get(str(les_idx)):
-                for a in activity[name][str(unit_idx)].get(str(les_idx)):
-                    if a['date'] > max_date:
-                        max_score = a['result']['score']
-                        max_date = a['date']
-                        ref = a['ref']
-        return [max_score, ref]
-
-    def get_activity(self, inv_map):
-        activity = {}
-        events = EventEntity().all().run(batch_size=100)
-        for e in events:
-            if e.source == "questionary-results":
-                st = Student.get_student_by_user_id(e.user_id)
-                if st:
-                    email = st.key().name()
-                    questionary = transforms.loads(e.data)
-                    attempt = questionary['results']
-                    maybeText = []
-                    corrects = 0
-                    incorrects = 0
-                    maybes = 0
-                    for a in attempt:
-                        if a['result'].get('correct') == True:
-                            corrects += 1
-                        if a['result'].get('incorrect') == True:
-                            incorrects += 1
-                        if a['result'].get('maybe') == True:
-                            maybes += 1
-                            QA = {}
-                            QA[a['text']] = a['result'].get('maybeText')
-                            maybeText.append(QA)
-                    score = float(corrects) / (corrects + incorrects + maybes)
-                    result = {
-                        'correct': corrects,
-                        'maybe': maybes,
-                        'incorrect': incorrects,
-                        'score': score
-                             }
-                    if not activity.get(email):
-                        activity[email] = {}
-                    att = {}
-                    if inv_map.has_key(questionary['unit']):
-                        idxs = inv_map.get(questionary['unit']).get(questionary['lesson'])
-                    else:
-                        idxs = None
-                    if not idxs:
-                        idxs = [questionary['unit'], questionary['lesson']]
-                    att = {}
-                    att['ref'] = e.key().id()
-                    att['date'] = e.recorded_on.isoformat()
-                    att['result'] = result
-                    att['maybeText'] = maybeText
-                    if not activity[email].get(idxs[0]):
-                        activity[email][idxs[0]] = {}
-                        activity[email][idxs[0]][idxs[1]] = []
-                    if not activity[email][idxs[0]].get(idxs[1]):
-                        activity[email][idxs[0]][idxs[1]] = []
-                    activity[email][idxs[0]][idxs[1]].append(att)
-        return activity
-
-
     def get_markup_for_basic_analytics(self, job):
         """Renders markup for basic enrollment and assessment analytics."""
         subtemplate_values = {}
@@ -781,119 +707,19 @@ class DashboardHandler(
                 stats = transforms.loads(job.output)
                 stats_calculated = True
 
-                cr = courses.Course(self).get_units()
-
                 subtemplate_values['enrolled'] = stats['enrollment']['enrolled']
                 subtemplate_values['unenrolled'] = (
                     stats['enrollment']['unenrolled'])
-                subtemplate_values['submissions'] =  stats['id']
 
                 scores = []
                 total_records = 0
-                names = []
-                submissions = {}
-                students = {}
-                data = []
-
-                for key, value in stats['id'].items():
-                    students[key] = value
-
-                course = courses.Course(self)
-                problems = course.get_assessment_list()
-                assessments = dict( (a.unit_id, a.title) for a in problems)
-
-                struct = {}
-                unit_list = []
-                units = course.get_units()
-                for u in units:
-                    if u.type == 'U':
-                        lessons = course.get_lessons(u.unit_id)    
-                        lesson_dict = {}
-                        for l in lessons:
-                            single = {}
-                            single['lesson_unit_idx'] = u._index
-                            single['lesson_unit'] = l.unit_id
-                            single['lesson_id'] = l.lesson_id
-                            single['lesson_title'] = l.title
-                            lesson_dict[l._index] = single
-                        struct[u._index] = {}
-                        struct[u._index]['id'] = u.unit_id
-                        struct[u._index]['title'] = u.title
-                        struct[u._index]['lessons'] = lesson_dict
-                        struct[u._index]['lesson_count'] = len(lesson_dict)
-
-                inv_map = {}
-                for k, v in struct.items():
-                    inv_map[v['id']] = {}
-                    for l_num, l_con in v['lessons'].items():
-                        inv_map[v['id']][l_con['lesson_id']] = [k, l_num]
-
-                for sname, sid in students.items():
-                    st = Student.get_student_by_user_id(sid)
-                    sc = course.get_all_scores(st)
-                    data.append({'name': sname, 'scores': sc})
-                
                 for key, value in stats['scores'].items():
                     total_records += value[0]
                     avg = round(value[1] / value[0], 1) if value[0] else 0
                     scores.append({'key': key, 'completed': value[0],
                                    'avg': avg})
-
-                activity = self.get_activity(inv_map)
-
-                att_scores = {}
-                avs_st = {}
-                for name in activity.keys():
-                    attempt_scores = []
-                    av_sum = 0
-                    count = 0
-                    for k, v in struct.items():
-                        for les, les1 in v['lessons'].items():
-                            idxs = [les1['lesson_unit'], les1['lesson_id']]
-                            sc = self.get_attempt_scores(name, activity,
-                                idxs[0], idxs[1])
-                            if sc[0] == -1:
-                                sc[0] = '-'
-                                attempt_scores.append(sc)
-                            else:
-                                av_sum += sc[0]
-                                count += 1
-                                sc[0] = '{0:.0%}'.format(sc[0])
-                                attempt_scores.append(sc)
-                    att_scores[name] = attempt_scores
-                    if count != 0:
-                        avs_st[name] = '{0:.0%}'.format(av_sum/count)
-                    else:
-                        avs_st[name] = '-'
-
-                count = len(att_scores.itervalues().next())
-                sums = [0] * count
-                counts = [0] * count
-                avs_ex = [0] * count
-                for k, v in att_scores.items():
-                    exer = 0
-                    for entry in v:
-                        if entry[0] != '-':
-                            entry = entry[0].strip('%')
-                            sums[exer] += float(entry)
-                            counts[exer] += 1
-                        exer += 1
-
-                for i in range(0,count):
-                    if counts[i] != 0:
-                        avs_ex[i] = float(sums[i]) / float(counts[i])
-                        avs_ex[i] = '{0:.0%}'.format(avs_ex[i] / float(100))
-                    else:
-                        avs_ex[i] = '-'
-
-                subtemplate_values['att_scores'] = att_scores
-                subtemplate_values['averages_st'] = avs_st
-                subtemplate_values['averages_ex'] = avs_ex
                 subtemplate_values['scores'] = scores
                 subtemplate_values['total_records'] = total_records
-                subtemplate_values['names'] = names
-                subtemplate_values['data'] = data
-                subtemplate_values['struct'] = struct
 
                 update_message = safe_dom.Text("""
                     Enrollment and assessment statistics were last updated at
@@ -924,32 +750,6 @@ class DashboardHandler(
             'basic_analytics.html', [os.path.dirname(__file__)]
         ).render(subtemplate_values, autoescape=True))
 
-    def get_markup_for_activity(self, ref):
-        sub_values = {}
-        ent = {}
-
-        act = EventEntity().get_by_id(int(ref))
-        if act.data:
-            entries = transforms.loads(act.data)['results']
-            for e in entries:
-                if e.get('text'):
-                    ent[e['text']] = {}
-                    ent[e['text']]['hint'] = e['result']['hint']
-                    if e['result'].get('maybe'):
-                        ent[e['text']]['answer'] = e['result']['maybeText']
-                    else:
-                        ent[e['text']]['answer'] = e['result']['correct']
-                        
-            sub_values['date'] = act.recorded_on.strftime('%d/%m/%y')
-            sub_values['ent'] = ent
-        else:
-            sub_values['date'] = 'no date'
-            sub_values['ent'] = 'no ent'
-
-        return jinja2.utils.Markup(self.get_template(
-            'activity.html', [os.path.dirname(__file__)]
-        ).render(sub_values, autoescape=True))
-
     def get_analytics(self):
         """Renders course analytics view."""
         template_values = {}
@@ -958,7 +758,6 @@ class DashboardHandler(
         all_jobs_have_finished = True
 
         basic_analytics_job = ComputeStudentStats(self.app_context).load()
-        #basic_analytics_job = {}
         stats_html = self.get_markup_for_basic_analytics(basic_analytics_job)
         if (basic_analytics_job and
             basic_analytics_job.status_code != jobs.STATUS_CODE_COMPLETED):
@@ -1020,6 +819,7 @@ class ScoresAggregator(object):
                 self.name_to_tuple[key] = (
                     count + 1, score_sum + float(scores[key]))
 
+
 class EnrollmentAggregator(object):
     """Aggregates enrollment statistics."""
 
@@ -1033,35 +833,7 @@ class EnrollmentAggregator(object):
         else:
             self.unenrolled += 1
 
-class NamesAggregator(object):
-    """Aggregates names of students."""
 
-    def __init__(self):
-        self.stname = {}
-        self.submissions = {}
-        self.st_id = {}
-
-    def visit(self, student):
-        name = student.name
-        self.stname[name] = 0
-        self.st_id[name] = student.user_id
-
-        exe = []
-        if student.scores:
-            scores = transforms.loads(student.scores)
-            self.stname[name] = len(scores)
-            for key in scores.keys():
-                exe.append(key)
-
-        submission = []
-        for e in exe:
-            sub = student_work.Submission.get_contents(e, student.get_key())
-            for s in sub:
-                s['enum'] = e
-                submission.append(s)
-    
-        self.submissions[name] = submission
-    
 class ComputeStudentStats(jobs.DurableJob):
     """A job that computes student statistics."""
 
@@ -1070,24 +842,20 @@ class ComputeStudentStats(jobs.DurableJob):
 
         enrollment = EnrollmentAggregator()
         scores = ScoresAggregator()
-        names = NamesAggregator()
         mapper = utils.QueryMapper(
             Student.all(), batch_size=500, report_every=1000)
 
         def map_fn(student):
             enrollment.visit(student)
             scores.visit(student)
-            names.visit(student)
 
         mapper.run(map_fn)
-        
+
         data = {
             'enrollment': {
                 'enrolled': enrollment.enrolled,
                 'unenrolled': enrollment.unenrolled},
-            'scores': scores.name_to_tuple,
-            'id': names.st_id
-                }
+            'scores': scores.name_to_tuple}
 
         return data
 

@@ -10,24 +10,25 @@
 .option.mcq div {
     margin: 10px 10px;
     padding: 10px 10px;
-    background-color:#8980FF;
     color:white;
+    background-color:#FFAE4D;
     text-align:center;
     margin-right:auto;
     margin-left:auto;    
+    text-shadow: 1px 1px #bbb;
 }
 .option.mcq.enabled div:hover {
-   background-color:#3A49BA;
+    background-color:#FD8900;
     cursor:pointer;
 }
 .option.mcq div.disabled {
     background-color:#aaa;
 }
 .option.mcq div.correct {
-    background-color: #3A49BA !important;   
+    background-color: #FD8900 !important;   
 }
 .option.mcq div.incorrect {
-    background-color: #3A49BA !important;   
+    background-color: #FD8900 !important;   
 }
 
 .option.mcq div {

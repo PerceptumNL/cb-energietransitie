@@ -11,7 +11,7 @@ td, th {
 .questionnaire {
     width: 788px;
     min-height: 500px;
-    border: 2px solid #9C959B;
+    border: 1px solid #c4c5c7;
     top: 0px;
     display: none;
     background-color: white;
@@ -23,7 +23,7 @@ td, th {
     display: inline-block;
     min-height: 500px;
     width: 328px;
-    border-left: 2px dashed #9C959B;
+    border-left: 1px dashed #c4c5c7;
     text-align:center;
     clear: both; 
 }
@@ -39,10 +39,10 @@ td, th {
 #q-header {
     height:30px;
     width:788px;
-    border-bottom: 2px solid #9C959B;
+    border-bottom: 1px solid #c4c5c7;
     position:relative;
-    color:#9C959B;
 }
+
 #q-table {
   width: 99%;
   height: 450px;
@@ -186,7 +186,7 @@ td, th {
     bottom:0px;
     padding: 8px 11px;
     border-top-left-radius: 2px;
-    background-color: #bbb;
+    background-color: #c4c5c7;
     width: 50px;
     float: right;
     text-align: center;
@@ -194,7 +194,7 @@ td, th {
 #send-button:hover,
 #submit-button:hover,
 #check-button:hover {
-    background-color: #9C959B;
+    margin-right:10px;
     cursor:pointer;
 }
 #clear {
@@ -248,29 +248,34 @@ td, th {
     text-align:center;
 }
 #revisit {
-    border: 1px solid #4671D5;
-    background-color:#4671D5;
+    background-color:#1994d4;
     color: white;
     margin: 10px 0px;
     padding: 20px 0px;
     padding-left: 15px;
+    font-size: 15px;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -webkit-border-radius: 10px 10px 10px 10px;
+    border-radius: 10px 10px 10px 10px;
     
 }
 #revisit:hover {
     cursor:pointer;
-    background-color:#0D43BD;
+    background-color: #1994d4;
 }
 #redo {
-    border: 1px solid #FF8100;
-    background-color: #FF8100;
+    background-color: #1994d4;
     color: white;
     margin: 10px 0px;
     padding: 20px 0px;
     padding-left: 15px;
+    font-size: 15px;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -webkit-border-radius: 10px 10px 10px 10px;
+    border-radius: 10px 10px 10px 10px;
 }
 #redo:hover {
     cursor:pointer;
-    background-color: #FF6F00;
 }
 
 #a-table {
