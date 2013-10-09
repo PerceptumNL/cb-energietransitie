@@ -1,4 +1,4 @@
-<div class="gcb-nav" id="gcb-nav-y" role="navigation">
+<div class="gcb-nav gcb-sidebar" id="gcb-nav-y" role="navigation">
   <ul>
     {{course_info.unit.after_leftnav_begins | safe}}
 
@@ -6,7 +6,7 @@
 
       {% if lesson.now_available or is_course_admin %}
 
-        <li {% if page_type == 'unit' and lesson.lesson_id == lesson_id %}class="active"{% endif %}>
+        <li class="les_activiteit {% if page_type == 'unit' and lesson.lesson_id == lesson_id %}active{% endif %}">
 
           {% if is_progress_recorded %}
             <div class="gcb-progress-icon-holder">
@@ -34,10 +34,10 @@
 
           <div class="gcb-lesson-title-with-progress">
             {% if page_type == 'unit' and lesson.lesson_id == lesson_id %}
-              {{ unit.index }}.{{ lesson.index }} {{ lesson.title }}
+              {{ lesson.title }}
             {% else %}
               <a href="unit?unit={{ unit_id }}&lesson={{ lesson.lesson_id }}">
-                {{ unit.index }}.{{ lesson.index }} {{ lesson.title }}
+                {{ lesson.title }}
               </a>
             {% endif %}
           </div>

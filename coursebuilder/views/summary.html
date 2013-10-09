@@ -6,16 +6,17 @@
 {% endif %}
 
   <h1 class="gcb-product-headers-large">
-    {{course_info.course.title}}
+    Introductie
   </h1>
 
   <p class="gcb-product-headers">
   {{course_info.course.blurb | gcb_tags}}
   </p>
 
-  <p class="gcb-bio-headers">
-    {{course_info.course.instructor_details | safe}}
-  </p>
+  
+  {% if transient_student %}
+        {% include 'registration_module.html' %}
+      {% endif %}
 
 </div>
 
@@ -28,7 +29,7 @@
       <iframe class="youtube-player" type="text/html" width="430"
           title="{{ gettext('YouTube Video Player') }}"
           height="300" src="{{course_info.course.main_video.url}}"
-          frameborder="0" allowfullscreen></iframe>
+          frameborder="0" allowfullscreen style="margin-top:80px;"></iframe>
     {% else%}
       <img height="300"
           alt="{{course_info.course.main_image.alt_text}}"
@@ -37,3 +38,4 @@
 
   </div>
 {% endif %}
+ 

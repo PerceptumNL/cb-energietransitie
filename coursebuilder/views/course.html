@@ -16,26 +16,22 @@
     }
   </script>
   <div class="gcb-cols">
-<!--
+
+ {% if transient_student %}
     <div class="gcb-col-11 gcb-aside">
-      {% include 'summary.html' %}
--->
-      {% if transient_student %}
-        {% include 'registration_module.html' %}
-      {% endif %}
-<!--
+      {% include 'summary.html' %}    
     </div>
--->
+{% endif %}
+
 </div>
 {% endblock %}
 
 {% block main_content %}
-    <div style="margin-top: 20px;" class="gcb-cols">
-      <div class="gcb-col-1">
-      </div>
-      <div class="gcb-col-9">
+    <div class="gcb-cols gcb-syllabus">
+      
+      <div class="gcb-outline">
 
-        <h1 class="gcb-schedule-headers">
+        <h1 class="gcb-schedule-headers" style="margin-left:20px;">
           {# I18N: This should be interpreted as a noun. It is the title for the course schedule on the main contents page. #}
           {{ gettext('Schedule') }}
         </h1>
@@ -192,5 +188,18 @@
         </div>
 
       </div>
+       <div class="gcb-bio-headers">
+        <h1 class="gcb-schedule-headers" style="margin-left:20px;">Instructor</h1>
+        <div style="padding: 9px 0;">
+        <div style="display:inline-block; float:left;">
+           <img src="assets/img/Jonas Voorzanger.png" style="width:100px; margin-left:20px; font-size:16px;"/>
+        </div>
+        <div style="display:inline-block; width:290px; margin-left:20px; text-align:justify; font-size:13px;">
+            <span style="font-size:15px;">Jonas Voorzanger</span>
+            <br>Freelance Developer
+            <p>I develop an online teaching module for high school students about the energy transition towards            renewable energy sources. This module aims to educate students about the theoretical aspects of such a transition as well as the practical implementation.</p>
+            </div>
+            </div>
+       </div>
     </div>
 {% endblock %}
