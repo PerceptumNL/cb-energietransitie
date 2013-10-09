@@ -1,0 +1,47 @@
+<html>
+  <head>
+  <meta charset="utf-8">
+  <title>QUnit Example</title>
+  <link rel="stylesheet" href="tests/qunit-1.12.0.css">
+  <script src="lib/dev.js"></script>
+  <script src="js_vendor/traits-0.4.mini.js"></script>
+  <script src="js_vendor/jquery-1.7.2.min.js"></script>
+  <script src="js_vendor/jquery.color.js"></script>
+  <script src="lib/custom_activity_loader.js"></script>
+  <script src="lib/tfq.js"></script>
+  <link rel="stylesheet" type="text/css" href="lib/common.css">
+  <link rel="stylesheet" type="text/css" href="lib/tfq.css">
+  <script>
+  var activity = [
+    '<question src="samples/tfq.js"></question>',
+  ];
+function onYouTubePlayerReady(playerId) {
+  ytplayer = document.getElementById("myytplayer");
+  ytplayer.addEventListener("onStateChange", "onytplayerStateChange");
+}
+
+function onytplayerStateChange(newState) {
+   alert("Player's new state: " + newState);
+}
+
+  </script>
+  </head>
+  <body style="z-index:1000">
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
+  <script src="tests/qunit-1.12.0.js"></script>
+  <script>
+  test( "loading", function() {
+    ok(Questionnaire, "load Questionnaire lib" );
+    $q = $('question');
+    ok($q, "load question tag" );
+    ok(!$q.is(":visible"), "starts hidden" );
+    Questionnaire.jumpNext();
+    ok($q.is(":visible"), "appears" );
+    $q.css('z-index', -100000)
+    $('#questions').css('z-index', -10000)
+  });
+  </script>
+
+  </body>
+</html>
