@@ -1,0 +1,15 @@
+#!/bin/bash
+
+APPID=cb-energietransitie
+DOWNLOAD_PATH=./tmp
+COURSE=et-remote
+COURSE_PATH=$DOWNLOAD_PATH/${COURSE}
+
+rm ${DOWNLOAD_PATH}/${COURSE}.zip
+
+source activate
+python coursebuilder/import.py download course / $APPID $APPID.appspot.com --archive_path ${DOWNLOAD_PATH}/${COURSE}.zip
+
+cd $COURSE_PATH
+unzip -d ${COURSE} ${COURSE}.zip 
+cd -

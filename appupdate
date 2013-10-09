@@ -1,0 +1,4 @@
+source activate
+cd coursebuilder
+appcfg.py update .
+cd -
