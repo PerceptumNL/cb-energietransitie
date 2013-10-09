@@ -212,7 +212,7 @@ var Questionnaire = {
         },
         error: function(data) {
           console.log(data);
-          console.log("Activity loaded:", data);
+          console.error("Error Activity loaded:", data);
           self.activity_original = data;
         } 
 
@@ -227,6 +227,7 @@ var Questionnaire = {
       $(qEle).hide();
       loadVideoQuestionnaire($(qEle).parent(), this.activity.videoId);
     }
+    console.error(this.activity);
 
     for (var i=0; i<a.questionsList.length; i++) {
       if (typeof this.questionsList[i].questionType == "undefined") 
@@ -359,6 +360,9 @@ var Questionnaire = {
     $("#questions").show();
 
     this.questionClass = this.registeredQuestionTypes[this.question.questionType];
+    console.log(this.registeredQuestionTypes);
+    console.log(this.questionClass);
+    console.log(this.question.questionType);
     
     this.questionInstances[index] = new this.questionClass(this.question, template)
     this.questionInstances[index].create();
