@@ -1,0 +1,52 @@
+<html>
+  <head>
+  <script src="/js_vendor/traits-0.4.mini.js"></script>
+  <script src="/js_vendor/jquery-1.7.2.min.js"></script>
+  <script src="/js_vendor/jquery.color.js"></script>
+  <script src="/js_vendor/jquery-ui-1.10.3.custom.min.js"></script>
+  <script src="js_vendor/swfobject.js"></script>
+  <script src="/lib/custom_activity_loader.js"></script>
+  <script src="lib/video_questionnaire.js"></script>
+  <script src="/lib/tfq.js"></script>
+  <script src="/lib/ddq.js"></script>
+  <script src="/lib/ddq_tree.js"></script>
+  <script src="/lib/mcq.js"></script>
+  <script src="/lib/tiq.js"></script>
+  <link rel="stylesheet" type="text/css" href="/lib/questionnaire.css">
+  </head>
+  <body>
+    <select id="demo">
+    </select>
+    <question></question>
+    <script>
+        function load_questionnaire(type) {
+            console.debug("Load questionnaire " + type);
+            $q = $("question")
+            $q.empty().attr("src", "samples/" + type + ".js");
+            window.location.hash = type
+            Questionnaire.create($q);
+        }
+        var demos = { 
+            "tfq": "TFQ",
+            "ddq": "DDQ",
+            "ddq_tree": "DDQ TREE",
+            "mcq": "MCQ",
+            "tiq": "TIC",
+            "mix": "MIX",
+            "video": "VIDEO",
+        }
+        var startup = window.location.hash.substr(1);
+        $.each(demos, function(k, v) {
+            $option = $("<option>").val(k).html(v).appendTo($("#demo"));
+            if (k == startup) {
+                $option.prop('selected', true);
+                load_questionnaire(k)
+            }
+        })
+        
+        $("#demo").change(function() {
+            load_questionnaire($(this).val());
+        })
+    </script>
+  </body>
+</html>

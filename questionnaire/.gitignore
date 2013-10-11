@@ -1,2 +1,5 @@
 
 build/
+lib/questionnaire.css
+.sass-cache/
+node_modules/
