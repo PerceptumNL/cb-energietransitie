@@ -441,7 +441,7 @@ msgid ""
 " important information."
 msgstr ""
 "Hartelijk dank voor uw cursusinschrijving. Klik op het tabblad "
-"'Aankondigingen' voor belangrijke informatie."
+"Aankondigingen voor belangrijke informatie."
 
 #. This is shown to the student in a popup if registrations for the course are
 #. not open.
