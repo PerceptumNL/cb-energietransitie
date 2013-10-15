@@ -2,25 +2,25 @@ base: {after_body_tag_begins: <!-- base.after_body_tag_begins -->, after_main_co
     base.after_main_content_ends -->, after_navbar_begins: <!-- base.after_navbar_begins
     -->, after_top_content_ends: <!-- base.after_top_content_ends -->, before_body_tag_ends: <!--
     base.before_body_tag_ends -->, before_head_tag_ends: <!-- base.before_head_tag_ends
-    -->, before_navbar_ends: <!-- base.before_navbar_ends -->, locale: en_US, 
-nav_header: 'De Energiecrisis', privacy_terms_url: PRIVACY_POLICY_AND_TERMS_OF_SERVICE, show_gplus_button: false}
+    -->, before_navbar_ends: <!-- base.before_navbar_ends -->, locale: en_US, nav_header: De
+    Energietransitie, privacy_terms_url: PRIVACY_POLICY_AND_TERMS_OF_SERVICE, show_gplus_button: false}
 course:
   admin_user_emails: '[sergio@perceptum.nl] [marta@perceptum.nl] [nadine@perceptum.nl]
     [vaidas@percetpum.nl] [ioannis@perceptum.nl]'
-  announcement_list_email: energietransitie-list@perceptum.nl
-  blurb: ''
+  announcement_list_email: energietransitie@perceptum.nl
+  blurb: "<p style='text-align: justify; line-height: 24px; font-size:15px;'>Energie bepaalt onze kwaliteit van leven. We gebruiken energie voor alles wat we doen. Ons huidige energieverbruik heeft helaas een aantal nadelen: het leidt tot klimaatverandering, politieke spanningen en onze belangrijkste energiebronnen worden uiteindelijk te duur om te gebruiken. Om onze kwaliteit van leven ook in de toekomst te kunnen garanderen, moeten we overstappen van fossiele brandstoffen naar duurzame energiebronnen. Deze energietransitie zal zich de komende decennia moeten afspelen en het is dus belangrijk daar nu al zo veel mogelijk over te leren. Dat is het doel van deze lesmodule over de energietransitie: duidelijk maken wat de energietransitie inhoudt, en wat je als individu kan doen om hier aan mee te werken. Het is tijd voor de energietransitie!</p>"
   browsable: true
-  forum_embed_url: 'https://groups.google.com/forum/embed/?place=forum/energietransitie'
-  forum_email: energietransitie@perceptum.nl
+  forum_email: ''
+  forum_embed_url: null
   instructor_details: ''
-  locale: en_US
+  locale: nl
   main_image: {alt_text: '', url: ''}
-  main_video: {url: ''}
+  main_video: {url: 'http://www.youtube.com/embed/_9sBMJFH2ps'}
   now_available: true
   start_date: ''
   title: Energietransitie
 institution:
-  logo: {alt_text: 'DeEnergieTransitie', url: 'assets/img/logo.png'}
+  logo: {alt_text: DeEnergieTransitie, url: assets/img/logo2.png}
   name: Perceptum
   url: http://deenergietransitie.nl
 preview: {}
