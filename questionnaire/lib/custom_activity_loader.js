@@ -31,12 +31,10 @@ function getLibUrl() {
 }
 
 function isTesting() {
-  return (typeof testing !== "undefined" && testing);
+  return (window.location.href.indexOf("127.0.0.1") > -1) 
 }
 
-if (isTesting()) {
-//    console.log = function() {};
-}
+
     
 
 var Questionnaire = {
@@ -96,6 +94,7 @@ var Questionnaire = {
     if (this.remaining().length == 0) {
       var correct=0, incorrect=0, maybe=0;
       $.each(this.doneQuestions, function(k, q) {
+        console.log(q);
         v = q.result;
         if (v.correct) 
             correct += 1;
@@ -105,10 +104,14 @@ var Questionnaire = {
             maybe += 1;
       });
       var total = correct + incorrect + maybe;
+      console.debug("Done questions");
+      console.debug("total " + total);
+      console.debug("correct " + correct);
+      console.debug("incorrect " + incorrect);
+      console.debug("maybe " + maybe);
       $("#right .percentage").html(Math.round(correct / total * 100) + "%");
       $("#wrong .percentage").html(Math.round(incorrect / total * 100) + "%");
       _showOverview();
-      //$("#maybe").html(maybe);
       return true;
     } else {
       $("#rewatch").show();
@@ -119,20 +122,20 @@ var Questionnaire = {
 
   sendResults: function(results) {
     var self = this;
-    var evt = {
-      //Find Unit
-      "source": "questionary-results",
-      "payload": JSON.stringify({
-        "results": this.doneQuestions, 
-        "unit": this.getUnit(),
-        "lesson": this.getLesson(),
-      }),
-      "xsrf_token": eventXsrfToken
-    }
     if (isTesting()) {
       console.log("Results:");
       console.log(this.doneQuestions);
     } else {
+      var evt = {
+        //Find Unit
+        "source": "questionary-results",
+        "payload": JSON.stringify({
+          "results": this.doneQuestions, 
+          "unit": this.getUnit(),
+          "lesson": this.getLesson(),
+        }),
+        "xsrf_token": eventXsrfToken
+      }
       $.post('/rest/events', {request: JSON.stringify(evt)}, function() {
         console.log("Activity results sent");
       }).fail(function() { 
@@ -157,11 +160,32 @@ var Questionnaire = {
     var time = m + ":" + s + "." + d
 
     for (var i=0; i<this.questionsList.length; i++) {
+      //console.error(this.questionsList[i].time, time);
       if (this.questionsList[i].time == time && 
           this.videoIndex != i) {
+        //recalculate position
+        console.error("FOund!");
         this.videoIndex = i;
         Questionnaire.jumpTo(i);
         Questionnaire.fadeIn();
+        $(this.qEle).css("z-index", "-1");
+        if (document.fullScreen || 
+            document.mozFullScreen ||
+            document.webkitIsFullScreen) {
+          if ($(this.qEle).height() > $(document).height()) {
+            $(this.qEle).css("top", "0px");
+            $(this.qEle).css("bottom", "0px");
+            $(this.qEle).css("overflow", "scroll");
+          } else {
+            var hpos = $(document).height() / 2 - $(this.qEle).height() / 2
+            $(this.qEle).css("top", hpos + "px");
+          }
+        } else {
+            $(this.qEle).css("top", "");
+            $(this.qEle).css("bottom", "");
+            $(this.qEle).css("overflow", "");
+        }
+        $(this.qEle).css('z-index', "2147483647");
         return true;
       }     
     }
@@ -206,12 +230,10 @@ var Questionnaire = {
         dataType: 'json',
         async: false,
         success: function(data) {
-          console.log(data);
-          console.log("Activity loaded:", data);
+          console.debug("Activity loaded:", data);
           self.activity_original = data;
         },
         error: function(data) {
-          console.log(data);
           console.error("Error Activity loaded:", data);
           self.activity_original = data;
         } 
@@ -223,11 +245,6 @@ var Questionnaire = {
     this.activity = a = $.extend(true, [], this.activity_original);
     this.questionsList = a.questionsList;
     this.defaultQuestionType = a.questionsType;
-    if (this.activity.videoId) {
-      $(qEle).hide();
-      loadVideoQuestionnaire($(qEle).parent(), this.activity.videoId);
-    }
-    console.error(this.activity);
 
     for (var i=0; i<a.questionsList.length; i++) {
       if (typeof this.questionsList[i].questionType == "undefined") 
@@ -269,10 +286,15 @@ var Questionnaire = {
         this.fadeIn();
         this.jumpNext();
     } else {
-        $(".questionnaire").css("zIndex", -1)
-        $(".questionnaire").show()
+        //$(this.qEle).css("zIndex", -1)
+        //$(this.qEle).show()
+        loadVideoQuestionnaire($(qEle).parent(), this.activity.videoId);
     }
 
+  },
+
+  getInstance: function() {
+      return this.questionInstances[this.index];
   },
 
   on: function(evtName, fnc) {
@@ -293,19 +315,11 @@ var Questionnaire = {
   },
 
   fadeOut: function() {
-    var self = this;
-    $(this.qEle).children().fadeOut(function() {
-        $(".questionnaire").css("zIndex", -1);
-        $(self.qEle).children().show();
-    });
+    $(this.qEle).fadeOut();
   },
 
   fadeIn: function() {
-    $(".questionnaire").css("zIndex", 1);
-    $("question").show()
-    $(this.qEle).children().hide();
-    $(this.qEle).show();
-    $(this.qEle).children().fadeIn();
+    $(this.qEle).fadeIn();
   },
 
   remaining: function() {
@@ -357,12 +371,7 @@ var Questionnaire = {
       index: this.index
     }).appendTo('#questions');
 
-    $("#questions").show();
-
     this.questionClass = this.registeredQuestionTypes[this.question.questionType];
-    console.log(this.registeredQuestionTypes);
-    console.log(this.questionClass);
-    console.log(this.question.questionType);
     
     this.questionInstances[index] = new this.questionClass(this.question, template)
     this.questionInstances[index].create();
@@ -395,7 +404,7 @@ var Questionnaire = {
   },
 
   registerType: function(questionObj) {
-    console.log("registerType");
+    console.debug("registerType: " + questionObj.questionType);
     this.registeredQuestionTypes[questionObj.questionType] = questionObj;
   }
 }
@@ -416,10 +425,13 @@ function QuestionBase(question, qEle) {
   } 
 }
 
-window.addEventListener("load", function() {
-  var qs = $("question"); 
-  //could support multiple questionnaires
-  $.each(qs, function(k, q) {
-    Questionnaire.create(q);
+if (!isTesting()) {
+  window.addEventListener("load", function() {
+    var qs = $("question"); 
+    //could support multiple questionnaires
+    $.each(qs, function(k, q) {
+      Questionnaire.create(q);
+    });
   });
-});
+} else {
+}

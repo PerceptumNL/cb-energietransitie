@@ -8,35 +8,19 @@ function loadVideoQuestionnaire(ele, youtubeid) {
   '</div>'
   );
 
-  $video = $("<video id='v' controls></video");
-  $video.append("<source>").attr({
-    "id": "mp4",
-    "src": "videos/1.1 Introductie met dagelijks energiegerbruik-IsHAobnJz-I.mp4",
-    "type": "video/mp4"
-  });
-  $video.append("<p>Your user agent does not support the HTML5 Video element.</p>");
-    
-  $("#ytapiplayer").append($video);
-  
-  var video= document.getElementById('v');
-  video.addEventListener('progress', function() {
-    var show= video.currentTime>=5 && video.currentTime<10;
-    overlay.style.visibility= show? 'visible' : 'visible';
-  }, false);"
-
-  //var params = { 
-  //  allowScriptAccess: "always", 
-  //  wmode: "transparent",
-  //  allowFullscreen: "true",
-  //};
-  //var atts = { 
-  //  id: "myytplayer",
-  //  style: "position:absolute" 
-  //};
-  //swfobject.embedSWF("http://www.youtube.com/v/"+youtubeid+
-  //                      "?enablejsapi=1&playerapiid=ytplayer&version=3",
-  //                    "ytapiplayer", 
-  //                    "788", "536", "8", null, null, params, atts);
+  var params = { 
+    allowScriptAccess: "always", 
+    wmode: "transparent",
+    allowFullscreen: "true",
+  };
+  var atts = { 
+    id: "myytplayer",
+    style: "position:absolute" 
+  };
+  swfobject.embedSWF("http://www.youtube.com/v/"+youtubeid+
+                        "?enablejsapi=1&playerapiid=ytplayer&version=3",
+                      "ytapiplayer", 
+                      "788", "536", "8", null, null, params, atts);
 }
 
 var inter;

@@ -1,11 +1,11 @@
-$answer: #FFAE4D;
-$answer-hover: #FD8900;
-$answer-disabled: #aaa;
+$answer: #E1E2E3;
+$answer-hover: #c4c5c7;
+$answer-disabled: #EFF0F1;
 
 .tfq {
   &.option {
     border: 2px;
-    color: white;
+    color: black;
     font-size: 17px;
     margin-left: 10px;
     margin-right: 10px;
@@ -13,10 +13,9 @@ $answer-disabled: #aaa;
 
     div {
       display: inline-block;
-      padding: 10px 0px;
+      padding: 10px 2.3px;
       margin: 0px 7px;
-      background-color: $answer;
-      text-shadow: 1px 1px #bbb; 
+      background-color: $answer; 
       &.selected,
       &:hover {
         background-color: $answer-hover;
@@ -27,11 +26,12 @@ $answer-disabled: #aaa;
       &.disabled:hover {
         background-color: $answer-disabled;
         cursor: default; 
+        text-shadow: none;
       }
     
       &.correct,
       &.incorrect {
-        background-color: $answer;
+        background-color: $answer-hover;
         cursor: default; 
       }
     }
@@ -40,5 +40,18 @@ $answer-disabled: #aaa;
   .table-feedback {
     margin-top: 14px; 
   }
+  #send-button,{
+    margin-bottom: 5px;
+    padding: 8px 11px;
+    background-color: #c4c5c7;
+    width: 50px;
+    float: right;
+    text-align: center;
+    margin-right: 5px; }
+
+#send-button:hover, {
+  margin-right: 5px;
+  cursor: pointer; }
+    
 }
 

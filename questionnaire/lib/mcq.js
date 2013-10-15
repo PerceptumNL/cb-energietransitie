@@ -68,20 +68,24 @@ MCQ.prototype = {
     var answers = self.question.answers
     self.result.correct = true;
 
+    console.log(question.correctAnswer);
     self.$q(".option").children().each(function(idx, ans) {
-      var img;
+      console.log(idx, ans);
+      if ($.inArray(idx, question.correctAnswer) >= 0) {
+        $(ans).addClass("correct");
+      } else {
+        $(ans).addClass("incorrect");
+      }
+      //Set correct
       if ($.inArray(idx, question.correctAnswer) >= 0 && $(ans).hasClass("toggleon") || 
           $.inArray(idx, question.correctAnswer) == -1 && !$(ans).hasClass("toggleon")) {
-          img = 'http://bit.ly/11iXTZG'
       }
       else {
           self.result.correct = false;
           self.result.incorrect = true;
-          img = 'http://bit.ly/1aMHTSK'
       }
-      var $div = $("<div>").attr("id", "fb").appendTo(ans)
-      $("<img>").attr("src", img).appendTo($div);
       if (answers[idx].feedback) {
+        var $div = $("<div>").attr("id", "fb").appendTo(ans)
         $("<span>").html(answers[idx].feedback).appendTo($div);
         $div.addClass("fill")
       }

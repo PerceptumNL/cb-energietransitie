@@ -11,7 +11,6 @@ td, th {
   min-height: 515px;
   border: 1px solid #c4c5c7;
   top: 0px;
-  display: none;
   background-color: white;
   position: relative; }
 
@@ -170,7 +169,7 @@ td, th {
 #send-button,
 #submit-button,
 #check-button {
-  bottom: 0px;
+  bottom: 0;
   padding: 8px 11px;
   background-color: #c4c5c7;
   width: 50px;
@@ -222,11 +221,10 @@ td, th {
 .percentage {
   display: inline-block;
   position: absolute;
-  top: 10px;
   margin-left: 50px; }
 
 #boxes {
-  margin-top: 350px;
+  margin-top: 220px;
   margin-left: 20px;
   margin-right: 20px;
   color: #726C78;

@@ -146,16 +146,6 @@ var drawArrow=function(ctx,x1,y1,x2,y2,style,which,angle,d)
   }
 }
 
-function canvas_arrow(context, fromx, fromy, tox, toy){
-    var headlen = 10;   // length of head in pixels
-    var angle = Math.atan2(toy-fromy,tox-fromx);
-    context.moveTo(fromx, fromy);
-    context.lineTo(tox, toy);
-    context.lineTo(tox-headlen*Math.cos(angle-Math.PI/6),toy-headlen*Math.sin(angle-Math.PI/6));
-    context.moveTo(tox, toy);
-    context.lineTo(tox-headlen*Math.cos(angle+Math.PI/6),toy-headlen*Math.sin(angle+Math.PI/6));
-}
-
 function DDQTREE(question, qEle) {
   this.question = question;
   this.qEle = qEle;
@@ -481,8 +471,9 @@ DDQTREE.prototype = {
       if ((ans.dataset.parent_id == -1 && parent_ans !== undefined) ||
           (parent_ans && ans.dataset.parent_id != parent_ans.dataset.ele_id) ||
            self._checkDepth(ans) == false) {
-        self.result.correct = false;
         $(ans).parent().css("border-color", "red");
+        self.result.incorrect = true;
+        self.result.correct = false;
       } else {
         $(ans).parent().css("border-color", "green");
       }

@@ -1,45 +1,59 @@
-.option.mcq {
-  border: 2px;
-  color: white;
-  font-size: 17px;
-  margin-left: 10px;
-  margin-right: 10px;
-  margin-top: 50px;
-  position: relative; }
+$green: #FFAE4D;
+$red: #FD8900;
 
-.option.mcq div {
-  margin: 10px 10px;
-  padding: 10px 10px;
-  color: white;
-  background-color: #FFAE4D;
-  text-align: center;
-  margin-right: auto;
-  margin-left: auto;
-  text-shadow: 1px 1px #bbb; }
+.mcq {
+  &.option {
+    border: 2px;
+    color: white;
+    font-size: 17px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 50px;
+    position: relative; 
 
-.option.mcq.enabled div:hover {
-  background-color: #FD8900;
-  cursor: pointer; }
+    div {
+      margin: 10px 10px;
+      padding: 10px 10px;
+      color: black;
+      background-color: #E1E2E3;
+      text-align: center;
+      margin-right: auto;
+      margin-left: auto;
+      border: 3px solid white; 
+      &.toggleon {
+        border: 3px solid black; }
+      &.toggleon.correct {
+        border: 3px solid #058515 !important;
+        }
+      &.toggleon.incorrect {
+        border: 3px solid #DF3B32 !important;
+        }
+      &.correct {
+        color:#058515;    
+            }
+      &.incorrect {
+        color:#DF3B32;    
+            }
+      &:hover {
+        cursor: pointer; 
+      }
+      &.disabled {
+        background-color: #aaa; 
+      }
+    }
+  }
+  
+  .text {
+    text-shadow: 1px 1px black;
+  }
 
-.option.mcq div.disabled {
-  background-color: #aaa; }
-
-.option.mcq div.correct {
-  background-color: #FD8900 !important; }
-
-.option.mcq div.incorrect {
-  background-color: #FD8900 !important; }
-
-.option.mcq div {
-  border: 5px solid white; }
-
-.option.mcq div.toggleon {
-  border: 5px solid black; }
-
-#fb {
-  background-color: white;
-  text-align: center;
-  color: black; }
-
-#fb.fill {
-  text-align: left; }
+  #fb {
+    background-color: white;
+    text-align: center;
+    color: black; 
+  }
+  
+  #fb.fill {
+    text-align: left; 
+  }
+}

@@ -9,7 +9,8 @@ def build():
         os.makedirs(directory)
     
     #js
-    libs = ['lib/custom_activity_loader.js', 'lib/ddq.js', 'lib/mcq.js', 'lib/tfq.js', 'lib/ddq_tree.js', 'lib/video_questionnaire.js', 'lib/tiq.js']
+    libs = ['lib/custom_activity_loader.js', 'lib/ddq.js', 'lib/mcq.js', 'lib/tfq.js', 'lib/ddq_tree.js', 'lib/html5_questionnaire.js', 'lib/tiq.js']
+    print "node_modules/uglify-js/bin/uglifyjs -c -o %s %s " % ('build/questionnaire_nolibs.js', " ".join(libs))
     os.system("node_modules/uglify-js/bin/uglifyjs -c -o %s %s " % ('build/questionnaire_nolibs.js', " ".join(libs)))
     filenames = ['build/questionnaire_nolibs.js', 'js_vendor/swfobject.js', 'js_vendor/jquery-ui-1.10.3.custom.min.js']
     with open(os.path.join(filedir, 'build/questionnaire.js'), 'w') as outfile:

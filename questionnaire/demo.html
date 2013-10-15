@@ -6,7 +6,12 @@
   <script src="/js_vendor/jquery-ui-1.10.3.custom.min.js"></script>
   <script src="js_vendor/swfobject.js"></script>
   <script src="/lib/custom_activity_loader.js"></script>
-  <script src="lib/video_questionnaire.js"></script>
+    <!--
+  <script src="lib/youtube_questionnaire.js"></script>
+-->
+	<link rel="stylesheet" href="js_vendor/mediaelement/mediaelementplayer.min.css" />
+  <script src="js_vendor/mediaelement/mediaelement-and-player.min.js"></script>
+  <script src="lib/html5_questionnaire.js"></script>
   <script src="/lib/tfq.js"></script>
   <script src="/lib/ddq.js"></script>
   <script src="/lib/ddq_tree.js"></script>
@@ -17,14 +22,37 @@
   <body>
     <select id="demo">
     </select>
-    <question></question>
+    <div id="activityContents">
+      <question></question>
+    </div>
     <script>
+        var params = {
+            "type": "tfq",
+            "solve": false,
+        }
+        function updateUrl() {
+            var url = window.location.protocol + 
+              "//" + window.location.host +
+              window.location.pathname; 
+            var pre = "?";
+            $.each(params, function(k, v) {
+                url += pre + k + "=" + v ;
+                pre = "&";
+            });
+            window.history.pushState("object or string", 
+              "Title", url);
+            return url
+        }
         function load_questionnaire(type) {
+            params['type'] = type;
+            updateUrl()
             console.debug("Load questionnaire " + type);
             $q = $("question")
             $q.empty().attr("src", "samples/" + type + ".js");
-            window.location.hash = type
             Questionnaire.create($q);
+            if (getURLParameter("solve") == "true") {
+                Questionnaire.getInstance().test();
+            }
         }
         var demos = { 
             "tfq": "TFQ",
@@ -35,7 +63,11 @@
             "mix": "MIX",
             "video": "VIDEO",
         }
-        var startup = window.location.hash.substr(1);
+        var startup = getURLParameter("type")
+        params = {
+            "type": startup,
+            "solve": getURLParameter("solve")
+        }
         $.each(demos, function(k, v) {
             $option = $("<option>").val(k).html(v).appendTo($("#demo"));
             if (k == startup) {

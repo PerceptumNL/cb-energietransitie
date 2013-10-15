@@ -1,113 +1,120 @@
-#concept_img {
-  height: 200px; }
+.ddq {
+  .top-row { text-align: center; }
+  .ui-state-active { background-color: $answer; }
 
-#check_answer {
-  margin-top: 20px;
-  text-align: center; }
+  #question-text {
+    padding-top: 5px;
+    font-size: 20px; 
+  }
 
-#check_answer span:hover {
-  color: white;
-  background-color: blue;
-  cursor: pointer; }
+  .concept {
+    display: inline-block;
+    border: 2px dashed $answer;
+    margin: 8px;
+    padding: 5px;
+    font-size: 14px;
+    text-align: center;
+    background-color: white; 
+    &.ui-draggable:hover { cursor: pointer; }
+    &.ui-state-disabled:hover { cursor: auto; }
+    img {
+      width: 100px;
+      display: block; 
+    }
+    &.dropped {
+      border: 2px solid $answer;
+    }
+  }
+  .target {
+    font-size: 10px;
+    display: inline-block;
+    text-align: center;
+    border: 1px solid #c4c5c7;
+    height: 100%;
+    margin-left: 1%;
+    margin-right: 1%;
+    vertical-align: top; 
+  }
 
-#check_answer span {
-  color: blue;
-  font-weight: bold;
-  text-align: center;
-  border: 1px blue solid;
-  padding: 10px; }
+  #question {
+    width: 100%;
+    text-align: center; 
+  }
 
-.ddq .top-row {
-  text-align: center; }
+  #q-table {
+    width: 100%; 
+    margin-top: 7px;
+  }
 
-.ddq .ui-state-active {
-  background-color: orange; }
+  .target-title {
+    font-size: 15px;
+    line-height: 20px;
+    background-color: #c4c5c7;
+    padding: 10px 0px; 
+  }
 
-.ddq #question-text {
-  padding-top: 15px;
-  font-size: 20px; }
+  .targets {
+    text-align: center; 
+  }
 
-.ddq .concept {
-  display: inline-block;
-  border: 2px dashed #FFAE4D;
-  margin: 10px;
-  padding: 10px;
-  font-size: 14px;
-  text-align: center;
-  background-color: white; }
+  #targets {
+    div {
+      width: 100%;
+      display: inline-block;
+      text-align: center;
+      border: 1px solid black;
+      line-height: 50px;
+      cursor: pointer;
+      position: relative; 
+      &:hover {
+        background-color: gray; 
+      }
+    }
+  }
 
-.ddq .concept.ui-draggable:hover {
-  cursor: pointer; }
+  .left-col {
+    width: 100%;
+    float: none; }
+  
+  .right-col {
+    display: none;
+    width: 236px; 
+  }
 
-.ddq .target {
-  font-size: 10px;
-  display: inline-block;
-  text-align: center;
-  border: 1px solid #c4c5c7;
-  height: 100%;
-  margin-left: 1%;
-  margin-right: 1%;
-  vertical-align: top; }
+  #send-button,
+  #check-button {
+    float: none;
+    margin: 0 auto; 
+  }
 
-.ddq #question {
-  width: 100%;
-  text-align: center; }
+  .target-image { 
+     width: 100%; 
+     height: 110px;
+    }
 
-.ddq #q-table {
-  width: 100%; }
+  #q-text { display: none; }
+  #tr-fb { display: none; }
+ .table-feedback { height: 100%; }
+  #td-fb-next { vertical-align: middle; }
+  #concept_img {
+    height: 200px; 
+  }
 
-.target-title {
-  font-size: 15px;
-  line-height: 20px;
-  background-color: #c4c5c7;
-  padding: 10px 0px; }
+  #check_answer {
+    margin-top: 20px;
+    text-align: center; 
+    span {
+      color: blue;
+      font-weight: bold;
+      text-align: center;
+      border: 1px blue solid;
+      padding: 10px; 
+      &:hover { 
+        color: white;
+        background-color: blue;
+        cursor: pointer; 
+      }
+    }
+  }
+}
 
-.targets {
-  text-align: center; }
-
-#targets div {
-  width: 100%;
-  display: inline-block;
-  text-align: center;
-  border: 1px solid black;
-  line-height: 50px;
-  cursor: pointer;
-  position: relative; }
-
-#targets div:hover {
-  background-color: gray; }
-
-.ddq .left-col {
-  width: 100%;
-  float: none; }
-
-.ddq .right-col {
-  display: none;
-  width: 236px; }
-
-.ddq #send-button,
-.ddq #check-button {
-  float: none;
-  margin: 0 auto; }
-
-.ddq .target-image {
-  width: 100%; }
-
-.ddq .concept img {
-  width: 100px;
-  display: block; }
-
-.ddq #q-text {
-  display: none; }
-
-.ddq #tr-fb {
-  display: none; }
-
-.ddq .table-feedback {
-  height: 100%; }
-
-.ddq #td-fb-next {
-  vertical-align: middle; }
-
-.ddq .concept.ui-state-disabled:hover {
-  cursor: auto; }

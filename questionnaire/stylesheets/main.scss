@@ -4,4 +4,71 @@ $answer: #FFAE4D;
 $answer-hover: #FD8900;
 $answer-disabled: #aaa;
 
+.gcb-lesson-content br {
+    height: 0px;
+    display: none;
+}
+
+#activityContents {
+    position: relative;
+    min-height: 440px; 
+    width: 100%;
+    &.fullscreen question {
+        position:absolute;
+        left: 0px;
+        right: 0px;
+    }
+    #v {
+        z-index: 0;
+    }
+    &.fullscreen #v {
+        z-index: 1;
+    }
+    &.fullscreen.pause #overlay {
+        z-index: 12147483647;
+        display: block;
+    }
+}
+
+
+#ytapiplayer {
+    position: absolute;
+    text-align: center;
+    z-index: -1;
+}
+
+question {
+    display: block;
+    z-index: 2147483647;
+}
+
+#questions {
+    margin: 0 auto;
+}
+
+#v {
+    text-align: center;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    margin: 0 auto;
+    z-index: 1;
+}
+
+#overlay {
+    display: none;
+    position: fixed;
+    background-color: black;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    opacity: 0.8;
+    z-index: 1;
+}
+
+
+
+
 @import "modules/all";

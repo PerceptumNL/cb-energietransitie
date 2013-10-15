@@ -95,7 +95,7 @@ DDQ.prototype = {
       })
     });
 
-    $(concept).css("border", "2px solid orange");
+    $(concept).addClass("dropped");
     self.checkDone();
   },
 
@@ -133,7 +133,6 @@ DDQ.prototype = {
       drop: function( event, ui ) {
         $a.append(ui.draggable[0]);
         $(ui.draggable[0])
-            .css("border", "2px dashed orange")
             .css("left", "0")
             .css("top", "0");
         self.checkDone();
@@ -146,6 +145,7 @@ DDQ.prototype = {
         .show();
 
     self.$q("#check-button").click(function(){
+      self.checkAnswer();
       self.$q("#check-button").hide();
       self.$q("#send-button").show();
     });
@@ -167,19 +167,13 @@ DDQ.prototype = {
   },
   
   checkAnswer: function() {
+    var self = this;
     this.result.correct = true;
     
-    var self = this;
-    for (var i=0; i<self.positions.length;i++){
-      var newentry2 = self.submissionList[self.positions[i].pos].conceptList.length;
-      self.submissionList[self.positions[i].pos].conceptList[newentry2]={}
-      self.submissionList[self.positions[i].pos].conceptList[newentry2].type="text"
-      self.submissionList[self.positions[i].pos].conceptList[newentry2].text=self.positions[i].name
-    }
-
-
+    console.error("checkAnswer");
     $(".target").each(function(k, v) {
       $(v).find(".concept").each(function(_k, answer) {
+        console.log(k);
 
         $(answer).draggable( "destroy" );
 
@@ -225,7 +219,6 @@ DDQ.prototype = {
           
       });
     });
-    this.question.submissionList = self.submissionList
     return true;
   },
   
