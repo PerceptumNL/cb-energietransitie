@@ -1,21 +1,6 @@
 unit_id,unit_title,lesson_id,lesson_title,lesson_activity,lesson_activity_name,lesson_notes,lesson_video_id,lesson_objectives
-87,Introductie,1,Het belang van energie,yes,,,,<gcb-activity activityid="activity-69.js" instanceid="0AnQ91jBoQmW"></gcb-activity><br>
-87,Introductie,2,De energietransitie in theorie,yes,,,_xqcBVtXBFo,
-87,Introductie,3,De energietransitie in de praktijk,yes,,,2rDTw2JBM4Y,
-68,De energietransitie in theorie,1,Energieopwekking en -gebruik,yes,,,,<gcb-activity activityid="activity-73.js" instanceid="wtrEeGew6eFv"></gcb-activity><br>
-43,Questionnaire examples,1,Drag and Drop Tree,yes,,,,
+87,Introductie,1,Het belang van energie,,,,,"<gcb-activity activityid=""activity-69.js"" instanceid=""0AnQ91jBoQmW""></gcb-activity><br>"
+87,Introductie,2,De energietransitie in theorie,,,,_xqcBVtXBFo,
+87,Introductie,3,De energietransitie in de praktijk,,,,2rDTw2JBM4Y,
+68,De energietransitie in theorie,1,Energieopwekking en -gebruik,yes,,,,"<gcb-activity activityid=""activity-73.js"" instanceid=""wtrEeGew6eFv""></gcb-activity><br>"
 68,De energietransitie in theorie,2,Zonne-energie,yes,,,Qr7kTYToGpw,
-43,Questionnaire examples,2,New Lesson,,,,,
-43,Questionnaire examples,3,True-False,yes,,,,<gcb-iframe src="https://docs.google.com/a/perceptum.nl/presentation/d/1_V03TEvOzJ7XmK7olV3XE9hc56Y_nySY0AmlwAGStB8/embed" title="" height="606" width="770" instanceid="AXLwNzuLRXV7"></gcb-iframe>
-
-43,Questionnaire examples,4,Multiple Choice,yes,,,,<gcb-iframe src="https://docs.google.com/a/perceptum.nl/presentation/d/1pzdQLhZYsjrXZjUik34m_1m6I-LG1A5MDr8rbcyqjLA/embed" title="" height="606" width="770" ></gcb-iframe>
-
-43,Questionnaire examples,5,Drag and drop,yes,,,,<gcb-iframe src="https://docs.google.com/a/perceptum.nl/presentation/d/1xGrRIfm-CnnDAjt6rZXv1khRH6Fmt0tE_8rlJqZhTyk/embed" title="" height="606" width="770" instanceid="AXLwNzuLRXV7"></gcb-iframe>
-
-43,Questionnaire examples,6,Drag and drop - Tree,yes,,,,<gcb-iframe src="https://docs.google.com/a/perceptum.nl/presentation/d/1fOcqk_VJfW620tCS_wzuoA8X8oki3Tv-MkTzlPVUFQQ/embed" title="" height="606" width="770" instanceid="AXLwNzuLRXV7"></gcb-iframe>
-
-43,Questionnaire examples,7,Questionnaire mix,yes,,,,<gcb-iframe src="https://docs.google.com/a/perceptum.nl/presentation/d/1F8xZeP5LIGZET_HXeHfMZ_ZcRiUoY_dRSdOkqQXZsfg/embed" title="" height="606" width="770" instanceid="AXLwNzuLRXV7"></gcb-iframe>
-
-43,Questionnaire examples,8,How to create a questionnaire,,,,,<gcb-iframe src="https://docs.google.com/a/perceptum.nl/presentation/d/1vu2ZiVod-aSC65JuwhBScCnw2MYLTS9NN8D3i_1_7TE/embed" title="" height="606" width="770" instanceid="AXLwNzuLRXV7"></gcb-iframe>
-
-43,Questionnaire examples,9,Video questionnaire,yes,,,,<gcb-activity activityid="activity-86.js" instanceid="1SKmEMCOlA5V"></gcb-activity><br>
