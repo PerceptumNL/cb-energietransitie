@@ -48,12 +48,17 @@
           </span>
         {% endif %}
 
-        {% if lesson.activity and lesson.activity_listed %}
-          <ul>
+        
+
+        </li>
+      
+      
+      {% if lesson.activity and lesson.activity_listed %}
+         
             {% if page_type == 'activity' and lesson.lesson_id == lesson_id %}
-              <li class="active">
+              <li class="active activiteit_sidebar">
             {% else %}
-              <li>
+              <li class="activiteit_sidebar">
             {% endif %}
                 {% if is_progress_recorded %}
                   <div class="gcb-progress-icon-holder">
@@ -91,10 +96,8 @@
                   {% endif %}
                 </div>
               </li>
-          </ul>
+         
         {% endif %}
-
-        </li>
 
       {% else %}
         <li>

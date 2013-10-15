@@ -27,7 +27,7 @@
 html {
  /*    
   background: #f5f5f5;*/
-  background: #f5f5f5;
+  background: #F3F7FE;
   color: #444;
   font-size: 13px;
   line-height: 1.54;
@@ -86,21 +86,19 @@ th, td {
   margin: 0 0;
   width: 15.11%;
   background-color:white;
-  margin-top: -5PX;
-
+  margin: 9px 0;
+ 
 }
-
 .gcb-sidebar {
   border-radius: 3px;
   box-shadow: 0 -1px 5px 0 rgba(0,0,0,0.1);
   border: 1px solid #c4c5c7;
-  margin: 9px 0 !important;
 }
 
 #gcb-nav-y ul {
   list-style: none;
   margin: 0;
- 
+  margin: 6px;
 }
 
 #gcb-nav-y ul ul {
@@ -134,7 +132,7 @@ th, td {
 }
 
 #gcb-nav-y li, #gcb-nav-y li.active a, #gcb-nav-y li.active li, #gcb-nav-y li.active li.active a {
-
+  font-weight: bold;
 }
 
 #gcb-nav-y li li {
@@ -460,15 +458,6 @@ a.gcb-button-action, button.gcb-button-action {
   padding: 0 2.5%;
   text-align:center;
 }
-.gcb-col-5.gcb-summary-left {
-  padding: 0 1.5% 0 3.5%;
-}
-.gcb-col-5.gcb-summary-right {
-  padding: 0 3.5% 0 1.5%;
-}
-.gcb-col-5.gcb-summary-right frame {
-  float: right;
-}
 
 
 .gcb-col-6 {
@@ -655,6 +644,7 @@ a.gcb-button-action, button.gcb-button-action {
 .gcb-lesson-title {
   font-size: 23px;
   margin: 0px;
+  text-align: middle;
   text-transform:uppercase;
 }
 
@@ -691,7 +681,7 @@ table.gcb-student-data-table {
 /* Styles for the circular progress indicators. */
 .gcb-progress-icon {
   margin: 2px 7px 0 0;
-  width: 8px;
+  opacity: 0.7;
 }
 .gcb-progress-empty {
   display: inline-block;
@@ -701,16 +691,14 @@ table.gcb-student-data-table {
 }
 .gcb-progress-icon-holder {
   float: left;
-  width: 8px;
-  margin-left: 5px;
+  width: 10px;
+  margin-left: 3px;
 }
-
 .gcb-lesson-title-with-progress {
-  margin-left: 18px;
-  width: 116px;    
+  margin-left: 15px;
 }
 .gcb-activity-title-with-progress {
-  margin-left: 18px;
+  margin-left: 15px;
 }
 
 /* Styles for grayed-out text (e.g. to indicate private lessons/units). */
@@ -722,13 +710,10 @@ table.gcb-student-data-table {
   font-weight: bold;
 }
 .gcb-sidebar .active {
-  background-color:#F4F3F3;
-   
+  background-color:#f0f0f0;
+  border-radius: 4px;    
 }
-.activiteit_sidebar {
-  padding-left: 13px !important;
-  margin-left: 0px;
-}
+
 
 /* A box that surrounds read-only assessments. */
 .gcb-border-box {
@@ -754,7 +739,6 @@ table.gcb-student-data-table {
 
 #gcb-nav-x .gcb-pull-right {
   float: right;
-  margin: 0 0 0 15px;
 }
 
 /* Registration page form. */

@@ -1,12 +1,12 @@
 
 {% if video_exists or image_exists %}
-  <div class="gcb-col-5">
+  <div class="gcb-col-5 gcb-summary-left">
 {% else %}
   <div class="gcb-col-11">
 {% endif %}
 
   <h1 class="gcb-product-headers-large">
-    Introductie
+    {{course_info.course.title}}
   </h1>
 
   <p class="gcb-product-headers">
@@ -22,7 +22,7 @@
 
 
 {% if video_exists or image_exists %}
-  <div class="gcb-col-5">
+  <div class="gcb-col-5 gcb-summary-right">
 
     {% if video_exists %}
       {# I18N: Alt text for an embedded YouTube video player. #}

@@ -67,27 +67,6 @@
 
             {% if lesson.now_available or is_course_admin %}
 
-              <div class="gcb-cols">
-                <div class="gcb-col-7">
-                  <h1 class="gcb-lesson-title">
-                    {{ lesson.activity_title }}
-                    {% if not lesson.now_available and is_course_admin %}
-                      <span id="lesson-title-private">
-                        (Private)
-                      </span>
-                    {% endif %}
-                  </h1>
-                </div>
-                <div class="gcb-col-3">
-                  <p style="float:right; margin-top: 0px;">
-                    <a role="button" class="gcb-button" id="lessonNotesLink" href="{{ lesson.notes }}" target="_blank">
-                      {# I18N: Link to a text version of a lesson video. #}
-                      {{ gettext('Text Version') }}
-                    </a>
-                  </p>
-                </div>
-              </div><!-- /gcb-cols -->
-
               <div style="width: 785px;" id="activityContents">
               </div>
 

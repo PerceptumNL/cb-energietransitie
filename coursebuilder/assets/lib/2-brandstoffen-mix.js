@@ -1,4 +1,4 @@
-{"videoId":"usGNrJhi4qY",
+{"videoId":"https://s3.amazonaws.com/energietransitie/2.+Energieopwekking+en+-gebruik-usGNrJhi4qY.mp4",
     "questionsList": [
         {
             "time": "0:02.0",
