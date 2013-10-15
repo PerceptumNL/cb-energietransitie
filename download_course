@@ -10,6 +10,6 @@ rm ${DOWNLOAD_PATH}/${COURSE}.zip
 source activate
 python coursebuilder/import.py download course / $APPID $APPID.appspot.com --archive_path ${DOWNLOAD_PATH}/${COURSE}.zip
 
-cd $COURSE_PATH
+cd $DOWNLOAD_PATH
 unzip -d ${COURSE} ${COURSE}.zip 
 cd -

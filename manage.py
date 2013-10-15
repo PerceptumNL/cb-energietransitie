@@ -6,8 +6,11 @@ import questionnaire.build
 
 def update_questionnaire(dst):
     print "Build questionnaire into %s " % dst
+    os.chdir("./questionnaire")
+    print os.getcwd()
     questionnaire.build.build()
 
+    os.chdir("..")
     print "Update questionnaire"
     shutil.copyfile("questionnaire/build/questionnaire.css", os.path.join(dst, "assets/css/questionnaire.css"))
     shutil.copyfile("questionnaire/build/questionnaire.js", os.path.join(dst, "assets/js/questionnaire.js"))
