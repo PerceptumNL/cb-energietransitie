@@ -6,11 +6,14 @@
   <script src="/js_vendor/jquery-ui-1.10.3.custom.min.js"></script>
   <script src="js_vendor/swfobject.js"></script>
   <script src="/lib/custom_activity_loader.js"></script>
+  <link rel="stylesheet" href="tests/qunit-1.12.0.css">
+  <script src="tests/qunit-1.12.0.js"></script>
     <!--
   <script src="lib/youtube_questionnaire.js"></script>
 -->
 	<link rel="stylesheet" href="js_vendor/mediaelement/mediaelementplayer.min.css" />
   <script src="js_vendor/mediaelement/mediaelement-and-player.min.js"></script>
+  <script src="js_vendor/screenfull.min.js"></script>
   <script src="lib/html5_questionnaire.js"></script>
   <script src="/lib/tfq.js"></script>
   <script src="/lib/ddq.js"></script>
@@ -22,13 +25,33 @@
   <body>
     <select id="demo">
     </select>
+ <style>
+
+#qunit {
+    display: none;
+
+}
+</style>
+  
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
     <div id="activityContents">
       <question></question>
     </div>
     <script>
+        var demos = { 
+            "tfq": "TFQ",
+            "ddq": "DDQ",
+            "ddq_tree": "DDQ TREE",
+            "mcq": "MCQ",
+            "tiq": "TIC",
+            "mix": "MIX",
+            "video": "VIDEO",
+        }
         var params = {
-            "type": "tfq",
-            "solve": false,
+            "type": getURLParameter("type", "tfq"),
+            "solve": getURLParameter("solve", false),
+            "test": getURLParameter("test", false)
         }
         function updateUrl() {
             var url = window.location.protocol + 
@@ -50,32 +73,30 @@
             $q = $("question")
             $q.empty().attr("src", "samples/" + type + ".js");
             Questionnaire.create($q);
-            if (getURLParameter("solve") == "true") {
+            if (params['solve'] == "true") {
                 Questionnaire.getInstance().test();
             }
-        }
-        var demos = { 
-            "tfq": "TFQ",
-            "ddq": "DDQ",
-            "ddq_tree": "DDQ TREE",
-            "mcq": "MCQ",
-            "tiq": "TIC",
-            "mix": "MIX",
-            "video": "VIDEO",
-        }
-        var startup = getURLParameter("type")
-        params = {
-            "type": startup,
-            "solve": getURLParameter("solve")
+            if (params['test']) {
+                var testName = 'test_' + params['test'];
+                console.log("Browser: ", JSON.stringify($.browser));
+                console.log(JSON.stringify(mejs.MediaFeatures))
+                if (!$.browser.webkit) console.error("Tests are meant to run with webkit");
+                if (testName in window) {
+                    $("#qunit").show();
+                    console.debug("Launch test: " + testName); 
+                    window[testName]();
+                } else {
+                    console.error("Test doesn't exist: " + testName); 
+                }
+            }
         }
         $.each(demos, function(k, v) {
             $option = $("<option>").val(k).html(v).appendTo($("#demo"));
-            if (k == startup) {
+            if (k == params['type']) {
                 $option.prop('selected', true);
                 load_questionnaire(k)
             }
         })
-        
         $("#demo").change(function() {
             load_questionnaire($(this).val());
         })
