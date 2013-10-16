@@ -726,8 +726,10 @@ table.gcb-student-data-table {
    
 }
 .activiteit_sidebar {
-  padding-left: 13px !important;
+
   margin-left: 0px;
+  padding-left: 13px !important;
+  border-top: 1px dashed #e0e0e0 ;
 }
 
 /* A box that surrounds read-only assessments. */
