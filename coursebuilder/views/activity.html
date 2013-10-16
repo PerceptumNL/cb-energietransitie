@@ -66,7 +66,11 @@
           <div class="gcb-aside">
 
             {% if lesson.now_available or is_course_admin %}
-
+              <div class="gcb-col-7">  
+               <h1 class="gcb-lesson-title gcb-lesson-title-middle">
+                    {{ lesson.title }}
+               </h1>
+              </div>
               <div style="width: 785px;" id="activityContents">
               </div>
 
