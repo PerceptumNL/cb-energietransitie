@@ -20,14 +20,6 @@
                                 {       
                                     "text": "Zuinigere apparaten en technologie",
                                     "image": "samples/concept-2.png"
-                                },
-                                {       
-                                    "text": "Zuinigere apparaten en technologie",
-                                    "image": "samples/concept-2.png"
-                                },
-                                {       
-                                    "text": "Zuinigere apparaten en technologie",
-                                    "image": "samples/concept-2.png"
                                 }
                             ]
                         },

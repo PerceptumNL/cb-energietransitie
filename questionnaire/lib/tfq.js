@@ -80,7 +80,7 @@ TFQ.prototype = {
         });
       }
     }
-    self.$q(".option").children().css("width", 80/self.$q(".option").children().length + "%");
+    self.$q(".option").children().css("width", (84/self.$q(".option").children().length) + "%");
     if (res) {
       self.checkAnswer(res.answerIdx)
     }

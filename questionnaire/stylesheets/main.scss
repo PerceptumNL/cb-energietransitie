@@ -3,10 +3,14 @@
 $answer: #FFAE4D;
 $answer-hover: #FD8900;
 $answer-disabled: #aaa;
+$width: 788px;
 
 .gcb-lesson-content br {
     height: 0px;
     display: none;
+}
+.mejs-container {
+    margin: 0 auto;
 }
 
 #activityContents {
@@ -14,9 +18,18 @@ $answer-disabled: #aaa;
     min-height: 440px; 
     width: 100%;
     &.fullscreen question {
-        position:absolute;
-        left: 0px;
-        right: 0px;
+      position: absolute;
+      left: 0px;
+      right: 0px;
+      z-index: 2147483647;
+      &.overflow {
+        position: fixed;
+        width: $width+2px;
+        top: 20px;
+        bottom: 20px;
+        overflow: scroll;
+        margin: 0 auto;
+      }
     }
     #v {
         z-index: 0;
@@ -28,8 +41,15 @@ $answer-disabled: #aaa;
         z-index: 12147483647;
         display: block;
     }
+    &.pause .mejs-overlay-play {
+        visibility: hidden;
+    }
 }
 
+
+.video #number {
+    display: none;
+}
 
 #ytapiplayer {
     position: absolute;

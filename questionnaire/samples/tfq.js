@@ -24,7 +24,7 @@
             "type": "text",
             "text": "Due to deliberate misinformation from governments and large corporations most people are still unaware of the necessity of change.",
             "correctAnswer": 0,
-            "answerMaybe": true,
+            "answerMaybe": false,
             "hint": "Freedom of the press?",
             "answers": [
                 {
@@ -43,7 +43,7 @@
             "type": "text",
             "text": "Proper education is the first step towards a sustainable society.",
             "correctAnswer": 0,
-            "answerMaybe": true,
+            "answerMaybe": false,
             "hint": "Freedom of the press?",
             "answers": [
                 {

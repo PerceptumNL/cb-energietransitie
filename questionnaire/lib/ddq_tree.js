@@ -223,7 +223,7 @@ DDQTREE.prototype = {
     for (var i=0;i<depth_ele.length;i++) {
       if (i>0) {
         var $tr = $("<div>").attr("class", "ddqt-col")
-          .css("width", 30/depth_ele.length + "%")
+          .css("width", 15/depth_ele.length + "%")
           .appendTo($t);
         var $cell = $("<div>").attr("class","ddqt-arrow-cell")
           .appendTo($tr);  
@@ -235,7 +235,7 @@ DDQTREE.prototype = {
 
       var $tr = $("<div>")
         .addClass("ddqt-col target-col")
-        .css("width", 70/depth_ele.length + "%")
+        .css("width", 85/depth_ele.length + "%")
         .data("depth", i)
         .appendTo($t);
     }
@@ -380,8 +380,9 @@ DDQTREE.prototype = {
     this.cell_width = this.$q(".ddqt-cell").width();
 
     $.each(concepts, function(i, concept) {
+      var concept_text = $("<div class='concept-text'>"+concept.text+"</div>")
       var concept_div = $("<div>")
-            .text(concept.text)
+            .html(concept_text)
             .addClass('concept')
             .attr("data-parent_id", concept.parent_id)
             .attr("data-ele_id", concept.ele_id)
@@ -392,10 +393,13 @@ DDQTREE.prototype = {
 
       if (concept.image) {
         $("<img>").attr("src", concept.image)
+          .addClass("concept-image")
           .attr("width", "100")
-          .css("display", "block")
+          .css("display", "inline")
           .css("margin", "auto")
           .prependTo(concept_div);
+      } else {
+        concept_text.addClass("solo-text");
       }
 
       $(concept_div).draggable({ 

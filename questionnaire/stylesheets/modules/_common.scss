@@ -67,6 +67,10 @@ td, th {
 #number span.sel-number {
   font-weight: bold;
   color: black; }
+.number-spacing {
+  letter-spacing: -3px;
+  padding-right: 4px;    
+}
 
 #button-hint {
   text-align: right;
@@ -74,7 +78,9 @@ td, th {
   margin-top: 2px;
   font-size: 20px;
   position: absolute;
-  display: inline-block; }
+  top: 0px;
+  float: right;
+}
 
 #button-hint:hover {
   cursor: pointer;
@@ -171,7 +177,7 @@ td, th {
 #check-button {
   bottom: 0;
   padding: 8px 11px;
-  background-color: #c4c5c7;
+  background-color: #E1E2E3;
   width: 50px;
   float: right;
   text-align: center;

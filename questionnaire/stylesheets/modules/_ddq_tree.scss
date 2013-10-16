@@ -77,6 +77,16 @@
   text-align: center;
   border: none; }
 
+.concept-text {
+  float:left;
+  width: 119px;
+  font-size: 14px;
+}
+
+.concept-image {
+  float:left;
+}
+
 .ddqt-cell {
   display: table-cell;
   vertical-align: middle;
@@ -109,7 +119,7 @@
 
 .ddqtree .option .concept {
   margin: 5px;
-  font-size: 16px; }
+  }
 
 .ddqtree .option {
   text-align: center; }
@@ -121,3 +131,7 @@
   width: 100%;
   text-align: center;
   margin: 20px 0px 15px; }
+
+.ddqtree .concept-text.solo-text {
+  width: 100%;
+}

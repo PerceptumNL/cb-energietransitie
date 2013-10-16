@@ -57,8 +57,6 @@ MCQ.prototype = {
 
     self.$q("#check-button").click(function(){
       self.checkAnswer();
-      self.$q("#check-button").hide();
-      self.$q("#send-button").show();
     });
   },
 
@@ -68,9 +66,7 @@ MCQ.prototype = {
     var answers = self.question.answers
     self.result.correct = true;
 
-    console.log(question.correctAnswer);
     self.$q(".option").children().each(function(idx, ans) {
-      console.log(idx, ans);
       if ($.inArray(idx, question.correctAnswer) >= 0) {
         $(ans).addClass("correct");
       } else {
@@ -92,6 +88,9 @@ MCQ.prototype = {
     });
     self.$q(".option").removeClass("enabled");
     self.$q(".option").children().unbind("click");
+    self.$q("#check-button").hide();
+    self.$q("#send-button").show();
+    Questionnaire.trigger("check");
   }
 }
 

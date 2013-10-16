@@ -181,7 +181,9 @@ DDQ.prototype = {
           self.result.correct = false;
           self.result.incorrect = true;
           $(answer).css("border-color", "red");
-          
+          /*try    
+          $(answer).append("<div>"+answer_idx+"</div>")
+          */
           $.each(self.targetList, function(kk, v) {
             $(v).find(".concept").each(function(_kk, _v){
               if($(_v).text() == $(answer)[0].innerText){

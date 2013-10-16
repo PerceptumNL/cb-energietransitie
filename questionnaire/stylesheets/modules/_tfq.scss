@@ -16,10 +16,15 @@ $answer-disabled: #EFF0F1;
       padding: 10px 2.3px;
       margin: 0px 7px;
       background-color: $answer; 
-      &.selected,
+      &.selected {
+        background-color: $answer-hover;
+        cursor: pointer; 
+        border: 3px solid black;
+      }
       &:hover {
         background-color: $answer-hover;
         cursor: pointer; 
+
       }
     
       &.disabled,
@@ -27,12 +32,12 @@ $answer-disabled: #EFF0F1;
         background-color: $answer-disabled;
         cursor: default; 
         text-shadow: none;
-      }
-    
+      }   
       &.correct,
       &.incorrect {
         background-color: $answer-hover;
         cursor: default; 
+        border: 3px solid black;
       }
     }
     
