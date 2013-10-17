@@ -193,8 +193,14 @@ class CourseHandler(BaseHandler):
 
         self.template_value['is_progress_recorded'] = (
             CAN_PERSIST_ACTIVITY_EVENTS.value)
-        self.template_value['navbar'] = {'course': True}
-        self.render('course.html')
+
+        path=urlparse.urlparse(self.request.url).path
+        if path=="/course":
+            self.template_value['navbar'] = {'course': True}
+            self.render('course.html')
+        elif path=="/schema":
+            self.template_value['navbar'] = {'schema': True}
+            self.render('schema.html')
 
 
 class UnitHandler(BaseHandler):

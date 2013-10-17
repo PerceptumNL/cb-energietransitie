@@ -811,6 +811,14 @@ a.gcb-explorer-course-title {
   margin-top: 20px;   
 }
 
+.schema {
+  width: 475px;
+  margin: 0 auto;    
+}
+.schema-custom {
+  width: 475px !important;
+}
+
 .gcb-outline {
     padding: 10px 0;
     width:48.5%; 

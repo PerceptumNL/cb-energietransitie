@@ -40,6 +40,7 @@ def register_module():
         ('/answer', assessments.AnswerHandler),
         ('/assessment', lessons.AssessmentHandler),
         ('/course', lessons.CourseHandler),
+        ('/schema', lessons.CourseHandler),
         ('/forum', utils.ForumHandler),
         ('/preview', utils.PreviewHandler),
         ('/register', utils.RegisterHandler),
