@@ -34,9 +34,6 @@ function isTesting() {
   return (window.location.href.indexOf("127.0.0.1") > -1) 
 }
 
-
-    
-
 var Questionnaire = {
   registeredQuestionTypes: {},
   defaultQuestionType: null,
@@ -145,17 +142,20 @@ var Questionnaire = {
       });
     }
   },
+
   resizeVideoQuestion: function() { 
     if (document.fullScreen || 
         document.mozFullScreen ||
         document.webkitIsFullScreen) {
+      //necessary to find real height
+      $(this.qEle).removeClass("overflow");
       $(this.qEle).addClass("fullscreen");
-      if ($(this.qEle).find("#questions").height() > $(document).height()) {
+      if ($(this.qEle).height() > $(window).height()) {
         $(this.qEle).addClass("overflow");
         $(this.qEle).css("top", "");
       } else {
         $(this.qEle).removeClass("overflow");
-        var hpos = $(document).height() / 2 - $(this.qEle).height() / 2
+        var hpos = $(window).height() / 2 - $(this.qEle).height() / 2
         $(this.qEle).css("top", hpos + "px");
       }
     } else {
@@ -294,8 +294,8 @@ var Questionnaire = {
     })
 
     if (this.activity.videoId == undefined) {
-        this.fadeIn();
         this.jumpNext();
+        this.fadeIn();
     } else {
         this.on("check", function() {
             self.resizeVideoQuestion();
@@ -362,6 +362,7 @@ var Questionnaire = {
   jumpNext: function() {
     this.index++; 
     this.jumpTo(this.index);
+    this.resizeVideoQuestion();
   },
 
   fixScroll: function() {
@@ -391,8 +392,8 @@ var Questionnaire = {
     if (this.questionInstances[index]) {
       this.questionInstances[index].show();
       setTimeout(function() {
-      self.fixScroll();
-      }, 1000);
+        self.fixScroll();
+      }, 500);
       return;
     }
     

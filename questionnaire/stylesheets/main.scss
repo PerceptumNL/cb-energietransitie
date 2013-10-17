@@ -18,7 +18,7 @@ $width: 788px;
     min-height: 440px; 
     width: 100%;
     &.fullscreen question {
-      position: absolute;
+      position: fixed;
       left: 0px;
       right: 0px;
       z-index: 2147483647;
@@ -49,12 +49,6 @@ $width: 788px;
 
 .video #number {
     display: none;
-}
-
-#ytapiplayer {
-    position: absolute;
-    text-align: center;
-    z-index: -1;
 }
 
 question {

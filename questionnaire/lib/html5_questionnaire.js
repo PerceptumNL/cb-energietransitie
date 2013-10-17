@@ -6,11 +6,9 @@ function loadVideoEvents(video) {
   var last_int = null;
   video.addEventListener('play', function() {
     last_int = setInterval(function() {
-        console.log("ble");
         if (document.fullScreen || 
             document.mozFullScreen ||
             document.webkitIsFullScreen) {
-        console.log("yes");
           $wrapper.addClass("fullscreen");
         } else {
           $wrapper.removeClass("fullscreen");
