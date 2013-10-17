@@ -351,7 +351,7 @@ msgid ""
 " Congratulations! Press the \\'Submit Answers\\' button to submit your "
 "grade. "
 msgstr ""
-" Gefeliciteerd! Druk op de knop \\'Antwoorden indienen\\' om uw cijfer te"
+" Gefeliciteerd! Druk op de knop 'Antwoorden indienen' om uw cijfer te"
 " verzenden. "
 
 #. Text appearing after the student has checked his/her answers to an
@@ -361,9 +361,9 @@ msgid ""
 " Press the \\'Submit Answers\\' button below to save your scores. You can"
 " also edit your answers above before clicking \\'Submit Answers\\'. "
 msgstr ""
-" Druk op de onderstaande knop \\'Antwoorden indienen\\' om uw scores op "
+" Druk op de onderstaande knop 'Antwoorden indienen' om uw scores op "
 "te slaan. U kunt uw antwoorden ook hierboven bewerken voordat u op "
-"\\'Antwoorden indienen\\' klikt. "
+"'Antwoorden indienen' klikt. "
 
 #. Text appearing in a confirmation dialog after the student has tried to
 #. submit an assignment.
@@ -799,7 +799,7 @@ msgstr "Cursistvoortgang"
 #. Shown on the student profile page.
 #: experimental/coursebuilder/views/student_profile.html:46
 msgid "To leave the course permanently, click on Unenroll"
-msgstr "Als u de cursus permanent wilt verlaten, klikt u op \\'Uitschrijven\\'"
+msgstr "Als u de cursus permanent wilt verlaten, klikt u op 'Uitschrijven'"
 
 #. Button that allows the student to unenroll from a course.
 #: experimental/coursebuilder/views/student_profile.html:52
