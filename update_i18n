@@ -1,0 +1,3 @@
+cd coursebuilder/modules/i18n/resources
+pybabel  compile -f  -l nl -d  locale/  -i locale/nl/LC_MESSAGES/messages.po
+cd -
