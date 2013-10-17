@@ -79,6 +79,17 @@ var Questionnaire = {
   },
 
   showOverview: function() {
+    //fast trick
+    if ($wrapper) {
+      if (document.fullScreen || 
+          document.mozFullScreen ||
+          document.webkitIsFullScreen) {
+        $wrapper.addClass("fullscreen");
+        this.resizeVideoQuestion();
+      } else {
+        $wrapper.removeClass("fullscreen");
+      }
+    }
     var self = this;
     $("#button-hint").hide()
     $("#statistics-button").css("display", "inline-block");
@@ -370,7 +381,7 @@ var Questionnaire = {
         'scrollTop': $('question').eq(0).offset().top
     }, 500);
     $('question').animate({                                                                                         
-        'scrollTop': $('question').eq(0).offset().top  - 20                                                              
+        'scrollTop': -$('question').eq(0).offset().top       
     }, 500);  
   },
 
@@ -435,8 +446,8 @@ var Questionnaire = {
         self.jumpNext();
       else {
         self.trigger("continue");
-        self.fixScroll();
       }
+      self.fixScroll();
     });
 
   },
