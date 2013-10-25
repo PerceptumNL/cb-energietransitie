@@ -1,6 +1,7 @@
 function TFQ(question, qEle) {
   this.question = question;
   this.qEle = qEle;
+  this.data = null;
   this.result = {
     incorrect: false,
     correct: false,
@@ -16,13 +17,18 @@ function TFQ(question, qEle) {
 TFQ.questionType = "tfq";
 TFQ.prototype = {
   answers: null,
-  questioncnt: 0,
-  
-  create: function() {
+
+  create: function(data) {
     $(this.qEle).addClass("tfq");
     this.answers = this.question.answers;
     this.drawQuestion();
     this.drawAnswers();
+    
+    if (data) { 
+      this.data = data;
+      this.checkAnswer(this.data.result.ans_index);
+      this.result = this.data.result;
+    }
   },
   
   drawQuestion: function() {
@@ -68,7 +74,7 @@ TFQ.prototype = {
           self.$q("#tr-fb-input").hide();
           self.$q("#feedback-input").hide();
           self.result.maybe = true;
-          self.result.ans_index=2;
+          self.result.ans_index = 2;
           self.result.maybeText = $q("#feedback-input").val();
         });
         self.$q("#feedback-input").keyup(function() {

@@ -4,9 +4,9 @@ function MCQ(question, qEle) {
   this.result = {
     incorrect: false,
     correct: false,
-    maybe: false,
     hint: false,
     selections: [],
+    time: 0,
   }
   this.$q = function(selector) {
     return $(this.qEle).find(selector);
@@ -16,12 +16,18 @@ function MCQ(question, qEle) {
 MCQ.questionType = "mcq";
 MCQ.prototype = {
   answers: null,
-  //submissionList: [],
   
-  create: function() {
+  create: function(data) {
     this.answers = this.question.answers;
     this.drawQuestion();
     this.drawAnswers();
+    if (data) { 
+      console.log(data);
+      this.data = data;
+      this.setSelections(this.data.result.selections);
+      this.checkAnswer(this.data.result.selections);
+      this.result = this.data.result;
+    }
   },
   
   drawQuestion: function() {
@@ -56,15 +62,36 @@ MCQ.prototype = {
     self.$q("#check-button").show();
 
     self.$q("#check-button").click(function(){
-      self.checkAnswer();
+      var selections = self.getSelections();
+      self.checkAnswer(selections);
     });
   },
 
-  checkAnswer: function() {
+  getSelections: function() {
+    var answers = [];
+    this.$q(".option").children().each(function(idx, ans) {
+      if ($(ans).hasClass("toggleon")) {
+        answers.push(idx);
+      }
+    });
+    return answers;
+  },
+
+  setSelections: function(selections) {
+    console.log("selections", selections);
+    this.$q(".option").children().each(function(idx, ans) {
+      if ($.inArray(idx, selections) >= 0) {
+        $(ans).addClass('toggleon');
+      }
+    });
+  },
+
+  checkAnswer: function(selections) {
     var self = this
     var question = self.question
     var answers = self.question.answers
     self.result.correct = true;
+    self.result.selections = selections;
 
     self.$q(".option").children().each(function(idx, ans) {
       if ($.inArray(idx, question.correctAnswer) >= 0) {
@@ -73,8 +100,8 @@ MCQ.prototype = {
         $(ans).addClass("incorrect");
       }
       //Set correct
-      if ($.inArray(idx, question.correctAnswer) >= 0 && $(ans).hasClass("toggleon") || 
-          $.inArray(idx, question.correctAnswer) == -1 && !$(ans).hasClass("toggleon")) {
+      if ($.inArray(idx, question.correctAnswer) >= 0 && $.inArray(idx, selections) >=0 ||
+          $.inArray(idx, question.correctAnswer) == -1 && $.inArray(idx, selections) == -1) {
       }
       else {
           self.result.correct = false;

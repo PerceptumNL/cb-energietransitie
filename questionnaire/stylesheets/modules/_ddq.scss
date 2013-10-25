@@ -24,6 +24,12 @@
     &.dropped {
       border: 2px solid $answer;
     }
+    &.correct {
+        border: 2px solid red;
+    }
+    &.incorrect {
+        border: 2px solid green;
+    }
   }
   .target {
     font-size: 10px;

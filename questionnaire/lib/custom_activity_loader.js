@@ -18,6 +18,14 @@ function shuffle(array) {
     return array;
 }
 
+function shuffleRange(length) {
+    var array = [];
+    for (var i=0;i<length;i++) 
+        array.push(i);
+    return shuffle(array);
+}
+
+
 function getURLParameter(name, _default) {
   return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||_default
 }
@@ -79,6 +87,8 @@ var Questionnaire = {
   },
 
   showOverview: function() {
+    var self = this;
+
     //fast trick
     if ($wrapper) {
       if (document.fullScreen || 
@@ -90,18 +100,8 @@ var Questionnaire = {
         $wrapper.removeClass("fullscreen");
       }
     }
-    var self = this;
     $("#button-hint").hide()
     $("#statistics-button").css("display", "inline-block");
-    function _showOverview() {
-      self.index = -1;
-      self.drawNumbers();
-      $("#number").css("display", "inline-block");
-      $(".question-wrapper").hide()
-      $("#overview").show();
-    }
-
-    $("#statistics-button").click(_showOverview);
     if (this.remaining().length == 0) {
       var correct=0, incorrect=0, maybe=0;
       $.each(this.doneQuestions, function(k, q) {
@@ -121,7 +121,12 @@ var Questionnaire = {
       console.debug(" maybe: " + maybe);
       $("#right .percentage").html(Math.round(correct / total * 100) + "%");
       $("#wrong .percentage").html(Math.round(incorrect / total * 100) + "%");
-      _showOverview();
+
+      this.index = -1;
+      this.drawNumbers();
+      $("#number").css("display", "inline-block");
+      $(".question-wrapper").hide()
+      $("#overview").show();
       return true;
     } else {
       $("#rewatch").show();
@@ -134,7 +139,7 @@ var Questionnaire = {
     var self = this;
     if (isTesting()) {
       console.log("Results:");
-      console.log(this.doneQuestions);
+      console.log(JSON.stringify(this.doneQuestions));
     } else {
       var evt = {
         //Find Unit
@@ -177,13 +182,13 @@ var Questionnaire = {
 
   showVideoQuestion: function() {
     $(this.qEle).css({
-        "display":"block",
-        "visibility":"hidden",
+      "display":"block",
+      "visibility":"hidden",
     });
     this.resizeVideoQuestion();
     $(this.qEle).css({
-        "display":"none",
-        "visibility":"",
+      "display":"none",
+      "visibility":"",
     });
     this.fadeIn();
   },
@@ -223,6 +228,7 @@ var Questionnaire = {
 
   redo: function() {
     $(".question-instance").remove();
+    this.data = null;
     this.first_results = $.extend(true, [], this.results);
     this.redoMode = true
     this.resetData();
@@ -249,9 +255,10 @@ var Questionnaire = {
     }
   },
 
-  create: function(qEle) {
+  create: function(qEle, data) {
     var self = this;
     this.qEle = qEle;
+    this.data = data;
 
     var a_name = $(qEle).attr("name");
     if (a_name && a_name in window) {
@@ -303,21 +310,32 @@ var Questionnaire = {
     $("#revisit").click(function() {
       location.href = location.href.replace("activity","unit");
     })
+    $("#statistics-button").click(function() {self.showOverview()});
+
+    if (this.data) {
+      for (var i=0;i<this.data.length;i++) {
+        console.log(JSON.stringify(this.data[i], undefined, 2));
+        this.createQuestion(i)
+        self.doneQuestions[i] = self.leftQuestions[i];
+        self.doneQuestions[i].result = self.data[i].result;
+        self.leftQuestions[i] = undefined;
+      }
+    }
 
     if (this.activity.videoId == undefined) {
-        this.jumpNext();
-        this.fadeIn();
+      this.jumpNext();
+      this.fadeIn();
     } else {
-        this.on("check", function() {
-            self.resizeVideoQuestion();
-        });
-        loadVideoQuestionnaire($(qEle).parent(), this.activity.videoId);
+      this.on("check", function() {
+        self.resizeVideoQuestion();
+      });
+      loadVideoQuestionnaire($(qEle).parent(), this.activity.videoId);
     }
     this.trigger("load");
   },
 
   getInstance: function() {
-      return this.questionInstances[this.index];
+    return this.questionInstances[this.index];
   },
 
   once: function(evtName, fnc) {
@@ -378,58 +396,32 @@ var Questionnaire = {
 
   fixScroll: function() {
     $(document.body).animate({
-        'scrollTop': $('question').eq(0).offset().top
+      'scrollTop': $('question').eq(0).offset().top
     }, 500);
     $('question').animate({                                                                                         
-        'scrollTop': -$('question').eq(0).offset().top       
+      'scrollTop': -$('question').eq(0).offset().top       
     }, 500);  
   },
 
-  jumpTo: function(index) {
+  createQuestion: function(index) {
     var self = this;
-    this.index = index;
-    this.drawNumbers();
-    this.question = this.leftQuestions[this.index] || this.doneQuestions[this.index]; 
-
-    if (this.question && this.question.hint) {
-      $("#button-hint").show();
-      $(".hint-text").html(this.question.hint);
-    } 
-    else 
-      $("#button-hint").hide();
-
-    $("#overview").hide();
-    $(".question-wrapper").hide();
-    if (this.questionInstances[index]) {
-      this.questionInstances[index].show();
-      setTimeout(function() {
-        self.fixScroll();
-      }, 500);
-      return;
-    }
-    
-    if (this.remaining().length == 0) {
-      this.showOverview();
-      this.sendResults();
-      return;
-    } else {
-      $("#statistics-button").hide();
-    }
-
+    var question = this.leftQuestions[index] || this.doneQuestions[index]; 
     var template = $(this.qEle).find('#template').clone();
     $(template).attr({
       id: "q"+this.index, 
       index: this.index
     }).addClass("question-instance").appendTo('#questions');
 
-    this.questionClass = this.registeredQuestionTypes[this.question.questionType];
-    
-    this.questionInstances[index] = new this.questionClass(this.question, template)
-    this.questionInstances[index].create();
-    this.questionInstances[index].show = function() {
-        $(this.qEle).show();
+    this.questionClass = this.registeredQuestionTypes[question.questionType];
+    this.questionInstances[index] = new this.questionClass(question, template)
+    var _data;
+    if (this.data && this.data[index]) {
+      _data = this.data[index];
     }
-    $(template).show();
+    this.questionInstances[index].create(_data);
+    this.questionInstances[index].show = function() {
+      $(this.qEle).show();
+    }
     $(template).find("#send-button").click(function() {
       if (self.leftQuestions[self.index] !== undefined) {
         self.doneQuestions[self.index] = self.leftQuestions[self.index];
@@ -450,6 +442,40 @@ var Questionnaire = {
       self.fixScroll();
     });
 
+  },
+
+  jumpTo: function(index) {
+    var self = this;
+    this.index = index;
+    this.drawNumbers();
+    this.question = this.leftQuestions[this.index] || this.doneQuestions[this.index]; 
+
+    if (this.question && this.question.hint) {
+      $("#button-hint").show();
+      $(".hint-text").html(this.question.hint);
+    } 
+    else {
+      $("#button-hint").hide();
+    }
+    $("#overview").hide();
+    $(".question-wrapper").hide();
+
+    if (this.questionInstances[index]) {
+      this.questionInstances[index].show();
+      setTimeout(function() {
+        self.fixScroll();
+      }, 500);
+      return;
+    }     
+    if (this.remaining().length == 0) {
+      this.showOverview();
+      this.sendResults();
+      return;
+    } else {
+      $("#statistics-button").hide();
+    }
+    this.createQuestion(index);
+    this.questionInstances[index].show();
   },
 
   registerType: function(questionObj) {

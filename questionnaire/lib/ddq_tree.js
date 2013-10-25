@@ -170,7 +170,32 @@ DDQTREE.prototype = {
   targets: [],
   answers: [],
 
-  create: function() {
+  loadData: function(data) {
+    var self = this;
+    if (data) { 
+      this.data = data;
+      this.result = this.data.result;
+      var total = this.result.selections.length, totalEnd = 0;
+      $.each(this.result.selections, function(tIdx, cIdx) {
+        var $concept = $(".concept[data-ele_id='"+cIdx+"']");
+        var $target = $(".target[data-ele_id='"+tIdx+"']");
+        setTimeout(function() {
+            self.addConcept($concept, $target);
+            totalEnd++;
+            console.log(totalEnd);
+            if (total == totalEnd) {
+                setTimeout(function() {
+                    self.checkAnswer();
+                }, 10);
+            }
+        }, 1);
+      });
+    } else {
+      this.result.selections = Array(this.targetList.length);
+    }
+  },
+
+  create: function(data) {
     var self = this;
     $(this.qEle).addClass("ddqtree");
     tree = self.question.tree[0];
@@ -182,7 +207,7 @@ DDQTREE.prototype = {
     setTimeout(function() {
         self.drawAnswers();
         self.$q(".table-feedback").hide();
-        //self.test();
+        self.loadData(data);
     }, 10);
     
   },
@@ -247,7 +272,7 @@ DDQTREE.prototype = {
       var top = -1/max_depth/2.0-1/depth_ele[i].length/2;
       for (var j=0;j<depth_ele[i].length;j++) {
         var $target = $("<div>")
-            .addClass("ddqt-cell")
+            .addClass("target")
             .css("height", this.cell_height + "px")
             .css("margin", "20px 0px")
             .appendTo($tr)  
@@ -302,7 +327,7 @@ DDQTREE.prototype = {
 
   resizeHeight: function() {
     var self = this;
-    this.$q(".ddqt-cell").each(function(k,ele) {
+    this.$q(".target").each(function(k,ele) {
         if ($(ele).children().length == 0)
             $(ele).height(self.cell_height);
     });
@@ -335,7 +360,7 @@ DDQTREE.prototype = {
       $(canvas[i]).attr("width",$(canvas[i]).parent().width())
       $(canvas[i]).attr("height",$(canvas[i]).parent().height())
       for (var j=0;j<depth_ele[i].length;j++) {
-        $eles = $(".ddqt-cell[data-parent_id='"+depth_ele[i][j].ele_id+"']");
+        $eles = $(".target[data-parent_id='"+depth_ele[i][j].ele_id+"']");
         var min=1000;
         var max=0;
         $eles.each(function(k,ele) {
@@ -345,10 +370,10 @@ DDQTREE.prototype = {
           if ($ele.position().top < min)
               min = $ele.position().top;
         });
-        ele = $(".ddqt-cell[data-ele_id='"+depth_ele[i][j].ele_id+"']");
+        ele = $(".target[data-ele_id='"+depth_ele[i][j].ele_id+"']");
         var _top = 0;
         if (j>0) {
-         _top -= $(".ddqt-cell[data-ele_id='"+depth_ele[i][j-1].ele_id+"']").height() + 20;
+         _top -= $(".target[data-ele_id='"+depth_ele[i][j-1].ele_id+"']").height() + 20;
         }      
         var top = (max + min) / 2 - $(ele).height() / 2 + _top ;
         $(ele).css("top", top + "px");
@@ -377,7 +402,7 @@ DDQTREE.prototype = {
       }
     }
     concepts = shuffle(concepts);
-    this.cell_width = this.$q(".ddqt-cell").width();
+    this.cell_width = this.$q(".target").width();
 
     $.each(concepts, function(i, concept) {
       var concept_text = $("<div class='concept-text'>"+concept.text+"</div>")
@@ -419,7 +444,6 @@ DDQTREE.prototype = {
       activeClass: "ui-state-hover",
       hoverClass: "ui-state-active",
       drop: function( event, ui ) {
-        console.error($(ui.draggable[0]).data("dragged"))
         if ($(ui.draggable[0]).data("dragged")) {
             $(ui.draggable[0]).data("dragged", ""); 
         } else {
@@ -440,8 +464,6 @@ DDQTREE.prototype = {
 
     self.$q("#check-button").click(function(){
       self.checkAnswer();
-      self.$q("#check-button").hide();
-      self.$q("#send-button").show();
     });
   },
 
@@ -464,11 +486,20 @@ DDQTREE.prototype = {
     return $(ele).parent().data("depth") == $(ele).data("depth");
   },
   
+  getSelection: function() {
+    var selections = [];
+    $(".target").each(function(tIdx, target) {
+      selections[tIdx] = parseInt($(target).children()[0].dataset.ele_id);
+    })
+    return selections;
+  },
+
   checkAnswer: function() {
     var self = this;
     this.result.correct = true;
-    $(".ddqt-cell").each(function(k,cell) {
-      parent_cell = $(".ddqt-cell[data-ele_id='"+cell.dataset.parent_id+"']");
+    this.result.selections = this.getSelection();
+    $(".target").each(function(k,cell) {
+      parent_cell = $(".target[data-ele_id='"+cell.dataset.parent_id+"']");
       parent_ans = $(parent_cell).children()[0];
       ans = $(cell).children()[0]; 
       $(ans).parent().css("border", "2px solid");
@@ -481,20 +512,30 @@ DDQTREE.prototype = {
       } else {
         $(ans).parent().css("border-color", "green");
       }
-      $(ans).draggable( "destroy" );
+      try {
+        $(ans).draggable( "destroy" );
+      } catch(e) { }
     })
-    return this.result.correct;
+    self.$q("#check-button").hide();
+    self.$q("#send-button").show();
+    return true;
   },
   
   test: function() {
     var self = this;
     setTimeout(function() {
-    $(".concept").each(function(i, concept) {
-        self.addConcept(concept, $(".ddqt-cell")[i]);
-    });
+      $(".concept").each(function(i, concept) {
+          self.addConcept(concept, $(".target")[i]);
+      });
     }, 100);
-
   }
 }
 
 Questionnaire.registerType(DDQTREE);
+
+window.test_d1 = function(cont) {
+  test( "ddqtree_1", function() {
+    ok(Questionnaire, "load Questionnaire lib" );
+    Questionnaire.getInstance().test();
+  });
+};

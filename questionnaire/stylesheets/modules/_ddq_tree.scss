@@ -1,137 +1,129 @@
-#concept_img {
-  height: 200px; }
-
-#check_answer {
-  margin-top: 20px;
-  text-align: center; }
-
-#check_answer span:hover {
-  color: white;
-  background-color: blue;
-  cursor: pointer; }
-
-#check_answer span {
-  color: blue;
-  font-weight: bold;
-  text-align: center;
-  border: 1px blue solid;
-  padding: 10px; }
-
-.concepts {
-  text-align: center; }
-
-.concept.ui-draggable:hover {
-  cursor: pointer; }
-
-.concept {
-  display: inline-block;
-  border: 2px dashed orange;
-  margin: 0px;
-  padding: 0px; }
-
-.ddqtree .target {
-  font-size: 16px;
-  display: inline-block;
-  text-align: center;
-  border: 2px solid #ddd;
-  height: 100%;
-  margin-left: 1%;
-  margin-right: 1%;
-  margin-top: 4%;
-  float: left; }
-
-.target-title {
-  font-size: 20px;
-  background-color: #ddd; }
-
-.targets {
-  text-align: center; }
-
-#targets div {
-  width: 100%;
-  display: inline-block;
-  text-align: center;
-  border: 1px solid black;
-  line-height: 50px;
-  cursor: pointer;
-  position: relative; }
-
-#targets div:hover {
-  background-color: gray; }
-
-.ddqt-table {
-  border: none;
-  font-size: 16px;
-  text-align: center;
-  display: table;
-  width: 100%;
-  height: 100%; }
-
-.ddqt-row {
-  display: table;
-  width: 100%; }
-
-.ddqt-arrow-cell {
-  display: table-cell;
-  vertical-align: middle;
-  text-align: center;
-  border: none; }
-
-.concept-text {
-  float:left;
-  width: 119px;
-  font-size: 14px;
-}
-
-.concept-image {
-  float:left;
-}
-
-.ddqt-cell {
-  display: table-cell;
-  vertical-align: middle;
-  text-align: center;
-  border: 1px solid black; }
-
-.ddqtree .right-col {
-  display: none; }
-
-.ddqtree .ddqt-col {
-  height: 100%;
-  position: relative;
-  display: inline-block; }
-
-.ddqtree .ddqt-arrow-cell {
-  height: 100%;
-  float: left;
-  width: 100%; }
-
-.ddqtree .ui-state-active {
-  background-color: orange; }
-
-.ddqtree .ddqt-cell {
-  width: 100%;
-  display: block;
-  position: relative; }
-
-.ddqtree .concept {
-  background-color: white; }
-
-.ddqtree .option .concept {
-  margin: 5px;
+.ddqtree {
+  #concept_img {
+    height: 200px; }
+  
+  #check_answer {
+    margin-top: 20px;
+    text-align: center; }
+  
+  #check_answer span:hover {
+    color: white;
+    background-color: blue;
+    cursor: pointer; }
+  
+  #check_answer span {
+    color: blue;
+    font-weight: bold;
+    text-align: center;
+    border: 1px blue solid;
+    padding: 10px; }
+  
+  .concepts {
+    text-align: center; }
+  
+  .concept.ui-draggable:hover {
+    cursor: pointer; }
+  
+  .concept {
+    display: inline-block;
+    border: 2px dashed orange;
+    margin: 0px;
+    padding: 0px; }
+  
+  
+  .target-title {
+    font-size: 20px;
+    background-color: #ddd; }
+  
+  .targets {
+    text-align: center; }
+  
+  #targets div {
+    width: 100%;
+    display: inline-block;
+    text-align: center;
+    border: 1px solid black;
+    line-height: 50px;
+    cursor: pointer;
+    position: relative; }
+  
+  #targets div:hover {
+    background-color: gray; }
+  
+  .ddqt-table {
+    border: none;
+    font-size: 16px;
+    text-align: center;
+    display: table;
+    width: 100%;
+    height: 100%; }
+  
+  .ddqt-row {
+    display: table;
+    width: 100%; }
+  
+  .ddqt-arrow-cell {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    border: none; }
+  
+  .concept-text {
+    float:left;
+    width: 119px;
+    font-size: 14px;
   }
-
-.ddqtree .option {
-  text-align: center; }
-
-.ddqtree #feedback {
-  margin: 0 auto; }
-
-.ddqtree .title {
-  width: 100%;
-  text-align: center;
-  margin: 20px 0px 15px; }
-
-.ddqtree .concept-text.solo-text {
-  width: 100%;
+  
+  .concept-image {
+    float:left;
+  }
+  
+  .target {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    border: 1px solid black; 
+    width: 100%;
+    display: block;
+    position: relative; 
+  }
+  
+  .right-col {
+    display: none; }
+  
+  .ddqt-col {
+    height: 100%;
+    position: relative;
+    display: inline-block; }
+  
+  .ddqt-arrow-cell {
+    height: 100%;
+    float: left;
+    width: 100%; }
+  
+  .ui-state-active {
+    background-color: orange; }
+  
+  
+  .concept {
+    background-color: white; }
+  
+  .option .concept {
+    margin: 5px;
+    }
+  
+  .option {
+    text-align: center; }
+  
+  #feedback {
+    margin: 0 auto; }
+  
+  .title {
+    width: 100%;
+    text-align: center;
+    margin: 20px 0px 15px; }
+  
+  .concept-text.solo-text {
+    width: 100%;
+  }
 }
