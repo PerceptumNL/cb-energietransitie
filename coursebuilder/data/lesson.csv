@@ -1,6 +1,17 @@
 unit_id,unit_title,lesson_id,lesson_title,lesson_activity,lesson_activity_name,lesson_notes,lesson_video_id,lesson_objectives
-87,Introductie,1,Het belang van energie,,,,,"<gcb-activity activityid=""activity-69.js"" instanceid=""0AnQ91jBoQmW""></gcb-activity><br>"
-87,Introductie,2,De energietransitie in theorie,,,,_xqcBVtXBFo,
-87,Introductie,3,De energietransitie in de praktijk,,,,2rDTw2JBM4Y,
-68,De energietransitie in theorie,1,Energieopwekking en -gebruik,yes,,,,"<gcb-activity activityid=""activity-73.js"" instanceid=""wtrEeGew6eFv""></gcb-activity><br>"
-68,De energietransitie in theorie,2,Zonne-energie,yes,,,Qr7kTYToGpw,
+87,Introductie,1,Het belang van energie,,,,,<questionnaire url="assets/lib/1.1-introductie-mcq.js" instanceid="Rme9Ff5a4erF"></questionnaire>
+87,Introductie,2,De energietransitie in theorie,,,,,<gcb-activity activityid="activity-71.js" instanceid="VulFXyiEXBXu"></gcb-activity><br>
+87,Introductie,3,De energietransitie in de praktijk,,,,,<gcb-activity activityid="activity-72.js" instanceid="WnFXRdX53f1G"></gcb-activity><br>
+68,De energietransitie in theorie,1,Energieopwekking en -gebruik,,,,,<gcb-activity activityid="activity-73.js" instanceid="wtrEeGew6eFv"></gcb-activity><br>
+68,De energietransitie in theorie,2,Huidige energiemix,,,,,<gcb-activity activityid="activity-88.js" instanceid="dw11wmQfulZz"></gcb-activity><br>
+68,De energietransitie in theorie,3,Zonne-energie,yes,,,Qr7kTYToGpw,
+68,De energietransitie in theorie,4,Bevolkingsgroei en welvaartsstijging,,,,,<gcb-activity activityid="activity-89.js" instanceid="dFZKuw5DlNzf"></gcb-activity><br>
+68,De energietransitie in theorie,5,Energietaal,,,,,<gcb-activity activityid="activity-90.js" instanceid="0IPrnFPLbyv6"></gcb-activity><br>
+68,De energietransitie in theorie,6,Voorraad fossiele brandstoffen,,,,,<gcb-activity activityid="activity-91.js" instanceid="dv9vDo4WacvM"></gcb-activity><br>
+68,De energietransitie in theorie,7,Klimaat,,,,,<gcb-activity activityid="activity-92.js" instanceid="axwwobDXFhOf"></gcb-activity><br>
+68,De energietransitie in theorie,8,Windenergie,yes,,,,<gcb-activity activityid="activity-93.js" instanceid="ahQivYcrX5li"></gcb-activity><br>
+68,De energietransitie in theorie,9,Stadslandbouw,,,,,<gcb-activity activityid="activity-94.js" instanceid="TZ5gzQd7rQes"></gcb-activity><br>
+68,De energietransitie in theorie,10,Elektrisch vervoer,,,,,<gcb-activity activityid="activity-95.js" instanceid="NSIfNW807rOv"></gcb-activity><br>
+68,De energietransitie in theorie,11,Biobrandstof,,,,,<gcb-activity activityid="activity-96.js" instanceid="sTipGiKdVNDV"></gcb-activity><br>
+68,De energietransitie in theorie,12,Waterenergie,,,,,<gcb-activity activityid="activity-97.js" instanceid="Kb5nBwtJ1TF1"></gcb-activity><br>
+68,De energietransitie in theorie,13,Warmte Koude Opslag,,,,,<gcb-activity activityid="activity-98.js" instanceid="FyyMy0VZwDWI"></gcb-activity><br>
