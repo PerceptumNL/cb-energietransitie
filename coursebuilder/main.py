@@ -34,6 +34,7 @@ import modules.dashboard.dashboard
 import modules.oauth2.oauth2
 import modules.oeditor.oeditor
 import modules.review.review
+import modules.questionnaire.questionnaire
 
 # use this flag to control debug only features
 debug = not appengine_config.PRODUCTION_MODE
@@ -47,6 +48,7 @@ modules.review.review.register_module().enable()
 modules.courses.courses.register_module().enable()
 modules.course_explorer.course_explorer.register_module().enable()
 modules.assessment_tags.questions.register_module().enable()
+modules.questionnaire.questionnaire.register_module().enable()
 
 # register modules that are not enabled by default.
 modules.oauth2.oauth2.register_module()
