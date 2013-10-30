@@ -61,6 +61,7 @@ var Questionnaire = {
   evtsOnce: {},
   videoIndex: -1,
   redoMode: false,
+  skipVideo: false,
 
   getLesson: function() {
     return getURLParameter("lesson");
@@ -145,29 +146,32 @@ var Questionnaire = {
     //  console.log("Results:");
     //  console.log(JSON.stringify(this.doneQuestions));
     //} else {
-    //if (typeof eventXsrfToken == "undefined")
-    //    var eventXsrfToken = ""
+    if (!("eventXsrfToken" in window))
+        window['eventXsrfToken'] = ""
+      var payload = {
+        "result": question.result, 
+        "unit": this.getUnit(),
+        "lesson": this.getLesson(),
+        "nround": 0,
+        "index": index,
+        "count": this.questionsList.length,
+        "location" : window.location.href,
+        "correct": question.result.correct
+      }
 
       var evt = {
         //Find Unit
         "source": "questionnaire-results",
-        "payload": JSON.stringify({
-          "result": question.result, 
-          "unit": this.getUnit(),
-          "lesson": this.getLesson(),
-          "nround": 0,
-          "index": index,
-          "count": this.questionsList.length,
-          "location" : window.location.href,
-          "correct": question.result.correct
-        }),
+        "payload": JSON.stringify(payload),
         "xsrf_token": eventXsrfToken
       }
       $.post('/questionnaire/save', {request: JSON.stringify(evt)}, function() {
         console.log("Activity results sent");
       }).fail(function() { 
         console.error("Error sending activity results");
-        console.log(JSON.stringify(evt))
+
+        self.data.push(payload);
+        console.log(JSON.stringify(self.data))
       });
     //}
   },
@@ -206,33 +210,45 @@ var Questionnaire = {
     this.fadeIn();
   },
   
-  video_question: function(time) {
-    var self = this;
-    
-    //decimals part
-    var d = time - Math.floor(time)
-    //1/10 of second resolution
-    d = Math.floor(d*10);
-    d = (d.toString().length == 1 ? "":"") + d.toString();
+  time2ds: function(strTime) {
+    var dsplit = strTime.split("."),
+        d=0;
 
-    var m = Math.floor(time/60.0);
-    var h = Math.floor(time/60.0/60);
-    var s = Math.floor(time%60);
-    s = (s.toString().length == 1 ? "0":"") + s.toString();
-    var time = m + ":" + s + "." + d
+    //floor to 1/10 second
+    if (dsplit.length > 1)
+        d=parseInt(dsplit[1]);
+
+    var tsplit=dsplit[0].split(":").reverse()
+    var s=0, m=0, h=0;
+    s = parseInt(tsplit[0]);
+    if (tsplit.length > 1)
+        m = parseInt(tsplit[1]);
+    if (tsplit.length > 2)
+        h = parseInt(tsplit[2]);
+
+    return d+s*10+m*600+h*36000;
+  },
+
+  seconds2ds: function(floatTs) {
+    return parseInt(floatTs*10)
+  },
+
+  video_question: function(floatTs) {
+    var currentDs = this.seconds2ds(floatTs)
 
     for (var i=0; i<this.questionsList.length; i++) {
-      //console.error(this.questionsList[i].time, time);
-      if (this.questionsList[i].time == time && 
-          this.videoIndex != i) {
-        this.videoIndex = i;
-        //recalculate position
-        this.jumpTo(i);
-        return true;
-      }     
+      if (this.questionsList[i].time) {
+        var questionDs = this.time2ds(this.questionsList[i].time);
+        if (questionDs == currentDs && this.videoIndex != i) {
+          this.videoIndex = i;
+          this.jumpTo(i);
+          return true;
+        }     
+      }
     }
-    if (this.videoIndex > -1 &&
-        this.questionsList[this.videoIndex].time != time) {
+
+    if (this.videoIndex > -1 && 
+        this.time2ds(this.questionsList[this.videoIndex].time) != currentDs) {
       this.videoIndex = -1;
     }
     return false;
@@ -340,14 +356,23 @@ var Questionnaire = {
       }
     }
 
-    if (this.activity.videoId == undefined || getURLParameter("novideo")) {
+    if (this.activity.videoId == undefined || this.isVideoDisabled()) {
       this.jumpNext();
       this.fadeIn();
     } else {
       this.on("check", function() {
         self.resizeVideoQuestion();
       });
-      loadVideoQuestionnaire($(qEle).parent(), this.activity.videoId);
+      var lastTime = 0;
+      if (this.data) {
+        $.each(this.data, function(k, v) {
+            if (self.questionsList[k].time) {
+                lastTime = self.time2ds(self.questionsList[k].time) / 10.0;
+            }
+        });
+
+      }
+      loadVideoQuestionnaire($(qEle).parent(), this.activity.videoId, lastTime);
     }
     this.trigger("load");
   },
@@ -420,6 +445,10 @@ var Questionnaire = {
     }, 500);  
   },
 
+  isVideoDisabled: function() {
+    return getURLParameter("skipvideo", false)
+  },
+
   createQuestion: function(index) {
     var self = this;
     var question = this.leftQuestions[index] || this.doneQuestions[index]; 
@@ -446,7 +475,7 @@ var Questionnaire = {
         self.leftQuestions[self.index] = undefined;
         self.sendResults(self.index, self.doneQuestions[self.index])
       }
-      if (self.redoMode) {
+      if (self.redoMode || self.isVideoDisabled()) {
         self.jumpNext();
       } else if (self.questionsList[self.index+1] &&
                  self.questionsList[self.index+1].time === undefined) {
@@ -501,22 +530,6 @@ var Questionnaire = {
     console.debug("registerType: " + questionObj.questionType);
     this.registeredQuestionTypes[questionObj.questionType] = questionObj;
   }
-}
-
-function QuestionBase(question, qEle) {
-  // the trait requires these properties
-  this.question = question;
-  this.$q = qEler;
-  this.result = {
-    incorrect: false,
-    correct: false,
-    maybe: false,
-    hint: false,
-  }
-
-  this.create = function() {
-    this.create_question();
-  } 
 }
 
 if (!isTesting()) {
@@ -596,22 +609,6 @@ window.test_fullscreen = function(cont) {
       mediaplayer.setCurrentTime(92);
       Questionnaire.once("show", function() {
         ok($q.is(":visible"), "appears" );
-        //Questionnaire.getInstance().checkAnswer();
-        //Questionnaire.getInstance().$q("#send-button").trigger("click");
-        //Questionnaire.getInstance().checkAnswer();
-        //Questionnaire.getInstance().$q("#send-button").trigger("click");
-        //mediaplayer.setCurrentTime(164);
-        //Questionnaire.once("show", function() {
-        //  ok($q.is(":visible"), "appears" );
-        //  start();
-        //  Questionnaire.getInstance().checkAnswer();
-        //  Questionnaire.getInstance().$q("#send-button").trigger("click");
-        //  mediaplayer.setCurrentTime(178);
-        //  mediaplayer.addEventListener("ended", function() {
-        //    this.removeEventListener('ended',arguments.callee,false);
-        //    if (cont) cont();
-        //  });
-        //});
       });
     });
   });
@@ -634,5 +631,24 @@ window.test_redo = function(cont) {
               Questionnaire.getInstance().$q("#send-button").trigger("click");
               ok($q.is(":visible"), "appears" );
         });
+    });
+}
+
+window.test_time = function() {
+    test( "time2ds", function() {
+        var ds = Questionnaire.time2ds("2:00.0")
+        equal(ds, 1200)
+        ds = Questionnaire.time2ds("2:00.1")
+        equal(ds, 1201)
+        ds = Questionnaire.time2ds("1:02:00.1")
+        equal(ds, 37201)
+    });
+    test( "seconds2ds", function() {
+        var ds = Questionnaire.seconds2ds("12")
+        equal(ds, 120)
+        ds = Questionnaire.seconds2ds("12.1")
+        equal(ds, 121)
+        ds = Questionnaire.seconds2ds("12.01")
+        equal(ds, 120)
     });
 }

@@ -45,7 +45,7 @@ function loadVideoEvents(video) {
 
 }
 
-function loadVideoQuestionnaire(ele, url) {
+function loadVideoQuestionnaire(ele, url, lastTime) {
   console.debug("loadVideoQuestionnaire: " + url);
 
   $wrapper = $(ele);
@@ -83,6 +83,8 @@ function loadVideoQuestionnaire(ele, url) {
   mejs.MediaFeatures.svg = false;
   console.log("CanPlay?");
   console.log($video[0].canPlayType);
+  var firstPlay = true;
+  var lastSecond = 1.0;
   $video.mediaelementplayer({
   	features: ['playpause','progress','current', 'duration', 'volume','sourcechooser', 'fullscreen'],
     iPadUseNativeControls: true,
@@ -91,11 +93,35 @@ function loadVideoQuestionnaire(ele, url) {
     loop: false,
     enablePluginDebug: true,
   	success: function(media, node, player) {
+      
       mediaplayer = media;
-      mediaplayer.addEventListener("seeked", function() { console.debug("Video event: seeked") });
+      mediaplayer.addEventListener("timeupdate", function() { 
+        //lastSecond = mediaplayer.player.getCurrentTime();
+        console.debug("Video event: timeupdate")
+      });
+      $(".mejs-time-total").click(function() {
+        lastSecond = mediaplayer.player.getCurrentTime();
+      });
+    
+      mediaplayer.addEventListener("seeked", function() { 
+        var currentSecond = mediaplayer.player.getCurrentTime();
+        console.log(currentSecond, lastSecond)
+        if (currentSecond > lastSecond) {
+          mediaplayer.pause()
+          alert("You have to finish")
+          mediaplayer.player.setCurrentTime(lastSecond);
+          mediaplayer.play()
+        }
+      });
       mediaplayer.addEventListener("loadeddata", function() { console.debug("Video event: loadeddata") });
       mediaplayer.addEventListener("play", function() { console.debug("Video event: play") });
-      mediaplayer.addEventListener("playing", function() { console.debug("Video event: playing") });
+      mediaplayer.addEventListener("playing", function() { console.debug("Video event: playing") 
+        if (firstPlay) {
+          mediaplayer.player.setCurrentTime(lastTime);
+        } else {
+          firstPlay = false;
+        }
+      });
       mediaplayer.addEventListener("pause", function() { console.debug("Video event: pause") });
       mediaplayer.addEventListener("ended", function() { console.debug("Video event: ended") });
   	  console.debug('mediaelementplayer mode: ' + media.pluginType);
