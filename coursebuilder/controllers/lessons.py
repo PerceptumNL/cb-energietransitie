@@ -299,8 +299,9 @@ class UnitHandler(BaseHandler):
             # Mark this page as accessed. This is done after setting the
             # student progress template value, so that the mark only shows up
             # after the student visits the page for the first time.
-            self.get_course().get_progress_tracker().put_html_accessed(
-                student, unit_id, lesson_id)
+            pass
+            #self.get_course().get_progress_tracker().put_html_accessed(
+            #    student, unit_id, lesson_id)
 
         self.render('unit.html')
 

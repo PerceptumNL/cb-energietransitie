@@ -140,6 +140,26 @@ var Questionnaire = {
     }
   },
 
+  sendEndVideo: function(index, question) {
+    var payload = {
+        "location" : window.location.href,
+    }
+    var evt = {
+        source: "video-end",
+        payload: JSON.stringify(payload),
+        xsrf_token: eventXsrfToken
+    }
+
+    $.post('/questionnaire/save', {request: JSON.stringify(evt)}, function() {
+      console.log("Video end signal sent");
+    }).fail(function() { 
+      console.error("Error video end singal sending");
+      self.data.push(payload);
+      console.log(JSON.stringify(self.data))
+    });
+    
+  },
+
   sendResults: function(index, question) {
     var self = this;
     //if (isTesting()) {

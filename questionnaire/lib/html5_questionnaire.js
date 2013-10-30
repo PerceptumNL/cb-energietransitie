@@ -41,6 +41,8 @@ function loadVideoEvents(video) {
   video.addEventListener('ended', function() {
     Questionnaire.showOverview();
     Questionnaire.fadeIn();
+    Questionnaire.sendEndVideo();
+
   });
 
 }
@@ -84,7 +86,7 @@ function loadVideoQuestionnaire(ele, url, lastTime) {
   console.log("CanPlay?");
   console.log($video[0].canPlayType);
   var firstPlay = true;
-  var lastSecond = 1.0;
+  var lastSecond = lastTime || 1.0;
   $video.mediaelementplayer({
   	features: ['playpause','progress','current', 'duration', 'volume','sourcechooser', 'fullscreen'],
     iPadUseNativeControls: true,
