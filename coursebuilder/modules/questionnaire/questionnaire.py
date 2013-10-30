@@ -32,6 +32,7 @@ from models.counters import PerfCounter
 import urllib
 import urlparse
 from google.appengine.ext import db
+from models.progress import UnitLessonCompletionTracker
 
 
 RESOURCES_PATH = '/modules/questionnaire/resources'
@@ -95,8 +96,10 @@ class StudentProgress():
 
     PROPERTY_KEY = 'course-questionnaire'
 
-    def __init__(self, progress):
+    def __init__(self, app_context, progress, student):
+        self.app_context = app_context
         self.progress = progress
+        self.student = student
 
     @property
     def value(self, progress_dict=None):
@@ -129,11 +132,21 @@ class StudentProgress():
             data.append(transforms.loads(e.data))
 
         return data
-        
+
+    def set_lesson_progress(self, unit_id, lesson_id, status):
+        course = models.courses.Course(None, self.app_context)
+        tracker = UnitLessonCompletionTracker(course)
+        p = UnitLessonCompletionTracker.get_or_create_progress(self.student)
+        _key = tracker._get_html_key(unit_id, lesson_id)
+        tracker._set_entity_value(p, _key, status)
+        p.put()
 
     def add(self, unit_id, lesson_id, nround, index, count, event_key, correct):
         progress_dict = transforms.loads(self.progress.value)
         current_progress = progress_dict[str(unit_id)][str(lesson_id)]
+
+        if len(current_progress) == 0:
+            self.set_lesson_progress(unit_id, lesson_id, 1)
 
         #ensure that a list of tries exists
         if nround >= len(current_progress):
@@ -148,15 +161,9 @@ class StudentProgress():
         self.progress.put()
         
     @classmethod
-    def _empty_progress(self):
+    def _empty_progress(self, app_context):
         progress_dict = dict()
-        app_context = sites.get_course_for_current_request()
-        if app_context  == None:
-            app_context = sites.get_all_courses()[0]
-        import logging
-        logging.error(app_context)
         course = models.courses.Course(None, app_context=app_context)
-        
         units = course.get_units()
         for unit in units:
             progress_dict[unit.unit_id] = dict()
@@ -166,15 +173,15 @@ class StudentProgress():
         return progress_dict
 
     @classmethod
-    def get_or_create_progress(cls, student):
+    def get_or_create_progress(cls, app_context, student):
         progress = StudentPropertyEntity.get(student, cls.PROPERTY_KEY)
         if not progress:
             progress = StudentPropertyEntity.create(
                 student=student, property_name=cls.PROPERTY_KEY)
-            progress.value = transforms.dumps(cls._empty_progress())
+            progress.value = transforms.dumps(cls._empty_progress(app_context))
             progress.put()
 
-        return cls(progress)
+        return cls(app_context, progress, student)
 
 
 class QuestionnaireTag(tags.BaseTag):
@@ -197,7 +204,7 @@ class QuestionnaireTag(tags.BaseTag):
 
         user = handler.get_user()
         student = Student.get_enrolled_student_by_email(user.email())
-        progress = StudentProgress.get_or_create_progress(student)
+        progress = StudentProgress.get_or_create_progress(app_context, student)
         saved_questionnaire = progress.load_lesson(lesson.lesson_id)
         questionnaire = cElementTree.XML("""
 <div id='activityContents' class='video'>
@@ -248,6 +255,9 @@ class QuestionnaireRESTHandler(BaseRESTHandler):
             return
 
         source = request.get('source')
+        
+
+        
         payload_json = request.get('payload')
         payload = transforms.loads(payload_json)
 
@@ -275,13 +285,16 @@ class QuestionnaireRESTHandler(BaseRESTHandler):
         unit_id, lesson_id = get_unit_and_lesson_id_from_url(
             course, source_url)
 
+        student = Student.get_enrolled_student_by_email(user.email())
+        progress = StudentProgress.get_or_create_progress(app_context, student)
+        if source == "video-end":
+            progress.set_lesson_progress(unit_id, lesson_id, 2)
+            return
+
         count = int(payload['count']) or 1
         index = int(payload['index']) or 0
         nround = int(payload['nround']) or 0
         correct = bool(payload['correct']) or False
-
-        student = Student.get_enrolled_student_by_email(user.email())
-        progress = StudentProgress.get_or_create_progress(student)
         progress.add(unit_id, lesson_id, nround, index, count, str(event.key()), correct)
 
 
@@ -304,6 +317,8 @@ def register_module():
         os.path.join(RESOURCES_PATH, '.*'), tags.ResourcesHandler)]
 
     questionnaire_handlers = [
+#        ('/questionnaire/start', QuestionnaireStartRESTHandler),
+#        ('/questionnaire/end', QuestionnaireEndRESTHandler),
         ('/questionnaire/save', QuestionnaireRESTHandler)]
 
     global custom_module

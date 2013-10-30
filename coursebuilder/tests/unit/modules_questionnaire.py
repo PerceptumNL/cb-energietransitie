@@ -9,6 +9,7 @@ from models import transforms
 from modules.questionnaire.questionnaire import StudentProgress
 from tests.functional import actions
 from models.models import Student, StudentPropertyEntity, EventEntity
+from controllers import sites
 
 def save_progress(browser):
     """Views /preview page."""
@@ -71,7 +72,8 @@ class QuestionnaireTests(actions.TestBase):
         actions.register(self, name)
         student = Student.get_enrolled_student_by_email(email)
         self.assertIsNotNone(student)
-        progress = StudentProgress.get_or_create_progress(student)
+        app_context = sites.get_all_courses()[0]
+        progress = StudentProgress.get_or_create_progress(app_context, student)
         self.assertIsNotNone(progress)
         self.assertIsInstance(StudentPropertyEntity.all().get(), StudentPropertyEntity)
 
@@ -129,7 +131,7 @@ class QuestionnaireTests(actions.TestBase):
         }
         response = self.post('questionnaire/save', {"request":transforms.dumps(request)})
 
-        progress = StudentProgress.get_or_create_progress(student)
+        progress = StudentProgress.get_or_create_progress(app_context, student)
         p = progress.value
         self.assertEqual(len(p["87"]["1"]), 1)
         self.assertEqual(len(p["87"]["1"][0]), 10)
@@ -140,7 +142,7 @@ class QuestionnaireTests(actions.TestBase):
         saved_results = progress.load_lesson(2)
         self.assertEqual(len(saved_results), 0)
 
-        response = self.get('/copy/unit?unit=87')
+        response = self.get('/unit?unit=87')
         print response.body
         
 
