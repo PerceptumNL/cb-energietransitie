@@ -160,15 +160,13 @@ function DDQTREE(question, qEle) {
   this.$q = function(selector) {
     return $(this.qEle).find(selector);
   }
+  this.tree = null;
+  this.depth_ele = [];
+  this.targets = [];
 }
 
 DDQTREE.questionType = "ddqtree";
 DDQTREE.prototype = {
-  result: {},
-  tree: null,
-  depth_ele: [],
-  targets: [],
-  answers: [],
 
   loadData: function(data) {
     var self = this;
@@ -177,8 +175,8 @@ DDQTREE.prototype = {
       this.result = this.data.result;
       var total = this.result.selections.length, totalEnd = 0;
       $.each(this.result.selections, function(tIdx, cIdx) {
-        var $concept = $(".concept[data-ele_id='"+cIdx+"']");
-        var $target = $(".target[data-ele_id='"+tIdx+"']");
+        var $concept = self.$q(".concept[data-ele_id='"+cIdx+"']");
+        var $target = self.$q(".target[data-ele_id='"+tIdx+"']");
         setTimeout(function() {
             self.addConcept($concept, $target);
             totalEnd++;
@@ -198,11 +196,13 @@ DDQTREE.prototype = {
   create: function(data) {
     var self = this;
     $(this.qEle).addClass("ddqtree");
-    tree = self.question.tree[0];
+
+    this.tree = self.question.tree[0];
     $(this.qEle).prepend(self.$q("#answer"));
     if (this.question && this.question.text) {
         $(this.qEle).prepend($("<div>").addClass("title").html(this.question.text));
     }
+
     this.drawQuestion();
     setTimeout(function() {
         self.drawAnswers();
@@ -212,11 +212,11 @@ DDQTREE.prototype = {
     
   },
 
-
   drawQuestion: function() {
     var self = this;
     var depth = 0,    
         max_depth = 0;
+    console.log("THIUS", this.depth_ele);
     var depth_ele = this.depth_ele;
     var ele_id = 0;
   
@@ -240,11 +240,12 @@ DDQTREE.prototype = {
       depth--;
       return;
     }
-    tree_walk(tree);
+    tree_walk(this.tree);
     this.$q("#question").removeClass("left-col");
     this.$q("#q-text").html("");
-    $t = $("<div>").attr("class","ddqt-table");
+    var $t = $("<div>").attr("class","ddqt-table");
     $t.appendTo(this.$q("#q-text"));
+    console.log("depth_ele" ,depth_ele);
     for (var i=0;i<depth_ele.length;i++) {
       if (i>0) {
         var $tr = $("<div>").attr("class", "ddqt-col")
@@ -268,7 +269,7 @@ DDQTREE.prototype = {
     this.height = $("#q-table").height()
     this.cell_height = 0.80*this.height/max_depth;
     for (var i=depth_ele.length-1;i>=0;i--) {
-      $tr = $($(".target-col")[i]);
+      var $tr = $($(".target-col")[i]);
       var top = -1/max_depth/2.0-1/depth_ele[i].length/2;
       for (var j=0;j<depth_ele[i].length;j++) {
         var $target = $("<div>")
@@ -397,14 +398,16 @@ DDQTREE.prototype = {
     var concepts = [];
     for (var i=0;i<depth_ele.length;i++) {
       for (var j=0;j<depth_ele[i].length;j++) {
-        ele = depth_ele[i][j];
+        var ele = depth_ele[i][j];
         concepts.push(ele);
       }
     }
     concepts = shuffle(concepts);
     this.cell_width = this.$q(".target").width();
 
-    $.each(concepts, function(i, concept) {
+    //void 
+    for (var i=0; i<concepts.length; i++) {
+      concept = concepts[i];
       var concept_text = $("<div class='concept-text'>"+concept.text+"</div>")
       var concept_div = $("<div>")
             .html(concept_text)
@@ -438,7 +441,7 @@ DDQTREE.prototype = {
         },
       });
       self.$q('.option').append(concept_div);
-    });
+    };
 
     $(self.qEle).droppable({
       activeClass: "ui-state-hover",

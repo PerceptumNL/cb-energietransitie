@@ -3,7 +3,28 @@
     "videoId": "https://s3.amazonaws.com/energietransitie/1.1+Introductie+met+dagelijks+energiegerbruik-IsHAobnJz-I.mp4",
     "questionsList": [
         {
-            "time": "1:33.0",
+            "questionType": "tfq",
+            "time": "0:05.0",
+            "type": "text",
+            "text": "The transition to a sustainable world is not only unnecessary but also avoidable.",
+            "correctAnswer": 1,
+            "answerMaybe": false,
+            "hint": "Think about the diminishing of the global oil reserves, the risks of runaway climate change and political unrest in the Middle East",
+            "answers": [
+                {
+                    "type": "text",
+                    "text": "Waar",
+                    "feedback": "Next time, read more carefully the question. "
+                },
+                {
+                    "type": "text",
+                    "text": "Niet waar",
+                    "feedback": "The transition is necessary and unavoidable!"
+                }
+            ]
+        },
+        {
+            "time": "0:07.0",
             "type": "text",
             "text": "Wat kun je nog doen als de stroom thuis een uur uitvalt?",
             "correctAnswer": [
@@ -75,33 +96,6 @@
                     "type": "text",
                     "text": "Koken op zelf gesprokkeld hout",
                     "feedback": "Als je aardappelen bij de boer hebt gekocht, kun je ze mooi koken op je zelf gemaakte vuurtje."
-                }
-            ]
-        },
-        {
-            "time": "2:44.6",
-            "type": "text",
-            "text": "Wat is de energietransitie?",
-            "correctAnswer": [
-                0
-            ],
-            "answerMaybe": false,
-            "hint": "Transitie betekent \"overstap\". De vraag is dus alleen nog: een overstap waar naartoe? ",
-            "answers": [
-                {
-                    "type": "text",
-                    "text": "De overstap van fossiele brandstoffen naar duurzame energiebronnen",
-                    "feedback": "Om verschillende redenen is het gebruik van fossiele brandstoffen op lange termijn geen goed idee. De energietransitie heeft daarom als doel om over te stappen naar duurzame energiebronnen."
-                },
-                {
-                    "type": "text",
-                    "text": "Het omzetten van energie",
-                    "feedback": "Energieomzettingen zijn heel belangrijk, maar ze hebben niks met het begrip \"energietransitie\" te maken."
-                },
-                {
-                    "type": "text",
-                    "text": "De overstap naar goedkopere energie",
-                    "feedback": "Het zou mooi zijn als de energietransitie uiteindelijk leidt tot goedkopere energie, maar ook dit heeft niks met het begrip \"energietransitie\" te maken."
                 }
             ]
         }

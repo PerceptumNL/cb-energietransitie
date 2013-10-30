@@ -51,7 +51,8 @@
         var params = {
             "type": getURLParameter("type", "tfq"),
             "solve": getURLParameter("solve", false),
-            "test": getURLParameter("test", false)
+            "test": getURLParameter("test", false),
+            "load": getURLParameter("load", false)
         }
         function updateUrl() {
             var url = window.location.protocol + 
@@ -72,7 +73,19 @@
             console.debug("Load questionnaire " + type);
             $q = $("question")
             $q.empty().attr("src", "samples/" + type + ".js");
-            Questionnaire.create($q);
+            var data = null;
+            if (params['load']) {
+              $.ajax({
+                url: 'samples/' + type + '_data.js',
+                success: function(_data) {
+                  data = _data;
+                },
+                dataType: 'json',
+                async:   false
+              });          
+            }
+    
+            Questionnaire.create($q, data);
             if (params['solve'] == "true") {
                 Questionnaire.getInstance().test();
             }

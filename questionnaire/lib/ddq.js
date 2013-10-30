@@ -12,15 +12,13 @@ function DDQ(question, qEle) {
   this.$q = function(selector) {
     return $(this.qEle).find(selector);
   }
+  this.targetList = [];
+  this.$targets = [];
+  this.$concepts = [];
 }
 
 DDQ.questionType = "ddq";
 DDQ.prototype = {
-  targetList: [],
-  submissionList: [],
-  $targets: [],
-  $concepts: [],
-  positions:[],
 
   create: function(data) {
     var self = this;
@@ -144,8 +142,6 @@ DDQ.prototype = {
 
     self.$q("#check-button").click(function(){
       self.checkAnswer();
-      self.$q("#check-button").hide();
-      self.$q("#send-button").show();
     });
   },
 
@@ -187,8 +183,10 @@ DDQ.prototype = {
     
     $(".target").each(function(tIdx, target) {
       $(target).find(".concept").each(function(cIdx, concept) {
-        $(concept).draggable( "destroy" );
-        console.log($(concept).data("targetIdx"), $(target).data("targetIdx")) 
+        try {
+            $(concept).draggable( "destroy" );
+        } catch(e) {}
+
         if ($(concept).data("targetIdx") != $(target).data("targetIdx")) {
           $(concept).addClass("incorrect");
           self.result.correct = false;
@@ -199,6 +197,8 @@ DDQ.prototype = {
         }
       });
     });
+    self.$q("#check-button").hide();
+    self.$q("#send-button").show();
     return true;
   },
   
