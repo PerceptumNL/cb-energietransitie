@@ -163,7 +163,14 @@ class CourseHandler(BaseHandler):
             self.redirect('/preview')
             return
 
-        self.template_value['units'] = self.get_units()
+        _units = self.get_units()
+        self.template_value['units'] = []        
+        for _unit in _units:
+            lessons = self.get_lessons(_unit.unit_id)
+            setattr(_unit, "lessons",  lessons)
+            self.template_value['units'].append(_unit)
+            
+
         self.template_value['show_registration_page'] = True
 
         if student and not student.is_transient:
@@ -299,9 +306,9 @@ class UnitHandler(BaseHandler):
             # Mark this page as accessed. This is done after setting the
             # student progress template value, so that the mark only shows up
             # after the student visits the page for the first time.
-            pass
             #self.get_course().get_progress_tracker().put_html_accessed(
             #    student, unit_id, lesson_id)
+            pass
 
         self.render('unit.html')
 
