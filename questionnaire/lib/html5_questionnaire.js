@@ -133,7 +133,7 @@ function loadVideoQuestionnaire(ele, url, lastTime) {
         $wrapper.removeClass("pause");
         Questionnaire.fadeOut();
       });
-      mediaplayer.play();
+      //mediaplayer.play();
   	},
   	error: function(media, err) {
   	  console.debug('mediaelementplayer mode: ' + media.pluginType);
