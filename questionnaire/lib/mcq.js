@@ -47,7 +47,7 @@ MCQ.prototype = {
       selected = [];
     self.$q(".option").html("").addClass("mcq").addClass("enabled");
     $.each(a, function(k, v) {
-      div = $("<div>").text(v.text).css("width", "80%");
+      div = $("<div>").html(v.text).css("width", "80%");
       self.$q(".option").append(div);
       $(div).click(
         function(evt) {
