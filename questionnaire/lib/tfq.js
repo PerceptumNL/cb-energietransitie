@@ -51,7 +51,7 @@ TFQ.prototype = {
     self.$q(".option").html("").addClass("tfq");
   
     $.each(a, function(k, v) {
-      var div = $("<div>").text(v.text);
+      var div = $("<div>").html(v.text);
       self.$q(".option").append(div);
       if (!res) {
         div.click(function() { 

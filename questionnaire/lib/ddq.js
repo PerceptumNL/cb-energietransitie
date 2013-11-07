@@ -188,7 +188,8 @@ DDQ.prototype = {
         } catch(e) {}
 
         if ($(concept).data("targetIdx") != $(target).data("targetIdx")) {
-          $(concept).addClass("incorrect");
+          $(this).addClass("incorrect");
+          $(this).append("<div class='soldd'>"+($(concept).data("targetIdx")+1)+"</div>"); 
           self.result.correct = false;
           self.result.incorrect = true;
         } 
