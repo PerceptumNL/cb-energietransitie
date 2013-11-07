@@ -109,10 +109,10 @@ function loadVideoQuestionnaire(ele, url, lastTime) {
         var currentSecond = mediaplayer.player.getCurrentTime();
         console.log(currentSecond, lastSecond)
         if (currentSecond > lastSecond) {
-          mediaplayer.pause()
-          alert("You have to finish")
-          mediaplayer.player.setCurrentTime(lastSecond);
-          mediaplayer.play()
+          //mediaplayer.pause()
+          //alert("You have to finish")
+          //mediaplayer.player.setCurrentTime(lastSecond);
+          //mediaplayer.play()
         }
       });
       mediaplayer.addEventListener("loadeddata", function() { console.debug("Video event: loadeddata") });

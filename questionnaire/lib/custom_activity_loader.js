@@ -71,6 +71,10 @@ var Questionnaire = {
     return getURLParameter("unit");
   },
 
+  getXsrfToken: function() {
+    return ("eventXsrfToken" in window) ? window['eventXsrfToken'] : "";
+  },
+
   drawNumbers: function() {
     var self = this;
     var nquestions = this.questionsList.length;
@@ -148,7 +152,7 @@ var Questionnaire = {
     var evt = {
         source: "video-end",
         payload: JSON.stringify(payload),
-        xsrf_token: eventXsrfToken
+        xsrf_token: this.getXsrfToken()
     }
 
     $.post('/questionnaire/save', {request: JSON.stringify(evt)}, function() {
@@ -163,38 +167,32 @@ var Questionnaire = {
 
   sendResults: function(index, question) {
     var self = this;
-    //if (isTesting()) {
-    //  console.log("Results:");
-    //  console.log(JSON.stringify(this.doneQuestions));
-    //} else {
-    if (!("eventXsrfToken" in window))
-        window['eventXsrfToken'] = ""
-      var payload = {
-        "result": question.result, 
-        "unit": this.getUnit(),
-        "lesson": this.getLesson(),
-        "nround": 0,
-        "index": index,
-        "count": this.questionsList.length,
-        "location" : window.location.href,
-        "correct": question.result.correct
-      }
+    var payload = {
+      "result": question.result, 
+      "unit": this.getUnit(),
+      "lesson": this.getLesson(),
+      "nround": 0,
+      "index": index,
+      "count": this.questionsList.length,
+      "location" : window.location.href,
+      "correct": question.result.correct
+    }
 
-      var evt = {
-        //Find Unit
-        "source": "questionnaire-results",
-        "payload": JSON.stringify(payload),
-        "xsrf_token": eventXsrfToken
-      }
-      $.post('/questionnaire/save', {request: JSON.stringify(evt)}, function() {
-        console.log("Activity results sent");
-      }).fail(function() { 
-        console.error("Error sending activity results");
-
+    var evt = {
+      //Find Unit
+      "source": "questionnaire-results",
+      "payload": JSON.stringify(payload),
+      xsrf_token: this.getXsrfToken()
+    }
+    $.post('/questionnaire/save', {request: JSON.stringify(evt)}, function() {
+      console.log("Activity results sent");
+    }).fail(function() { 
+      console.error("Error sending activity results");
+      if (self.data && self.data.length) {
         self.data.push(payload);
         console.log(JSON.stringify(self.data))
-      });
-    //}
+      }
+    });
   },
 
   resizeVideoQuestion: function() { 
@@ -371,25 +369,27 @@ var Questionnaire = {
     $("#statistics-button").click(function() {self.showOverview()});
   },
 
-  loadData: function() {
+  loadSavedData: function() {
     var self = this;
     if (this.data) {
       for (var i=0;i<this.data.length;i++) {
-        console.log(JSON.stringify(this.data[i], undefined, 2));
+        console.debug(JSON.stringify(this.data[i], undefined, 2));
         this.createQuestion(i)
         self.doneQuestions[i] = self.leftQuestions[i];
         self.doneQuestions[i].result = self.data[i].result;
         self.leftQuestions[i] = undefined;
-      }
-      if (this.status == "2") {
-        self.showOverview();
-        $(this.qEle).show();
       }
     }
   },
 
   start: function() {
     var self = this;
+    if (this.status == "2") {
+      console.debug("Activity completed");
+      self.showOverview();
+      $(this.qEle).show();
+      return;
+    } 
     if (this.activity.videoId == undefined || this.isVideoDisabled()) {
       this.jumpNext();
       this.fadeIn();
@@ -405,7 +405,7 @@ var Questionnaire = {
             }
         });
       }
-      loadVideoQuestionnaire($(qEle).parent(), this.activity.videoId, lastTime);
+      loadVideoQuestionnaire($(this.qEle).parent(), this.activity.videoId, lastTime);
     }
     this.trigger("load");
 
@@ -427,7 +427,7 @@ var Questionnaire = {
     this.asyncInit(function() {
         self.initData();
         self.loadEvents();
-        self.loadData();
+        self.loadSavedData();
         self.start();
     });
   },
@@ -541,6 +541,7 @@ var Questionnaire = {
       //           self.questionsList[self.index].time === undefined) 
       //  self.jumpNext();
       else {
+        self.jumpNext();
         self.trigger("continue");
       }
       self.fixScroll();
