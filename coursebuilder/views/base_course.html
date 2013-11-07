@@ -37,13 +37,9 @@
           {# I18N: Navbar tab. #}
           <a href="announcements">{{ gettext('Announcements') }}</a>
         </li>
-        <li {% if navbar.course %}class='active'{% endif %}>
-          {# I18N: Navbar tab. #}
-          <a href="course">{{ gettext('Course') }}</a>
-        </li>
         <li {% if navbar.schema %}class='active'{% endif %}>
           {# I18N: Navbar tab. #}
-          <a href="schema">{{ gettext('Schema') }}</a>
+          <a href="schema">{{ gettext('Lesmateriaal') }}</a>
         </li>
         {% if course_info.course.forum_embed_url %}
           <li {% if navbar.forum %}class='active'{% endif %}>
