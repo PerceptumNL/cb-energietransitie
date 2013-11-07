@@ -25,7 +25,7 @@
 
         <h1 class="gcb-schedule-headers" style="margin-left:20px;">
           {# I18N: This should be interpreted as a noun. It is the title for the course schedule on the main contents page. #}
-          {{ gettext('Schedule') }}
+          {{ gettext('Lesmateriaal') }}
         </h1>
         <div id="gcb-main">
           <div style="width: 100%;" class="gcb-nav" id="gcb-nav-y">
@@ -167,7 +167,7 @@
                                   {% if page_type == 'unit' and lesson.lesson_id == lesson_id %}
                                     {{ lesson.title }}
                                   {% else %}
-                                    <a href="unit?unit={{ unit_id }}&lesson={{ lesson.lesson_id }}">
+                                    <a href="unit?unit={{ unit.unit_id }}&lesson={{ lesson.lesson_id }}">
                                       {{ lesson.title }}
                                     </a>
                                   {% endif %}
@@ -183,7 +183,7 @@
 
                               </li>
                             
-                            
+                            <!--no need
                             {% if lesson.activity and lesson.activity_listed %}
                                
                                   {% if page_type == 'activity' and lesson.lesson_id == lesson_id %}
@@ -229,7 +229,7 @@
                                     </li>
                                
                               {% endif %}
-
+-->
                             {% else %}
                               <li>
                                 {% if page_type == 'unit' and lesson.lesson_id == lesson_id %}
@@ -312,6 +312,83 @@
         </div>
 
       </div>
-      
+<object id="windmill" data="https://s3.amazonaws.com/energietransitie/windmill.svg" onload="Windmills.create()">
+   <img src="https://s3.amazonaws.com/energietransitie/windmill.png" width="200" height="50">
+</object>
+<script>
+var Windmills = {
+    wms: [],
+    create: function() {
+        return;
+        var svgDoc = $("#windmill")[0].contentDocument;
+
+        this._load($(svgDoc).find('#c1')[0], $(svgDoc).find('#m1'));
+        this._load($(svgDoc).find('#c2')[0], $(svgDoc).find('#m2'));
+        this._load($(svgDoc).find('#c3')[0], $(svgDoc).find('#m3'));
+
+        var self = this;
+        setInterval(function() {
+          for (var i=0;i<self.wms.length;i++) {
+            var w = self.wms[i];
+            w.rot += w.inc;
+            $(w.ele).attr("transform", "rotate(" + w.rot + ","+w.cx+","+w.cy+")");
+          }
+        }, 10);
+    },
+    _load: function(eleCenter, eleRotate) {
+        var wm = {};
+        var translate = [0, 0];
+        if ($(eleCenter).attr("translate")) {
+          translate = $(eleCenter).attr("translate").split("(")[1].split(")")[0].split(",");
+        } 
+        wm.ele = eleRotate;
+        wm.cx = parseFloat(translate[0]) + parseFloat($(eleCenter).attr("sodipodi:cx"));
+        wm.cy = parseFloat(translate[1]) + parseFloat($(eleCenter).attr("sodipodi:cy"));
+        wm.inc = Math.random() * 1 + 0.5;
+        wm.rot = 0
+        this.wms.push(wm);
+    }
+};
+</script>
+
+
+     
+      <div class="messages-wrapper">
+          
+    
+          <div class="message-box welcome-message">
+            <div class="close-message-box">x</div>
+            <div class="text-welcome-message-box">
+                Waar was je? <br> Welkom terug!
+            </div>
+          </div>
+          <div class="message-box last-time">
+            <div class="close-message-box">x</div>
+            <div class="text-message-box">
+              Hier ben je gebleven:
+              <ul id="last-time-concept">
+                    <li><a href="http://localhost:8080/unit?unit=68&lesson=3">Zonne-energie</a></li>
+                </ul>
+             </div>
+          </div>
+          <div class="message-box missing">
+            <div class="close-message-box">x</div>
+            <div class="text-message-box">  
+                Deze lessen wachten nog op jou:  
+                <ul id="missing-concept">
+                  <li><a href="http://localhost:8080/unit?unit=87&lesson=3">De energietransitie in de praktijk</a> </li>
+                  <li><a href="http://localhost:8080/unit?unit=68&lesson=2">Huidige energiemix</a></li>    
+                </ul>
+            </div>    
+          </div>      
+      </div>
+     
     </div>
+     <script type="text/javascript">
+         $(document).ready(function(){
+           $('.close-message-box').click(function(){
+               $(this).parent().hide();
+               })
+         })        
+      </script>
 {% endblock %}

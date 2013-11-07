@@ -108,7 +108,9 @@ th, td {
   margin: 8px 0 -8px;
   list-style: none;
 }
-
+#lessons_schema {
+  margin-left: 34px !important;
+}
 #gcb-nav-y-list {
   margin: 6px;
 }
@@ -175,7 +177,7 @@ th, td {
 #gcb-header img {
   padding: 0 3px 0 0;
   position: relative;
-  top: -3px;
+  top: 5.4px;
   vertical-align: middle;
   width: 50px;
 }
@@ -709,6 +711,9 @@ table.gcb-student-data-table {
   margin-left: 18px;
   width: 116px;    
 }
+.gcb-lesson-title-with-progress-schema {
+  margin-left: 18px !important;
+}
 .gcb-activity-title-with-progress {
   margin-left: 18px;
 }
@@ -812,11 +817,11 @@ a.gcb-explorer-course-title {
 }
 
 .schema {
-  width: 475px;
-  margin: 0 auto;    
+  width: 978px;   
 }
 .schema-custom {
   width: 475px !important;
+  margin-left: 90px;
 }
 
 .gcb-outline {
@@ -828,4 +833,79 @@ a.gcb-explorer-course-title {
     border-radius: 3px;
     box-shadow: 0 -1px 5px 0 rgba(0,0,0,0.1);
     border: 1px solid #c4c5c7;
+}
+.messages-wrapper {
+    display: inline-block;
+}
+.message-box {
+    width:250px;
+    height: 150px;
+    margin: 30px 50px 0px 50px;
+    border-radius: 19px;
+    border: 4px solid;
+}
+.welcome-message {
+    background-color:#1994d4;
+    border-color: #1A709E; 
+    color: #1A709E; 
+    
+}
+.last-time {
+    background-color:#E1E2E3;
+    border-color:#c4c5c7;
+    color:#c4c5c7;
+}
+#last-time-concept {
+    font-size: 15px;
+    color: #1994d4;
+}
+#missing-concept {
+    list-style-type:circle;
+    font-size: 15px;
+    color: gray;
+}
+.missing {
+    background-color: #FF9999; 
+    border-color: #FF7373;
+    color:#FF7373;
+    height:auto !important;
+
+}
+.close-message-box{
+    background-color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    text-align: center;
+    vertical-align: middle;
+    float: right;
+    margin-right: 8px;
+    margin-top: 8px;
+    padding-bottom: 1px;
+    cursor:pointer;
+
+}
+.text-message-box{
+    color: black;
+    font-size: 16px;
+    margin:30px 25px 30px 25px;
+}
+.text-welcome-message-box {
+    color:white;
+    font-size: 16px;
+    text-align:center;
+    margin-top:40px;
+    line-height: 30px;
+}
+#background-schema {
+    width:100px;
+}
+
+#windmill {
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    left: 0;
+    z-index: -10;
+    opacity: 0.6;
 }
