@@ -1,4 +1,14 @@
 .ddq {
+
+  .soldd {
+    position: absolute;
+    top: -11;
+    right: -5;
+    background-color: white;
+    border: 2px solid red;
+    padding: 1px;
+    font-size: 11px;
+  }
   .top-row { text-align: center; }
   .ui-state-active { background-color: $answer; }
 
