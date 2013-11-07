@@ -33,6 +33,7 @@ import urllib
 import urlparse
 from google.appengine.ext import db
 from models.progress import UnitLessonCompletionTracker
+from tools import verify
 
 
 RESOURCES_PATH = '/modules/questionnaire/resources'
@@ -133,7 +134,7 @@ class StudentProgress():
 
         return data
 
-    def set_lesson_progress(self, unit_id, lesson_id, status):
+    def set_lesson_status(self, unit_id, lesson_id, status):
         course = models.courses.Course(None, self.app_context)
         tracker = UnitLessonCompletionTracker(course)
         p = UnitLessonCompletionTracker.get_or_create_progress(self.student)
@@ -141,12 +142,19 @@ class StudentProgress():
         tracker._set_entity_value(p, _key, status)
         p.put()
 
+    def get_lesson_status(self, unit_id, lesson_id):
+        course = models.courses.Course(None, self.app_context)
+        tracker = UnitLessonCompletionTracker(course)
+        p = UnitLessonCompletionTracker.get_or_create_progress(self.student)
+        status = tracker.get_html_status(p, unit_id, lesson_id)
+        return status or 0
+
     def add(self, unit_id, lesson_id, nround, index, count, event_key, correct):
         progress_dict = transforms.loads(self.progress.value)
         current_progress = progress_dict[str(unit_id)][str(lesson_id)]
 
         if len(current_progress) == 0:
-            self.set_lesson_progress(unit_id, lesson_id, 1)
+            self.set_lesson_status(unit_id, lesson_id, 1)
 
         #ensure that a list of tries exists
         if nround >= len(current_progress):
@@ -196,24 +204,37 @@ class QuestionnaireTag(tags.BaseTag):
 
     def render(self, node, handler):
         questionnaire_url = node.attrib.get('url')
-        import logging
         app_context = sites.get_course_for_current_request()
-        print app_context
-        logging.error(app_context)
         unit, lesson = extract_unit_and_lesson(handler)
 
         user = handler.get_user()
-        student = Student.get_enrolled_student_by_email(user.email())
-        progress = StudentProgress.get_or_create_progress(app_context, student)
-        saved_questionnaire = progress.load_lesson(lesson.lesson_id)
+        if user == None:
+            saved_questionnaire = []
+            status = 0
+        else:
+            student = Student.get_enrolled_student_by_email(user.email())
+            progress = StudentProgress.get_or_create_progress(app_context, student)
+            saved_questionnaire = progress.load_lesson(lesson.lesson_id)
+            status = progress.get_lesson_status(unit.unit_id, lesson.lesson_id)
+
+        #quickfix-char-errors
+        for q in saved_questionnaire:
+            q['location'] = ""
+
+        script = """
+<script>
+    var lesson_questionnaire_%s = %s;
+    var lesson_status_%s = %s;
+</script>
+""" % (lesson.lesson_id, transforms.dumps(saved_questionnaire), lesson.lesson_id, status)
+        import logging
+        logging.error(script)
         questionnaire = cElementTree.XML("""
 <div id='activityContents' class='video'>
-    <script>
-        var saved_questionnaire_%s = %s;
-    </script>
-    <div class='questionnaire' src='%s' data="saved_questionnaire_%s"></div>
+    %s
+    <div class='questionnaire' src='%s' data="lesson_questionnaire_%s" status="%s"></div>
 </div>
-""" % (lesson.lesson_id, transforms.dumps(saved_questionnaire), questionnaire_url, lesson.lesson_id))
+""" % (script, questionnaire_url, lesson.lesson_id, status))
         return questionnaire
 
     def get_icon_url(self):
@@ -255,9 +276,6 @@ class QuestionnaireRESTHandler(BaseRESTHandler):
             return
 
         source = request.get('source')
-        
-
-        
         payload_json = request.get('payload')
         payload = transforms.loads(payload_json)
 
@@ -288,7 +306,7 @@ class QuestionnaireRESTHandler(BaseRESTHandler):
         student = Student.get_enrolled_student_by_email(user.email())
         progress = StudentProgress.get_or_create_progress(app_context, student)
         if source == "video-end":
-            progress.set_lesson_progress(unit_id, lesson_id, 2)
+            progress.set_lesson_status(unit_id, lesson_id, 2)
             return
 
         count = int(payload['count']) or 1

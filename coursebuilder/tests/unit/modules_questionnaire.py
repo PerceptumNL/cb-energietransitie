@@ -6,10 +6,12 @@ from common import tags
 
 import re
 from models import transforms
+import modules.questionnaire.questionnaire as questionnaire 
 from modules.questionnaire.questionnaire import StudentProgress
 from tests.functional import actions
 from models.models import Student, StudentPropertyEntity, EventEntity
 from controllers import sites
+import models.courses
 
 def save_progress(browser):
     """Views /preview page."""
@@ -31,50 +33,24 @@ class QuestionnaireTests(actions.TestBase):
 
     def setUp(self):
         super(QuestionnaireTests, self).setUp()
-
-        class SimpleTag(tags.BaseTag):
-            def render(self, unused_arg, unused_handler):
-                return cElementTree.Element('SimpleTag')
-
-        class ComplexTag(tags.BaseTag):
-            def render(self, unused_arg, unused_handler):
-                return cElementTree.XML(
-                    '<Complex><Child>Text</Child></Complex>')
-
-        class ReRootTag(tags.BaseTag):
-            def render(self, node, unused_handler):
-                elt = cElementTree.Element('Re')
-                root = cElementTree.Element('Root')
-                elt.append(root)
-                for child in node:
-                    root.append(child)
-                return elt
-
-        def new_get_tag_bindings():
-            return {
-                'simple': SimpleTag,
-                'complex': ComplexTag,
-                'reroot': ReRootTag}
-
-        self.old_get_tag_bindings = tags.get_tag_bindings
-        tags.get_tag_bindings = new_get_tag_bindings
-
-        self.mock_handler = object()
-
-    def tearDown(self):
-        pass
-
-    def test_get_or_create_progress(self):
         email = "test@example.com"
         name = "test"
 
         actions.login(email)
         actions.register(self, name)
-        student = Student.get_enrolled_student_by_email(email)
-        self.assertIsNotNone(student)
-        app_context = sites.get_all_courses()[0]
-        progress = StudentProgress.get_or_create_progress(app_context, student)
-        self.assertIsNotNone(progress)
+
+        self.student = Student.get_enrolled_student_by_email(email)
+        self.app_context = sites.get_all_courses()[0]
+        self.progress = StudentProgress.get_or_create_progress(self.app_context, self.student)
+
+    def tearDown(self):
+        pass
+
+    def test_set_up(self):
+        self.assertIsNotNone(self.student)
+
+    def test_get_or_create_progress(self):
+        self.assertIsNotNone(self.progress)
         self.assertIsInstance(StudentPropertyEntity.all().get(), StudentPropertyEntity)
 
         response = self.get('course')
@@ -131,7 +107,7 @@ class QuestionnaireTests(actions.TestBase):
         }
         response = self.post('questionnaire/save', {"request":transforms.dumps(request)})
 
-        progress = StudentProgress.get_or_create_progress(app_context, student)
+        progress = StudentProgress.get_or_create_progress(self.app_context, self.student)
         p = progress.value
         self.assertEqual(len(p["87"]["1"]), 1)
         self.assertEqual(len(p["87"]["1"][0]), 10)
@@ -143,7 +119,23 @@ class QuestionnaireTests(actions.TestBase):
         self.assertEqual(len(saved_results), 0)
 
         response = self.get('/unit?unit=87')
-        print response.body
+
+    def test_unit_and_lesson_id_from_url(self):
+        course = models.courses.Course(None, app_context=self.app_context)
+        unit_id, lesson_id = questionnaire.get_unit_and_lesson_id_from_url(course, '/unit?unit=87')
+        self.assertEqual(unit_id, "87")
+        self.assertEqual(lesson_id, 1)
+
+    def test_load_status(self):
+        progress = StudentProgress.get_or_create_progress(self.app_context, self.student)
+        course = models.courses.Course(None, app_context=self.app_context)
+        unit_id, lesson_id = questionnaire.get_unit_and_lesson_id_from_url(course, '/unit?unit=87')
+        status = progress.get_lesson_status(unit_id, lesson_id)
+        self.assertEqual(status, 0)
+        progress.set_lesson_status(unit_id, lesson_id, 2)
+        status = progress.get_lesson_status(unit_id, lesson_id)
+        self.assertEqual(status, 2)
+    
         
 
         
