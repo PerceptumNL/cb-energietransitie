@@ -129,24 +129,32 @@
 
           {% endif %}
         </div><!-- /gcb-aside -->
+        <script>
+            {% if back_button_url %}
+                var backButtonUrl = "{{ back_button_url }}";
+            {% endif %}
+            {% if next_button_url %}
+                var nextButtonUrl = "{{ next_button_url }}";
+            {% endif %}
+        </script>
 
+        {#
         <div class="gcb-button-box">
           <div class="gcb-prev-button">
             {% if back_button_url %}
-              {# I18N: Text on the navigation button at the end of a lesson page. #}
               <a href="{{ back_button_url }}"> {{ gettext('Previous Page') }} </a>
             {% endif %}
           </div>
           <div class="gcb-next-button">
             {% if next_button_url %}
-              {# I18N: Text on the navigation button at the end of a lesson page. #}
               <a href="{{ next_button_url }}"> {{ gettext('Next Page') }} </a>
             {% else %}
-              {# I18N: Text on the navigation button at the end of a lesson. It signals that the student has completed a unit (which is a series of lessons). #}
               <a href="course"> {{ gettext('End') }} </a>
             {% endif %}
           </div>
         </div>
+        #}
+
       </div>
     {% endif %}
     {{course_info.unit.before_content_ends | safe}}
