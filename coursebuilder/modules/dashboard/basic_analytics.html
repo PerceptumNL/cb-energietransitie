@@ -22,10 +22,12 @@
   <br></br>
   <table>
       <tr>
+{#
             <th>Student</th>
             {% for m in data[0]['scores'] %}
             <th> {{ m['title'] }} </th>
             {% endfor %}
+#}
       </tr>
     {% for d in data%}
       <tr>
@@ -51,21 +53,26 @@
   <table class="table">
       <tr>
             <th>Units</th>
+{#
             {% for k, v in struct.items() %}
                 <th colspan={{ v['lesson_count'] }}> Unit {{ k }} - {{ v['title'] }} </th>
             {% endfor %}
+#}
             <th> Total </th>
       </tr>
 
       <tr>
             <th>Lessons</th>
+{#
             {% for k, v in struct.items() %}
                 {% for key, val in v['lessons'].items() %}
                     <th> {{ k }}.{{ key }} </th>
                 {% endfor %}
             {% endfor %}
+#}
             <th> Average </th>
       </tr>
+{#
       {% for key, value in att_scores.items() %}
             <tr>
                 <th> {{ key }} </th>
@@ -79,6 +86,7 @@
                 <th>{{ averages_st[key] }}</th>
             </tr>
       {% endfor %}
+#}
       <tr>
         <th> Average per activity </th>
         {% for v in averages_ex %}

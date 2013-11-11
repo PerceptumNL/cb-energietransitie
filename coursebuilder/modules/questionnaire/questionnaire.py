@@ -339,6 +339,12 @@ def register_module():
 #        ('/questionnaire/end', QuestionnaireEndRESTHandler),
         ('/questionnaire/save', QuestionnaireRESTHandler)]
 
+    import modules.dashboard  # pylint: disable-msg=g-import-not-at-top
+    from modules.questionnaire import stats  # pylint: disable-msg=g-import-not-at-top
+    # register custom dashboard section
+    modules.dashboard.dashboard.DashboardRegistry.add_custom_analytics_section(
+        stats.PeerReviewStatsHandler)
+
     global custom_module
     custom_module = custom_modules.Module(
         'Questionnaire tag',

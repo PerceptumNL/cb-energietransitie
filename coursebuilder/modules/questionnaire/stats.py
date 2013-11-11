@@ -51,33 +51,19 @@ class ReviewStatsAggregator(object):
             self.counts_by_completed_reviews[unit_id][count] += 1
 
 
-class ComputeReviewStats(jobs.DurableJob):
+class ComputeQuestionnaireStats():
     """A job for computing peer review statistics."""
+    def __init__(self, app_context):
+        self.app_context = app_context
 
     def run(self):
-        """Computes peer review statistics."""
+        pass
 
-        stats = ReviewStatsAggregator()
-        mapper = utils.QueryMapper(
-            peer.ReviewSummary.all(), batch_size=500, report_every=1000)
-
-        mapper.run(stats.visit)
-
-        completed_arrays_by_unit = {}
-        for unit_id in stats.counts_by_completed_reviews:
-            max_completed_reviews = max(
-                stats.counts_by_completed_reviews[unit_id].keys())
-
-            completed_reviews_array = []
-            for i in range(max_completed_reviews + 1):
-                if i in stats.counts_by_completed_reviews[unit_id]:
-                    completed_reviews_array.append(
-                        stats.counts_by_completed_reviews[unit_id][i])
-                else:
-                    completed_reviews_array.append(0)
-            completed_arrays_by_unit[unit_id] = completed_reviews_array
-
-        return {'counts_by_completed_reviews': completed_arrays_by_unit}
+    def submit(self):
+        return None
+    
+    def load(self): 
+        return None
 
 
 class PeerReviewStatsHandler(ApplicationHandler):
@@ -85,65 +71,30 @@ class PeerReviewStatsHandler(ApplicationHandler):
 
     # The key used in the statistics dict that generates the dashboard page.
     # Must be unique.
-    name = 'peer_review_stats'
+    name = 'questionnaire_stats'
     # The class that generates the data to be displayed. It should have a
     # get_stats() method.
-    stats_computer = ComputeReviewStats
+    stats_computer = ComputeQuestionnaireStats
 
-    def get_markup(self, job):
+    def get_markup(self, job=None):
         """Returns Jinja markup for peer review analytics."""
+        from models.models import Student
+        from modules.questionnaire.questionnaire import StudentProgress
+        students = Student.all().fetch(10000)
+        for s in students:
+            progress = StudentProgress.get_or_create_progress(self.app_context, s)
+            setattr(s, "progress", progress)
 
-        errors = []
-        stats_calculated = False
-        update_message = safe_dom.Text('')
-
-        course = courses.Course(self)
-        serialized_units = []
-
-        if not job:
-            update_message = safe_dom.Text(
-                'Peer review statistics have not been calculated yet.')
-        else:
-            if job.status_code == jobs.STATUS_CODE_COMPLETED:
-                stats = transforms.loads(job.output)
-                stats_calculated = True
-
-                for unit in course.get_peer_reviewed_units():
-                    if unit.unit_id in stats['counts_by_completed_reviews']:
-                        unit_stats = (
-                            stats['counts_by_completed_reviews'][unit.unit_id])
-                        serialized_units.append({
-                            'stats': unit_stats,
-                            'title': unit.title,
-                            'unit_id': unit.unit_id,
-                        })
-                update_message = safe_dom.Text("""
-                    Peer review statistics were last updated at
-                    %s in about %s second(s).""" % (
-                        job.updated_on.strftime(HUMAN_READABLE_TIME_FORMAT),
-                        job.execution_time_sec))
-            elif job.status_code == jobs.STATUS_CODE_FAILED:
-                update_message = safe_dom.NodeList().append(
-                    safe_dom.Text("""
-                        There was an error updating peer review statistics.
-                        Here is the message:""")
-                ).append(
-                    safe_dom.Element('br')
-                ).append(
-                    safe_dom.Element('blockquote').add_child(
-                        safe_dom.Element('pre').add_text('\n%s' % job.output)))
-            else:
-                update_message = safe_dom.Text("""
-                    Peer review statistics update started at %s and is running
-                    now. Please come back shortly.""" % job.updated_on.strftime(
-                        HUMAN_READABLE_TIME_FORMAT))
+        from models.courses import Course
+        self.course = Course(self)
+        units = self.course.get_units()
+        for _unit in units:
+            lessons = self.course.get_lessons(_unit.unit_id)
+            setattr(_unit, "lessons",  lessons)
 
         return jinja2.utils.Markup(self.get_template(
             'stats.html', [os.path.dirname(__file__)]
         ).render({
-            'errors': errors,
-            'serialized_units': serialized_units,
-            'serialized_units_json': transforms.dumps(serialized_units),
-            'stats_calculated': stats_calculated,
-            'update_message': update_message,
+            'students': students,
+            'units': units
         }, autoescape=True))

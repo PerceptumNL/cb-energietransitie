@@ -2,6 +2,21 @@ import os
 import datetime
 
 
+FILES = [
+    {
+        "internal_path": "build/questionnaire.css",
+        "external_path": "assets/css/questionnaire.css",
+    },
+    {
+        "internal_path": "build/questionnaire.js",
+        "external_path": "assets/js/questionnaire.js",
+    },
+    {
+        "internal_path": "lib/base.html",
+        "external_path": "assets/lib/base.html",
+    },
+]
+
 def build():
     filedir = os.path.dirname(os.path.realpath(__file__))
     directory=os.path.join(filedir, "build")
