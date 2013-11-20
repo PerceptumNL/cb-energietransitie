@@ -142,6 +142,7 @@ DDQ.prototype = {
 
     self.$q("#check-button").click(function(){
       self.checkAnswer();
+      self.submit();
     });
   },
 

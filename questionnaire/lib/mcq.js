@@ -64,6 +64,7 @@ MCQ.prototype = {
     self.$q("#check-button").click(function(){
       var selections = self.getSelections();
       self.checkAnswer(selections);
+      self.submit();
     });
   },
 

@@ -14,9 +14,7 @@ $width: 788px;
 }
 
 #activityContents {
-    position: relative;
     min-height: 440px; 
-    width: 100%;
     &.fullscreen question {
       position: fixed;
       left: 0px;
@@ -81,6 +79,14 @@ question {
     opacity: 0.8;
     z-index: 1;
 }
+
+.actions {
+    text-align: center;
+    div {
+        margin: 0 auto;
+    }
+}
+
 
 
 

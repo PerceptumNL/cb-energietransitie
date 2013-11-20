@@ -42,80 +42,17 @@ TFQ.prototype = {
   
   drawAnswers: function(res) {
     var self = this;
-    var q = self.question;
-    var a = q.answers;
-    self.$q(".table-feedback").hide();
-    self.$q(".feedback-text").html("");
-    self.$q(".right").hide();
-    self.$q(".wrong").hide();
-    self.$q(".option").html("").addClass("tfq");
-  
-    $.each(a, function(k, v) {
-      var div = $("<div>").html(v.text);
-      self.$q(".option").append(div);
-      if (!res) {
-        div.click(function() { 
-          self.prompt_maybe(false); 
-          self.checkAnswer(k) 
-        });
-      }
+    self.$q(".answer").click(function() {
+      self.checkAnswer(this.dataset.index) ;
     });
-    if (q.answerMaybe) {
-      var div = $("<div>").text("Maybe").attr("id", "maybe-button");
-      self.$q(".option").append(div);
-      if (!res) {
-        
-        div.click(function() {
-            self.prompt_maybe(true)
-        });  
-        self.$q("#submit-button").click(function() {
-          $(this).hide()
-          self.$q("#send-button").show();
-          self.$q("#tr-fb-input").hide();
-          self.$q("#feedback-input").hide();
-          self.result.maybe = true;
-          self.result.ans_index = 2;
-          self.result.maybeText = $q("#feedback-input").val();
-        });
-        self.$q("#feedback-input").keyup(function() {
-          if ($(this).val().length > 0) {
-            self.$q("#submit-button").show();
-          } else {
-            self.$q("#submit-button").hide();
-          }
-        });
-      }
-    }
-    self.$q(".option").children().css("width", (84/self.$q(".option").children().length) + "%");
-    if (res) {
-      self.checkAnswer(res.answerIdx)
-    }
-  },
-  
-  prompt_maybe: function(show) {
-    var self = this;
-    if (show) {
-      self.$q("#feedback-input").show();
-      self.$q("#tr-fb-input").show();
-      self.$q("#send-button").hide();
-      self.$q("#maybe-button").addClass("selected");
-      self.$q(".table-feedback").fadeIn();
-      self.$q("#feedback-input").focus();
-    } else {
-      self.$q(".table-feedback").hide();
-      self.$q("#feedback-input").hide();
-      self.$q("#tr-fb-input").hide();
-      self.$q("#send-button").show();
-      self.$q("#submit-button").hide();
-      self.$q("#maybe-button").removeClass("selected");
-    }
   },
   
   feedback_correct: function(answer_idx) {
     var self = this;
     var ele = self.$q(".option").children()[answer_idx];
     $(ele).addClass("correct");
-    self.$q(".right").show();
+    self.$q(".right").removeClass("hidden");
+    self.$q(".feedback").removeClass("hidden");
     answer_text = self.answers[answer_idx].feedback;
     if (typeof answer_text != "undefined")
       self.$q(".feedback-text").html("<div>" + answer_text + "</div>")
@@ -126,7 +63,8 @@ TFQ.prototype = {
     var self = this;
     var ele = self.$q(".option").children()[answer_idx];
     $(ele).addClass("incorrect");        
-    self.$q(".wrong").show();
+    self.$q(".wrong").removeClass("hidden");
+    self.$q(".feedback").removeClass("hidden");
     answer_text = self.answers[answer_idx].feedback;
     if (typeof answer_text != "undefined")
       self.$q(".feedback-text").html("<div>" + answer_text + "</div>")

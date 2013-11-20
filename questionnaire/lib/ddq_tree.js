@@ -184,12 +184,14 @@ DDQTREE.prototype = {
             if (total == totalEnd) {
                 setTimeout(function() {
                     self.checkAnswer();
-                }, 10);
+                }, 50);
             }
         }, 1);
       });
     } else {
-      this.result.selections = Array(this.targetList.length);
+      //console.log(this.question)
+      //console.log(":HEI");
+      //this.result.selections = Array(this.question.targetList.length);
     }
   },
 
@@ -403,11 +405,13 @@ DDQTREE.prototype = {
       }
     }
     concepts = shuffle(concepts);
-    this.cell_width = this.$q(".target").width();
+    this.cell_width = this.$q(".target").width() - 1;
 
     //void 
+    console.log(concepts)
     for (var i=0; i<concepts.length; i++) {
       concept = concepts[i];
+      console.log(concept);
       var concept_text = $("<div class='concept-text'>"+concept.text+"</div>")
       var concept_div = $("<div>")
             .html(concept_text)
@@ -422,7 +426,7 @@ DDQTREE.prototype = {
       if (concept.image) {
         $("<img>").attr("src", concept.image)
           .addClass("concept-image")
-          .attr("width", "100")
+          .attr("width", "40%")
           .css("display", "inline")
           .css("margin", "auto")
           .prependTo(concept_div);
@@ -467,6 +471,7 @@ DDQTREE.prototype = {
 
     self.$q("#check-button").click(function(){
       self.checkAnswer();
+      self.submit();
     });
   },
 
@@ -528,9 +533,30 @@ DDQTREE.prototype = {
     var self = this;
     setTimeout(function() {
       $(".concept").each(function(i, concept) {
-          self.addConcept(concept, $(".target")[i]);
+            console.log(concept);
+          var c2 = $(concept).clone(true)
+          c2.appendTo(".option");
+      });
+      $(".concept").each(function(i, concept) {
+          var parent_id = $(concept).attr('data-ele_id')
+          var $target = $(".target[data-ele_id='" + parent_id + "'");
+          self.addConcept(concept, $target);
+      });
+    }, 500);
+  },
+
+  test_correct: function() {
+    var self = this;
+    setTimeout(function() {
+      $(".concept").each(function(i, concept) {
+          var parent_id = $(concept).attr('data-ele_id')
+          var $target = $(".target[data-ele_id='" + parent_id + "'");
+          self.addConcept(concept, $target);
       });
     }, 100);
+  },
+
+  loadCorrect: function() {
   }
 }
 

@@ -59,6 +59,7 @@ TIQ.prototype = {
     $submit.appendTo(self.$q("#answer"))
     self.$q("#submit-button").click(function() {
         self.checkAnswer();
+        self.submit();
     });
 
   },

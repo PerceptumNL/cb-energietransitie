@@ -25,13 +25,15 @@ function shuffleRange(length) {
     return shuffle(array);
 }
 
-
 function getURLParameter(name, _default) {
-  ret = decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||_default
+  var ret = decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||_default
   if (ret == "false") return false;
   else if (ret == "true") return true;
   else return ret;
-  
+}
+
+function getXsrfToken() {
+    return ("eventXsrfToken" in window) ? window['eventXsrfToken'] : "";
 }
 
 function getLibUrl() {
@@ -43,8 +45,9 @@ function getLibUrl() {
 }
 
 function isTesting() {
-  return (window.location.href.indexOf("127.0.0.1") > -1) 
+  return (getXsrfToken() == "")
 }
+
 
 var Questionnaire = {
   registeredQuestionTypes: {},
@@ -62,6 +65,7 @@ var Questionnaire = {
   videoIndex: -1,
   redoMode: false,
   skipVideo: false,
+  data: [],
 
   getLesson: function() {
     return getURLParameter("lesson");
@@ -71,43 +75,46 @@ var Questionnaire = {
     return getURLParameter("unit");
   },
 
-  getXsrfToken: function() {
-    return ("eventXsrfToken" in window) ? window['eventXsrfToken'] : "";
-  },
-
   drawNumbers: function() {
     var self = this;
-    var nquestions = this.questionsList.length;
-    var ntmpl = $("#number").children()[0].outerHTML;
-    $("#number").html("");
-    for (var i=0; i<nquestions; i++) {
-      var qnumber;
-      (function(j) { 
-        qnumber = $(ntmpl).html(j+1).addClass("number-spacing").click(function() {
-            self.jumpTo(j);
-            self.drawNumbers();
-        });
-      })(i);
-      $("#number").append(qnumber);
-    }
-    $("#number").children().removeClass("sel-number");
-    if (this.index > -1)
-      $("#number").children().eq(this.index).addClass("sel-number");
+    $(".question-index").children().click(function() {
+      $(this).parent().children().removeClass("active");
+      $(this).addClass("active");
+      self.jumpTo($(this).text()-1);
+
+    });
+    //var self = this;
+    //var nquestions = this.questionsList.length;
+    //var ntmpl = $("#number").children()[0].outerHTML;
+    //$("#number").html("");
+    //for (var i=0; i<nquestions; i++) {
+    //  var qnumber;
+    //  (function(j) { 
+    //    qnumber = $(ntmpl).html(j+1).addClass("number-spacing").click(function() {
+    //        self.drawNumbers();
+    //    });
+    //  })(i);
+    //  $("#number").append(qnumber);
+    //}
+    //$("#number").children().removeClass("sel-number");
+    //if (this.index > -1)
+    //  $("#number").children().eq(this.index).addClass("sel-number");
   },
 
   showOverview: function() {
     var self = this;
-    self.sendEnd();
+    if (this.status != "2")
+        self.sendEnd();
 
     //fast trick
-    if ($wrapper) {
+    if (VideoQuestionnaire.$wrapper) {
       if (document.fullScreen || 
           document.mozFullScreen ||
           document.webkitIsFullScreen) {
-        $wrapper.addClass("fullscreen");
+        VideoQuestionnaire.$wrapper.addClass("fullscreen");
         this.resizeVideoQuestion();
       } else {
-        $wrapper.removeClass("fullscreen");
+        VideoQuestionnaire.$wrapper.removeClass("fullscreen");
       }
     }
     $("#button-hint").hide()
@@ -124,18 +131,24 @@ var Questionnaire = {
             maybe += 1;
       });
       var total = correct + incorrect + maybe;
+
       console.debug("Overview: ");
       console.debug(" total: " + total);
       console.debug(" correct: " + correct);
       console.debug(" incorrect: " + incorrect);
       console.debug(" maybe: " + maybe);
-      $("#right .percentage").html(Math.round(correct / total * 100) + "%");
-      $("#wrong .percentage").html(Math.round(incorrect / total * 100) + "%");
-
+      
+      var templateValues = {
+        right: Math.round(correct / total * 100) + "%",
+        wrong: Math.round(incorrect / total * 100) + "%",
+      }
       this.index = -1;
       this.drawNumbers();
       $("#number").css("display", "inline-block");
       $(".question-wrapper").hide()
+      var overview = Handlebars.compile($("#overview-partial").html());
+      var html = overview(templateValues)
+      $(html).appendTo("#single-question");
       $("#overview").show();
       return true;
     } else {
@@ -146,13 +159,14 @@ var Questionnaire = {
   },
 
   sendEnd: function(index, question) {
+    var self = this;
     var payload = {
         "location" : window.location.href,
     }
     var evt = {
         source: "video-end",
         payload: JSON.stringify(payload),
-        xsrf_token: this.getXsrfToken()
+        xsrf_token: getXsrfToken()
     }
 
     $.post('/questionnaire/save', {request: JSON.stringify(evt)}, function() {
@@ -162,7 +176,6 @@ var Questionnaire = {
       self.data.push(payload);
       console.log(JSON.stringify(self.data))
     });
-    
   },
 
   sendResults: function(index, question) {
@@ -182,7 +195,7 @@ var Questionnaire = {
       //Find Unit
       "source": "questionnaire-results",
       "payload": JSON.stringify(payload),
-      xsrf_token: this.getXsrfToken()
+      xsrf_token: getXsrfToken()
     }
     $.post('/questionnaire/save', {request: JSON.stringify(evt)}, function() {
       console.log("Activity results sent");
@@ -273,13 +286,17 @@ var Questionnaire = {
     return false;
   },
 
-  redo: function() {
+  redo: function(showVideo) {
     $(".question-instance").remove();
-    this.data = null;
+    this.data = [];
     this.first_results = $.extend(true, [], this.results);
-    this.redoMode = true
+    this.redoMode = showVideo || false;
     this.initData();
-    this.jumpNext();
+    if (showVideo) {
+        VideoQuestionnaire.replay();
+    } else {
+        this.jumpNext();
+    }
   },
 
   initData: function() {
@@ -318,10 +335,11 @@ var Questionnaire = {
         url: a_src,
         type: 'get',
         dataType: 'json',
-        async: true,
+        async: false,
         success: function(data) {
           console.debug("Activity loaded:", data);
           self.activity_original = data;
+          self.questionsList = data.questionsList;
           requestDone();
         },
         error: function(data) {
@@ -335,11 +353,24 @@ var Questionnaire = {
       url: getLibUrl() + 'base.html',
       type: 'get',
       dataType: 'html',
-      async: true,
-      success: function(data) {
+      async: false,
+      success: function(source) {
         $(self.qEle).hide();
         $(self.qEle).empty();
-        $(self.qEle).append(data);
+        $(self.qEle).append(source);
+        self.template = Handlebars.compile($("#questionnaire-template").html());
+        Handlebars.registerPartial("question", $("#question-partial").html());
+        Handlebars.registerPartial("overview", $("#overview-partial").html());
+        var templateValues = {
+            questionsList: self.questionsList,
+        }
+        //console.log(questionsList);
+        var $html = $(self.template(templateValues));
+        //$(self.qEle).html(html);
+        $html.attr({
+          id: "qaa"+this.index, 
+          index: this.index
+        }).addClass("question-instance").appendTo('question');
         requestDone();
       },
       error: function(data) {
@@ -361,24 +392,26 @@ var Questionnaire = {
       $(".hint").hide();
     });
     $("#redo").click(function() {
-      self.redo();
+      self.redo(self.hasVideo());
     })
-    $("#revisit").click(function() {
-      location.href = location.href.replace("activity","unit");
-    })
+    if (this.hasVideo()) {
+        $("#revisit").click(function() {
+          self.redo(false);
+        })
+    } else {
+        $("#revisit").hide()
+    }
     $("#statistics-button").click(function() {self.showOverview()});
   },
 
   loadSavedData: function() {
     var self = this;
-    if (this.data) {
-      for (var i=0;i<this.data.length;i++) {
-        console.debug(JSON.stringify(this.data[i], undefined, 2));
-        this.createQuestion(i)
-        self.doneQuestions[i] = self.leftQuestions[i];
-        self.doneQuestions[i].result = self.data[i].result;
-        self.leftQuestions[i] = undefined;
-      }
+    for (var i=0;i<this.data.length;i++) {
+      console.debug(JSON.stringify(this.data[i], undefined, 2));
+      this.createQuestion(i)
+      self.doneQuestions[i] = self.leftQuestions[i];
+      self.doneQuestions[i].result = self.data[i].result;
+      self.leftQuestions[i] = undefined;
     }
   },
 
@@ -390,7 +423,7 @@ var Questionnaire = {
       $(this.qEle).show();
       return;
     } 
-    if (this.activity.videoId == undefined || this.isVideoDisabled()) {
+    if (!this.hasVideo() || this.isVideoDisabled()) {
       this.jumpNext();
       this.fadeIn();
     } else {
@@ -405,16 +438,19 @@ var Questionnaire = {
             }
         });
       }
-      loadVideoQuestionnaire($(this.qEle).parent(), this.activity.videoId, lastTime);
+      VideoQuestionnaire.create($(this.qEle).parent(), this.activity.videoId, lastTime);
     }
     this.trigger("load");
 
   },
 
   create: function(qEle, data) {
+Handlebars.registerHelper('add1', function(index) {
+    return parseInt(index)+1;
+});
     var self = this;
     this.qEle = qEle;
-    this.data = data;
+    this.data = data || [];
 
     var a_data = $(qEle).attr("data");
     if (a_data && a_data in window) {
@@ -501,21 +537,45 @@ var Questionnaire = {
     }, 500);  
   },
 
+  hasVideo: function() {
+    return (this.activity.videoId != undefined)
+  },
+
   isVideoDisabled: function() {
-    return getURLParameter("skipvideo", false)
+    return getURLParameter("skipvideo", false);
+  },
+
+  isVideoNext: function() {
+    if (!this.hasVideo()) return false;
+    if (this.isVideoDisabled()) return false;
+    if (this.redoMode) return false;
+    if (this.questionsList[this.index+1] == "undefined")  return false;
+    if (this.questionsList[this.index+1] &&
+        this.questionsList[this.index+1].time === undefined) 
+        return false;
+    if (this.questionsList[this.index+1].time) 
+        return true;
   },
 
   createQuestion: function(index) {
     var self = this;
     var question = this.leftQuestions[index] || this.doneQuestions[index]; 
-    var template = $(this.qEle).find('#template').clone();
-    $(template).attr({
-      id: "q"+this.index, 
+    var question_template = Handlebars.compile($("#question-partial").html());
+
+
+    var templateValues = {
+        question: question,
+    }
+    console.log(question);
+    console.log(question.questionType);
+    var $html = $(question_template(templateValues));
+    $html.attr({
+      id: this.index, 
       index: this.index
-    }).addClass("question-instance").appendTo('#questions');
+    }).addClass("question-instance").appendTo('#single-question');
 
     this.questionClass = this.registeredQuestionTypes[question.questionType];
-    this.questionInstances[index] = new this.questionClass(question, template)
+    this.questionInstances[index] = new this.questionClass(question, $html)
     var _data;
     if (this.data && this.data[index]) {
       _data = this.data[index];
@@ -524,26 +584,22 @@ var Questionnaire = {
     this.questionInstances[index].show = function() {
       $(this.qEle).show();
     }
-    $(template).find("#send-button").click(function() {
+    console.log(this.questionInstances);
+    this.questionInstances[index].submit = function() {
       if (self.leftQuestions[self.index] !== undefined) {
         self.doneQuestions[self.index] = self.leftQuestions[self.index];
         self.doneQuestions[self.index].result = self.questionInstances[self.index].result;
         self.leftQuestions[self.index] = undefined;
         self.sendResults(self.index, self.doneQuestions[self.index])
       }
-      if (self.redoMode || self.isVideoDisabled()) {
-        self.jumpNext();
-      } else if (self.questionsList[self.index+1] &&
-                 self.questionsList[self.index+1].time === undefined) {
-        self.jumpNext();
-      }
-      //} else if (self.questionsList[self.index+1] === undefined && 
-      //           self.questionsList[self.index].time === undefined) 
-      //  self.jumpNext();
-      else {
-        self.jumpNext();
+    }
+    $html.find("#send-button").click(function() {
+      if (self.isVideoNext()) {
         self.trigger("continue");
+      } else {
+        self.jumpNext();
       }
+
       self.fixScroll();
     });
 
@@ -562,6 +618,7 @@ var Questionnaire = {
     else {
       $("#button-hint").hide();
     }
+    
     $("#overview").hide();
     $(".question-wrapper").hide();
 
@@ -577,7 +634,7 @@ var Questionnaire = {
       //this.sendResults();
       return;
     } else {
-      $("#statistics-button").hide();
+      //$("#statistics-button").hide();
     }
     this.createQuestion(index);
     this.questionInstances[index].show();
@@ -589,16 +646,17 @@ var Questionnaire = {
   }
 }
 
-if (!isTesting()) {
   window.addEventListener("load", function() {
+if (!isTesting()) {
+    console.log("Load questionnaire");
     var qs = $(".questionnaire"); 
     //could support multiple questionnaires
     $.each(qs, function(k, q) {
       Questionnaire.create(q);
     });
-  });
 } else {
 }
+  });
 
 window.test_nofullscreen = function(cont) {
   test( "nofullscreen", function() {

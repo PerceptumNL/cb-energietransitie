@@ -11,10 +11,8 @@ $answer-disabled: #EFF0F1;
     margin-right: 10px;
     text-align: center; 
 
-    div {
-      display: inline-block;
+    div div {
       padding: 10px 2.3px;
-      margin: 0px 7px;
       background-color: $answer; 
       &.selected {
         background-color: $answer-hover;
@@ -45,18 +43,6 @@ $answer-disabled: #EFF0F1;
   .table-feedback {
     margin-top: 14px; 
   }
-  #send-button,{
-    margin-bottom: 5px;
-    padding: 8px 11px;
-    background-color: #c4c5c7;
-    width: 50px;
-    float: right;
-    text-align: center;
-    margin-right: 5px; }
 
-#send-button:hover, {
-  margin-right: 5px;
-  cursor: pointer; }
-    
 }
 

@@ -1,18 +1,22 @@
 * {
   font-family: "Open Sans"; }
 
+.questions {
+  border: 1px solid #c4c5c7;
+  background-color: white;
+}
+#q-header {
+  border-bottom: 1px solid #c4c5c7;
+}
+#q-table {
+  border: solid 1px blue;
+}
+/*
 td, th {
   border: none;
   padding: 0;
   vertical-align: inherit; }
 
-#questions {
-  width: 788px;
-  min-height: 515px;
-  border: 1px solid #c4c5c7;
-  top: 0px;
-  background-color: white;
-  position: relative; }
 
 .right-col {
   position: relative;
@@ -30,11 +34,6 @@ td, th {
   text-align: center;
   min-height: 450px; }
 
-#q-header {
-  height: 30px;
-  width: 788px;
-  border-bottom: 1px solid #c4c5c7;
-  position: relative; }
 
 #q-table {
   width: 99%;
@@ -48,6 +47,7 @@ td, th {
 
 #tr-image {
   display: none; }
+*/
 
 #number {
   text-align: left;
@@ -73,13 +73,11 @@ td, th {
 }
 
 #button-hint {
-  text-align: right;
-  right: 10px;
-  margin-top: 2px;
+  text-align: center;
+  margin-top: 20px;
   font-size: 20px;
-  position: absolute;
-  top: 0px;
-  float: right;
+  list-style-type: none;
+    
 }
 
 #button-hint:hover {
@@ -111,24 +109,20 @@ td, th {
   line-height: 30px;
   vertical-align: middle; }
 
-.table-feedback {
-  position: relative;
-  margin-top: 0px;
-  margin-left: 20px;
-  margin-right: 20px;
-  margin-bottom: 20px;
+.feedback {
   border: 1px solid #9C959B;
-  text-align: left;
-  display: none; }
+  margin: 20px;
+  padding: 20px;
+  &.hidden {
+    display: none;
+  }
+}
 
 #td-fb-icon {
   vertical-align: top; }
 
-.right,
-.wrong {
-  display: inline-block;
-  margin: 5px;
-  text-align: left;
+
+.hidden {
   display: none; }
 
 #td-fb-text {
@@ -179,15 +173,12 @@ td, th {
   padding: 8px 11px;
   background-color: #E1E2E3;
   width: 50px;
-  float: right;
   text-align: center;
-  margin-right: 10px; }
-
-#send-button:hover,
-#submit-button:hover,
-#check-button:hover {
-  margin-right: 10px;
-  cursor: pointer; }
+  margin: 0 auto; 
+  &:hover {
+    cursor: pointer; 
+  }
+}
 
 #clear {
   clear: both; }
@@ -289,14 +280,9 @@ td, th {
 
 #a-table {
   height: 450px;
-  width: 100%; }
-
-#template {
-  display: none; }
-
-#statistics-button {
-  display: inline-block; }
+  width: 100%; 
+}
 
 #statistics-button img {
-  width: 22px;
-  cursor: pointer; }
+  width: 29px;
+}
