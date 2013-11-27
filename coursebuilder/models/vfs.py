@@ -24,6 +24,7 @@ from entities import BaseEntity
 from models import MemcacheManager
 from google.appengine.api import namespace_manager
 from google.appengine.ext import db
+import json
 
 
 # We want to use memcache for both objects that exist and do not exist in the
@@ -158,6 +159,7 @@ class LocalReadOnlyFileSystem(object):
             extensions=['jinja2.ext.i18n'],
             loader=jinja2.FileSystemLoader(physical_dir_names))
         jinja_environment.filters['js_string'] = jinja_utils.js_string
+        jinja_environment.filters['tojson'] = json.dumps
 
         return jinja_environment
 
@@ -514,6 +516,7 @@ class DatastoreBackedFileSystem(object):
             loader=VirtualFileSystemTemplateLoader(
                 self, self._logical_home_folder, dir_names))
         jinja_environment.filters['js_string'] = jinja_utils.js_string
+        jinja_environment.filters['tojson'] = json.dumps
 
         return jinja_environment
 

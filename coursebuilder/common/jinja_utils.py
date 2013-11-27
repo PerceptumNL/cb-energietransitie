@@ -20,6 +20,7 @@ import jinja2
 from webapp2_extras import i18n
 import safe_dom
 import tags
+import json
 
 
 def finalize(x):
@@ -70,8 +71,10 @@ def get_template(template_name, dirs, locale=None, handler=None):
         loader=jinja2.FileSystemLoader(dirs))
     jinja_environment.filters['js_string'] = js_string
     jinja_environment.filters['gcb_tags'] = get_gcb_tags_filter(handler)
+    jinja_environment.filters['tojson'] = json.dumps
 
     if locale:
+
         i18n.get_i18n().set_locale(locale)
         jinja_environment.install_gettext_translations(i18n)
 

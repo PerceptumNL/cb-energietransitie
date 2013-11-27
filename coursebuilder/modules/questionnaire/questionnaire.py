@@ -117,7 +117,8 @@ class StudentProgress():
         for unit, lessons in self.value.iteritems():
             if lesson_id in lessons:
                 lesson_attempts = self.value[unit][lesson_id]
-                
+                break
+
         if lesson_attempts == None or len(lesson_attempts) == 0: return []
 
         lesson_attempts = lesson_attempts[-1]
@@ -137,10 +138,18 @@ class StudentProgress():
     def set_lesson_status(self, unit_id, lesson_id, status):
         course = models.courses.Course(None, self.app_context)
         tracker = UnitLessonCompletionTracker(course)
-        p = UnitLessonCompletionTracker.get_or_create_progress(self.student)
-        _key = tracker._get_html_key(unit_id, lesson_id)
-        tracker._set_entity_value(p, _key, status)
-        p.put()
+        if status == 1:
+            p = UnitLessonCompletionTracker.get_or_create_progress(self.student)
+            unit_status = tracker.get_unit_status(p, unit_id)
+            if unit_status == None:
+                _key = tracker._get_unit_key(unit_id)
+                tracker._set_entity_value(p, _key, 1)
+            _key = tracker._get_html_key(unit_id, lesson_id)
+            tracker._set_entity_value(p, _key, status)
+            p.put()
+        elif status == 2:
+            tracker._put_event(
+                self.student, 'html', tracker._get_html_key(unit_id, lesson_id))
 
     def get_lesson_status(self, unit_id, lesson_id):
         course = models.courses.Course(None, self.app_context)
@@ -227,8 +236,6 @@ class QuestionnaireTag(tags.BaseTag):
     var lesson_status_%s = %s;
 </script>
 """ % (lesson.lesson_id, transforms.dumps(saved_questionnaire), lesson.lesson_id, status)
-        import logging
-        logging.error(script)
         questionnaire = cElementTree.XML("""
 <div id='activityContents' class='video'>
     %s

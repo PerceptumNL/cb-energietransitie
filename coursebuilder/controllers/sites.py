@@ -153,6 +153,7 @@ GCB_INHERITABLE_FOLDER_NAMES = [
     os.path.join(GCB_ASSETS_FOLDER_NAME, 'css/'),
     os.path.join(GCB_ASSETS_FOLDER_NAME, 'img/'),
     os.path.join(GCB_ASSETS_FOLDER_NAME, 'lib/'),
+    os.path.join(GCB_ASSETS_FOLDER_NAME, 'fonts/'),
     GCB_VIEWS_FOLDER_NAME,
     GCB_MODULES_FOLDER_NAME]
 
@@ -916,6 +917,16 @@ order they are defined.""")
     ), 'course:/:/:', multiline=True, validator=_courses_config_validator)
 
 
+def auto_enroll():
+    from models.models import Student
+    from google.appengine.api import users
+    user = users.get_current_user()
+    if user == None:
+        return
+    student = Student.get_enrolled_student_by_email(user.email())
+    if student == None:
+        Student.add_new_student_for_current_user(user.user_id(), None)
+
 class ApplicationRequestHandler(webapp2.RequestHandler):
     """Handles dispatching of all URL's to proper handlers."""
 
@@ -928,6 +939,7 @@ class ApplicationRequestHandler(webapp2.RequestHandler):
     IMPERSONATE_HEADER_NAME = 'Gcb-Impersonate'
 
     def dispatch(self):
+        auto_enroll()
         if self.CAN_IMPERSONATE:
             self.impersonate_and_dispatch()
         else:

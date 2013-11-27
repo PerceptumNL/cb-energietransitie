@@ -61,6 +61,15 @@ def get_first_lesson(handler, unit_id):
     lessons = handler.get_course().get_lessons(unit_id)
     return lessons[0] if lessons else None
 
+def get_incomplete_units(unit_id):
+    units = []
+    return units
+
+def get_incomplete_lessons(unit_id, lesson_id):
+    lessons = []
+    return lessons
+    
+
 
 def extract_unit_and_lesson(handler):
     """Loads unit and lesson specified in the request."""
@@ -167,6 +176,9 @@ class CourseHandler(BaseHandler):
         self.template_value['units'] = []        
         for _unit in _units:
             lessons = self.get_lessons(_unit.unit_id)
+
+            setattr(_unit, "progress", 
+               self.get_progress_tracker().get_lesson_progress(student, _unit.unit_id))
             setattr(_unit, "lessons",  lessons)
             self.template_value['units'].append(_unit)
             
@@ -200,6 +212,8 @@ class CourseHandler(BaseHandler):
 
         self.template_value['is_progress_recorded'] = (
             CAN_PERSIST_ACTIVITY_EVENTS.value)
+
+
 
         path=urlparse.urlparse(self.request.url).path
         if path=="/course":
@@ -281,19 +295,42 @@ class UnitHandler(BaseHandler):
                 self.template_value['back_button_url'] = (
                     'unit?unit=%s&lesson=%s' % (unit_id, prev_lesson.lesson_id))
 
+        current_page = {
+            "currentUnit": { 
+                "index": unit.index
+            },
+            "currentLesson": {
+                "index": lesson.index,
+                "title": lesson.title
+            },
+            "nextLesson": None,
+            "nextUnit": None
+        }
         # Format next button.
         if self._show_activity_on_separate_page(lesson):
             self.template_value['next_button_url'] = (
                 'activity?unit=%s&lesson=%s' % (
                     unit_id, lesson_id))
         else:
-            if index >= len(lessons) - 1:
-                self.template_value['next_button_url'] = ''
-            else:
-                next_lesson = lessons[index + 1]
-                self.template_value['next_button_url'] = (
-                    'unit?unit=%s&lesson=%s' % (
-                        unit_id, next_lesson.lesson_id))
+            units = self.get_course().get_units()
+            if unit.index < len(units):
+                next_unit = units[unit.index]
+                import logging
+                logging.error(next_unit)
+                current_page['nextUnit'] = {
+                    "index": next_unit.index,
+                    "title": next_unit.title,
+                    "url": 'unit?unit=%s' % (next_unit.unit_id)
+                }
+            if lesson.index < len(lessons):
+                next_lesson = lessons[lesson.index]
+                current_page['nextLesson'] = {
+                    "index": next_lesson.index,
+                    "title": next_lesson.title,
+                    "url": 'unit?unit=%s&lesson=%s' % (
+                        unit_id, next_lesson.lesson_id)
+                }
+        self.template_value['current_page'] = current_page
 
         # Set template values for student progress
         self.template_value['is_progress_recorded'] = (
