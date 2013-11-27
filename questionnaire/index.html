@@ -39,8 +39,37 @@
   
   <div id="qunit"></div>
   <div id="qunit-fixture"></div>
+<script>
+/*
+    var lesson_questionnaire_11 = [{"count": 3, "index": 0, "nround": 0, "result": {"incorrect": false, "time": 0, "selections": [0], "correct": true, "hint": false}, "lesson": "11", "correct": true, "unit": "68", "location": ""}, {"count": 3, "index": 1, "nround": 0, "result": {"incorrect": true, "time": 0, "selections": [1], "correct": false, "hint": false}, "lesson": "11", "correct": false, "unit": "68", "location": ""}, {}];
+    var lesson_status_11 = 1;
+
+var currentUnit = { index: 1 }
+var currentLesson = { 
+    index: 4,
+    url: "ble",
+    title: "bla",
+
+}
+var nextLesson = {
+    index: 6,
+    url: "ble",
+    title: "bla",
+}
+
+var nextUnit = {
+    index: 8,
+    url: "ble",
+    title: "bla",
+}
+*/
+</script>
+    <div id="timeDebug"></div>
     <div id="activityContents" class="container">
-      <question class="row"></question>
+<!--
+      <div class="row questionnaire" data="lesson_questionnaire_11" status="1"></div>
+-->
+      <div class="row questionnaire"></div>
     </div>
     <script>
         var demos = { 
@@ -48,9 +77,25 @@
             "ddq": "DDQ",
             "ddq_tree": "DDQ TREE",
             "mcq": "MCQ",
-            "tiq": "TIC",
+            "tiq": "TIQ",
             "mix": "MIX",
             "video": "VIDEO",
+            "1.1-introductie-mcq":"1.1-introductie-mcq.js",
+            "1.2-introductie-ddq":"1.2-introductie-ddq.js",
+            "1.3-introductie-mcq":"1.3-introductie-mcq.js",
+            "2.1-brandstoffen-mix":       "2.1-brandstoffen-mix.js",
+            "2.2-huidigemix-mix":         "2.2-huidigemix-mix.js",
+            "2.3-zonne-energie-mix":      "2.3-zonne-energie-mix.js",
+            "2.4-bevolking-welvaart-mix": "2.4-bevolking-welvaart-mix.js",
+            "2.5-energietaal-mix":        "2.5-energietaal-mix.js",
+            "2.6-energievoorraad-mix":    "2.6-energievoorraad-mix.js",
+            "2.7-klimaat-mix":            "2.7-klimaat-mix.js",
+            "2.8-windenergie-mix":        "2.8-windenergie-mix.js",
+            "2.9-stadslandbouw-mix":      "2.9-stadslandbouw-mix.js",
+            "2.10-elektrisch-vervoer-mix":"2.10-elektrisch-vervoer-mix.js",
+            "2.11-biobrandstof-mix":      "2.11-biobrandstof-mix.js",
+            "2.12-waterenergie-mix":      "2.12-waterenergie-mix.js",
+            "2.13-WKO-mix":               "2.13-WKO-mix.js"
         }
         var params = {
             "type": getURLParameter("type", "tfq"),
@@ -75,7 +120,7 @@
             params['type'] = type;
             updateUrl()
             console.debug("Load questionnaire " + type);
-            $q = $("question")
+            $q = $(".questionnaire")
             $q.empty().attr("src", "samples/" + type + ".js");
             var data = null;
             if (params['load'] && !params['correct']) {
@@ -89,11 +134,14 @@
               });          
             }
     
-            Questionnaire.create($q, data);
-            if (params['correct'] == "true") {
+            if (params['correct']) {
                 console.log("Load with correct answers");
-                Questionnaire.on("load", function() { 
+               // Questionnaire.on("load", function() { 
+               //     Questionnaire.getInstance().test_correct();
+               // });
+                Questionnaire.on("question-created", function() {
                     Questionnaire.getInstance().test_correct();
+                    Questionnaire.getInstance().submit();
                 });
             }
             else if (params['solve']) {
@@ -115,6 +163,7 @@
                     console.error("Test doesn't exist: " + testName); 
                 }
             }
+            Questionnaire.create($q, data);
         }
         $.each(demos, function(k, v) {
             $option = $("<option>").val(k).html(v).appendTo($("#demo"));

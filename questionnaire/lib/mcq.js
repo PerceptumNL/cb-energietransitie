@@ -1,12 +1,18 @@
-function MCQ(question, qEle) {
+function MCQ(question, qEle, savedQuestion) {
   this.question = question;
   this.qEle = qEle;
-  this.result = {
-    incorrect: false,
-    correct: false,
-    hint: false,
-    selections: [],
-    time: 0,
+  this.savedQuestion = savedQuestion;
+
+  if (savedQuestion && "result" in savedQuestion) {
+    this.result = savedQuestion.result;
+  } else {
+    this.result = {
+      incorrect: false,
+      correct: false,
+      hint: false,
+      selections: [],
+      time: 0,
+    }
   }
   this.$q = function(selector) {
     return $(this.qEle).find(selector);
@@ -15,53 +21,33 @@ function MCQ(question, qEle) {
 
 MCQ.questionType = "mcq";
 MCQ.prototype = {
-  answers: null,
   
-  create: function(data) {
-    this.answers = this.question.answers;
+  create: function() {
     this.drawQuestion();
     this.drawAnswers();
-    if (data) { 
-      console.log(data);
-      this.data = data;
-      this.setSelections(this.data.result.selections);
-      this.checkAnswer(this.data.result.selections);
-      this.result = this.data.result;
+
+    if (this.savedQuestion) {
+      this.setSelections(this.result.selections);
+      this.checkAnswer(this.result.answer_idx);
     }
   },
   
   drawQuestion: function() {
-    var self = this;
-    self.$q("#q-text").html(this.question.text);
-    if (this.question.type == "image") {
-      self.$q("#q-image").attr("src", this.question.image);
-      self.$q("#tr-image").show();
-    }
   },
   
   drawAnswers: function() {
-    var self = this,
-      q = this.question,
-      a = q.answers,
-      per = 95 / a.length,
-      selected = [];
-    self.$q(".option").html("").addClass("mcq").addClass("enabled");
-    $.each(a, function(k, v) {
-      div = $("<div>").html(v.text).css("width", "80%");
-      self.$q(".option").append(div);
-      $(div).click(
-        function(evt) {
+    var self = this;
+    this.$q(".option").empty();
+    $.each(this.question.answers, function(k, v) {
+      var $div = $("<div>").html(v.text)
+      self.$q(".option").append($div);
+      $div.click(function(evt) {
           $(this).toggleClass("toggleon")
-        }
-      )
+      });
     });
 
-    self.$q("#send-button").hide(); 
-    self.$q(".table-feedback").show();
-    self.$q(".table-feedback").css("border", "none");
-    self.$q("#check-button").show();
-
-    self.$q("#check-button").click(function(){
+    this.$q("#send-button").hide(); 
+    this.$q("#check-button").show().click(function(){
       var selections = self.getSelections();
       self.checkAnswer(selections);
       self.submit();
@@ -79,7 +65,6 @@ MCQ.prototype = {
   },
 
   setSelections: function(selections) {
-    console.log("selections", selections);
     this.$q(".option").children().each(function(idx, ans) {
       if ($.inArray(idx, selections) >= 0) {
         $(ans).addClass('toggleon');
@@ -89,36 +74,41 @@ MCQ.prototype = {
 
   checkAnswer: function(selections) {
     var self = this
-    var question = self.question
-    var answers = self.question.answers
+
     self.result.correct = true;
     self.result.selections = selections;
 
     self.$q(".option").children().each(function(idx, ans) {
-      if ($.inArray(idx, question.correctAnswer) >= 0) {
+      if ($.inArray(idx, self.question.correctAnswer) >= 0) {
         $(ans).addClass("correct");
       } else {
         $(ans).addClass("incorrect");
       }
       //Set correct
-      if ($.inArray(idx, question.correctAnswer) >= 0 && $.inArray(idx, selections) >=0 ||
-          $.inArray(idx, question.correctAnswer) == -1 && $.inArray(idx, selections) == -1) {
-      }
-      else {
+      if ($.inArray(idx, self.question.correctAnswer) >= 0 && $.inArray(idx, selections) >=0 ||
+          $.inArray(idx, self.question.correctAnswer) == -1 && $.inArray(idx, selections) == -1) {
+      } else {
           self.result.correct = false;
           self.result.incorrect = true;
       }
-      if (answers[idx].feedback) {
-        var $div = $("<div>").attr("id", "fb").appendTo(ans)
-        $("<span>").html(answers[idx].feedback).appendTo($div);
-        $div.addClass("fill")
+      if (self.question.answers[idx].feedback) {
+        var $div = $("<div>").addClass("mcq-feedback").appendTo(ans)
+        $("<span>").html(self.question.answers[idx].feedback).appendTo($div);
       }
     });
+    //disable buttons
     self.$q(".option").removeClass("enabled");
     self.$q(".option").children().unbind("click");
+    //show next action buttons
     self.$q("#check-button").hide();
     self.$q("#send-button").show();
+    //meant to resize window
     Questionnaire.trigger("check");
+  },
+
+  test_correct: function() {
+    this.setSelections(this.question.correctAnswer);
+    this.checkAnswer(this.question.correctAnswer);
   }
 }
 

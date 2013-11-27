@@ -1,18 +1,25 @@
-function DDQ(question, qEle) {
+function DDQ(question, qEle, savedQuestion) {
   this.question = question;
   this.qEle = qEle;
-  this.result = {
-    incorrect: false,
-    correct: false,
-    maybe: false,
-    hint: false,
-    selections: []
+  this.savedQuestion = savedQuestion;
+
+  if (savedQuestion && "result" in savedQuestion) {
+    this.result = savedQuestion.result;
+  } else {
+    this.result = {
+      incorrect: false,
+      correct: false,
+      maybe: false,
+      hint: false,
+      selections: Array(this.question.targetList.length)
+    }
   }
+
   this.lastAnswerHeight = 0;
   this.$q = function(selector) {
     return $(this.qEle).find(selector);
   }
-  this.targetList = [];
+  this.targetList = this.question.targetList;
   this.$targets = [];
   this.$concepts = [];
 }
@@ -20,19 +27,13 @@ function DDQ(question, qEle) {
 DDQ.questionType = "ddq";
 DDQ.prototype = {
 
-  create: function(data) {
+  create: function() {
     var self = this;
-    $(this.qEle).addClass("ddq");
-    this.targetList = this.question.targetList;
 
     this.drawQuestion();
     this.drawAnswers();
-    self.$q(".table-feedback").appendTo(self.$q("#top-answer"));
-    self.$q(".table-feedback").hide();
 
-    if (data) { 
-      this.data = data;
-      this.setSelections(this.data.result.selections);
+    if (this.savedQuestion) {
       var total = 0, totalEnd = 0;
       $.each(this.result.selections, function(tIdx, targetArray) {
         $.each(targetArray, function(cIdx, conceptIndex) {
@@ -45,31 +46,15 @@ DDQ.prototype = {
             }, 1);
         });
       });
-      this.result = this.data.result;
-    } else {
-      this.result.selections = Array(this.targetList.length);
     }
   },
 
   drawQuestion: function() {
     var self = this;
-    this.$q("#question-text").html(this.question.text);
-    this.$q("#q-text").html("");
-    this.$q("#tr-text").show();
     var per = 90 / this.targetList.length
-    $.each(this.targetList, function(k, v) {
-      var $target = $("<td>").addClass("target").data("targetIdx", k);
-      if (v.image) {
-        $("<img>").addClass('target-image')
-            .attr("src", v.image)
-            .appendTo($target);
-      }
-      $("<div>").addClass('target-title')
-            .html(v.text)
-            .appendTo($target);
+    $(".target").each(function(k, target) {
+      $target = $(target).data("targetIdx", k);
       $target.css("width", per + "%");
-      self.$q('#tr-text').append($target);
-
       $target.droppable({
         greedy: true,
         activeClass: "ui-state-hover",
@@ -99,10 +84,12 @@ DDQ.prototype = {
     var self = this;
     var $a = self.$q("#top-answer");
     
+    var idx = 0;
     $.each(self.targetList, function(tIdx, target) {
       $.each(target.conceptList, function(cIdx, concept) {
         var $concept = $("<div class='concept'>" + concept.text + "</div>")
           .data("targetIdx", tIdx)
+          .data("idx", idx++)
           .draggable({
             start: function(event, ui) {
                 $(event.target).css("z-index","100");
@@ -151,18 +138,13 @@ DDQ.prototype = {
     var done=true;
     self.$q(".concept").each(function(k,concept) {
       if ($(concept).parent().hasClass("target") == false) {
-        done=false;
+        done = false;
       }
     });
     self.$q("#check-button").toggle(done);
-    self.$q(".table-feedback").toggle(done);
     if (done && self.lastAnswerHeight > 0)
         self.$q("#top-answer").height(self.lastAnswerHeight);
     return done;
-  },
-
-  setSelections: function(selections) {
-    this.result.selections = selections;
   },
 
   getSelections: function() {

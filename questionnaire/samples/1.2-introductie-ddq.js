@@ -1,6 +1,8 @@
 {
+    "videoId": "https://s3.amazonaws.com/energietransitie/1.2+Introductie+-+energietransitie+in+theorie-_xqcBVtXBFo.mp4",
     "questionsList": [
         {
+            "time": "2:52.6",
             "questionType": "ddqtree",
             "tree": [
                 {
@@ -12,7 +14,7 @@
                             "text": "Energievraag verkleinen",
                             "children": [
                                 {
-                                    "text": "Efficiëtere processen",
+                                    "text": "EfficiÃ«ntere processen",
                                     "image": "assets/img/concept-1.png"
                                 },
                                 {

@@ -1,51 +1,119 @@
 <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:Condensed" />
 <script id="overview-partial" type="text/x-handlebars-template">
-<div id="overview">
-      <div class="left-col">
-        <div id="title">
-          <div id="statistics"><img src="http://farm8.staticflickr.com/7345/9369459729_d946aa106e_o.png"/></div>
-          <div id="lesson"><strong>overzicht resultaat opgaven</strong></div> 
-        </div>
-        <div class="results">
-          <div id="right">
-            <div class="ima"><img src="http://farm3.staticflickr.com/2842/9365150932_15b9ae99a0_o.png"/></div>
-            <div class="percentage">{{right}}</div>
+<div id="overview" class="row">
+      <div class="col-md-8">
+        <div class="middle-align">
+          <div id="title">
+            <div id="statistics"><img src="http://farm8.staticflickr.com/7345/9369459729_d946aa106e_o.png"/></div>
+            <div id="lesson"><strong>Overzicht resultaat opgaven</strong></div> 
           </div>
-          <div id="wrong">
-            <div class="ima"><img src="http://farm3.staticflickr.com/2850/9365153454_e2e44fc42f_o.png" /></div>
-            <div class="percentage">{{wrong}}</div>
+          <div class="results">
+            <div id="right">
+              <div class="ima"><img src="http://farm3.staticflickr.com/2842/9365150932_15b9ae99a0_o.png"/></div>
+              <div class="percentage">{{right}}</div>
+            </div>
+            <div id="wrong">
+              <div class="ima"><img src="http://farm3.staticflickr.com/2850/9365153454_e2e44fc42f_o.png" /></div>
+              <div class="percentage">{{wrong}}</div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="right-col">
-        <div id ="boxes">
-          <div id="revisit">herhaling video en opgaven</div>
-          <div id="redo">herhaling opgaven</div>
+      <div class="col-md-4 right-col">
+        <div id ="boxes" class="middle-align">
+          {{#if hasVideo}}
+          <div id="revisit">Herhaling video en opgaven</div>
+          {{/if}}
+          <div id="redo">Herhaling opgaven</div>
           <div class="message_box"> 
-              <div>gefeliciteerd!</div> 
-              <div>je hebt deel 1 afgerond.</div> 
-              <div id="next_step">de volgende stap is:
-                  <div id="options_next">
-                      <ul style="list-style-type:none;">
-                          <li><a href="http://localhost:8080/unit?unit=68">deel 2. de energietransitie in theory</a></li>
-                          <li><a href="http://localhost:8080/schema">lesmateriaal</a></li>
-                        </ul>  
-                  </div>
+            <div>Gefeliciteerd!</div> 
+            {{#if nextLesson }}
+            <div>Je hebt les {{currentLesson.index}} afgerond.</div> 
+            {{else}}{{#if nextUnit }}
+            <div>Je hebt deel {{currentUnit.index}} afgerond.</div> 
+            {{/if}}{{/if}}
+            <div id="next_step">De volgende stap is:
+              <div id="options_next">
+                <ul style="list-style-type:none;">
+                  {{#if nextLesson }}
+                  <li><a href="{{nextLesson.url}}">Les {{nextLesson.index}}. {{nextLesson.title}}</a></li>
+                  {{else}}{{#if nextUnit }}
+                  <li><a href="{{nextUnit.url}}">Deel {{nextUnit.index}}. {{nextLesson.title}}</a></li>
+                  {{/if}}{{/if}}
+                  <li><a href="http://localhost:8080/schema">lesmateriaal</a></li>
+                </ul>  
               </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 </script>
 
-<script id="question-partial" type="text/x-handlebars-template">
+
+<script id="question-part" class="ddqtree-template" type="text/x-handlebars-template">
+<div class="question-wrapper row {{question.questionType}}">
+   <div class="col-md-12">
+     <div id="check-button">&#8629;</div>
+     <div id="send-button">&rarr;</div>
+     <div class="option"></div>
+   </div>
+   <div class="col-md-12 tree">
+     {{question.text}}
+     <div id="top-answer" class="top-row"></div>
+     <div id="q-text"></div>
+   </div>
+</div>
+</script>
+<script id="question-part" class="ddq-template" type="text/x-handlebars-template">
+<div class="question-wrapper row {{question.questionType}}">
+
+   <div class="col-md-12 ddq-title">
+     {{question.text}}
+   </div>
+   <div id="check-button">&#8629;</div>
+   <div id="send-button">&rarr;</div>
+   <div id="top-answer" class="col-md-12">
+   </div>
+   <div class="col-md-12" >
+   {{#each question.targetList}}
+        <div class="target">
+            <div class="target-title">{{text}}</div>
+            {{#if image}}
+            <img class="target-image" src="{{image}}" />
+            {{/if}}
+        </div>
+   {{/each}}
+   </div>
+</div>
+</script>
+<script id="question-partial" class="tiq-template" type="text/x-handlebars-template">
 <div class="question-wrapper row {{questionType}}">
-  <div id="question" class="left-col col-sm-8">
+  <div id="question" class="col-md-7">
     <div class="middle-align">
-      <div id='q-text'></div>
+      <div id='q-text'>{{question.text}}</div>
     </div>
   </div>
-  <div id="answer" class="right-col col-sm-4">
+  <div id="answer" class="col-md-5">
+    <div class="middle-align">
+      <textarea id="textinput" name="textinput" />
+      <div class="row actions">
+        <div id="send-button">&rarr;</div>
+        <div id="submit-button">&#8629;</div>
+      </div>
+    </div>
+  </div>
+</div>
+</script>
+
+<script id="question-partial" class="tfq-template mcq-template" type="text/x-handlebars-template">
+<div class="question-wrapper row {{questionType}}">
+  <div id="question" class="left-col col-sm-7">
+    <div class="middle-align">
+      <div id='q-text'>{{question.text}}</div>
+    </div>
+  </div>
+  <div id="answer" class="right-col col-sm-5">
     <div class="middle-align">
     <div class="{{question.questionType}} option row">
       {{#each question.answers}}
@@ -62,11 +130,11 @@
         </div>  
         <div class="feedback-text col-sm-10"></div>
       </div>
-      <div class="row actions">
-        <div id="send-button">&rarr;</div>
-        <div id="submit-button">&#8629;</div>
-        <div id="check-button">&#8629;</div>
-      </div>
+    </div>
+    <div class="row actions">
+      <div id="send-button">&rarr;</div>
+      <div id="submit-button">&#8629;</div>
+      <div id="check-button">&#8629;</div>
     </div>
     </div>
   </div>
@@ -74,22 +142,37 @@
 </script>
 
 <script id="questionnaire-template" type="text/x-handlebars-template">
+{{#if hasVideo}}
+<div class="video-evt video hidden">
+    <div id="v">
+        <video width='768' height='432' controls>
+            <p>Your user agent does not support the HTML5 Video element.</p>
+        </video>
+    </div>
+</div>
+{{/if}}
+<div id="overlay"></div>
 <div id="questionnaire-wrapper" class="col-md-12 questions">
     <div id="q-header" class="row">
-        <div class="col-xs-11">
+        <div class="col-xs-10">
             <ul class="pagination question-index">
               {{#each questionsList}}
-                <li><a href="#">{{add1 @index}}</a></li>
+                <li><a href="{{../base}}#questionnaire-wrapper">{{add1 @index}}</a></li>
               {{/each}}
-              <li id="statistics-button" class="disabled">
-                <a href="#">
+              <li id="statistics-button">
+                <a href="{{base}}#">
                   <img src="http://farm8.staticflickr.com/7345/9369459729_d946aa106e_o.png"/>
                 </a>
               </li>
             </ul>
         </div>
-        <ul class="col-xs-1">
-            <li id="button-hint">?</li>
+        <ul class="col-xs-2 controls">
+            {{#if hasVideo}}
+            <li id="button-rewatch-last" class="glyphicon glyphicon-fast-backward" 
+                data-toggle="tooltip" title="" data-original-title="Rewatch video"></li>
+            {{/if}}
+            <li id="button-hint" class="glyphicon glyphicon-question-sign" 
+                data-toggle="tooltip" title="" data-original-title="Give me a hint!"></li>
         </ul>
     </div>
     <div id="single-question">{{> question}}</div>

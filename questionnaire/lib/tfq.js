@@ -1,13 +1,18 @@
-function TFQ(question, qEle) {
+function TFQ(question, qEle, savedQuestion) {
   this.question = question;
   this.qEle = qEle;
-  this.data = null;
-  this.result = {
-    incorrect: false,
-    correct: false,
-    maybe: false,
-    hint: false,
-    selections: [],
+  this.savedQuestion = savedQuestion;
+
+  if (savedQuestion && "result" in savedQuestion) {
+    this.result = savedQuestion.result;
+  } else {
+    this.result = {
+      incorrect: false,
+      correct: false,
+      hint: false,
+      selections: [],
+      answer_idx: null,
+    }
   }
   this.$q = function(selector) {
     return $(this.qEle).find(selector);
@@ -16,83 +21,64 @@ function TFQ(question, qEle) {
 
 TFQ.questionType = "tfq";
 TFQ.prototype = {
-  answers: null,
 
-  create: function(data) {
-    $(this.qEle).addClass("tfq");
-    this.answers = this.question.answers;
+  create: function() {
     this.drawQuestion();
     this.drawAnswers();
     
-    if (data) { 
-      this.data = data;
-      this.checkAnswer(this.data.result.ans_index);
-      this.result = this.data.result;
+    if (this.savedQuestion) {
+      this.checkAnswer(this.result.answer_idx);
     }
   },
   
   drawQuestion: function() {
-    var self = this;
-    this.$q("#q-text").html(self.question.text);
-    if (self.question.type == "image") {
-      self.$q("#q-image").attr("src", self.question.image);
-      self.$q("#tr-image").show();
-    }
   },
   
   drawAnswers: function(res) {
     var self = this;
-    self.$q(".answer").click(function() {
+    this.$q(".answer").click(function() {
       self.checkAnswer(this.dataset.index) ;
+      self.submit();
     });
   },
   
-  feedback_correct: function(answer_idx) {
-    var self = this;
-    var ele = self.$q(".option").children()[answer_idx];
-    $(ele).addClass("correct");
-    self.$q(".right").removeClass("hidden");
-    self.$q(".feedback").removeClass("hidden");
-    answer_text = self.answers[answer_idx].feedback;
-    if (typeof answer_text != "undefined")
-      self.$q(".feedback-text").html("<div>" + answer_text + "</div>")
-    self.$q(".table-feedback").fadeIn();
-  },
-  
-  feedback_incorrect: function(answer_idx) {
-    var self = this;
-    var ele = self.$q(".option").children()[answer_idx];
-    $(ele).addClass("incorrect");        
-    self.$q(".wrong").removeClass("hidden");
-    self.$q(".feedback").removeClass("hidden");
-    answer_text = self.answers[answer_idx].feedback;
-    if (typeof answer_text != "undefined")
-      self.$q(".feedback-text").html("<div>" + answer_text + "</div>")
-    self.$q(".table-feedback").fadeIn();
-  },
-    
   checkAnswer: function(answer_idx) {
     var self = this;
-    self.result.ans_index = answer_idx;
-    if (self.question.correctAnswer == answer_idx) {
-      if (!self.result.incorrect) {
-        self.result.correct = true;
+    //check correct answer
+    if (this.question.correctAnswer == answer_idx) {
+      if (!this.result.incorrect) {
+        this.result.correct = true;
       }
-      //console.log("Good! continue with next concept");
-      this.feedback_correct(answer_idx);
+      this.$q(".right").removeClass("hidden");
     } else {
-      self.result.incorrect = true;
-      //console.log("Wrong... Try again!");
-      this.feedback_incorrect(answer_idx);
+      this.result.incorrect = true;
+      this.$q(".wrong").removeClass("hidden");
     }
+
+    //save result
+    this.result.answer_idx = answer_idx;
+
+    //show feedback
+    this.$q(".feedback").removeClass("hidden");
+    var feedback_text = this.question.answers[answer_idx].feedback;
+    if (typeof feedback_text != "undefined")
+      this.$q(".feedback-text").html("<div>" + feedback_text + "</div>")
     
-    self.$q(".option").children().each(function(idx, ele) {
+    //disable buttons
+    this.$q(".option").children().each(function(idx, ele) {
       if (idx != answer_idx) {
         self.$q(ele).addClass("disabled");
       }
     });
-    self.$q(".option").children().unbind("click");
+    this.$q(".option").children().unbind("click");
+
+    //next button
+    this.$q("#send-button").show();
   },
+ 
+  test_correct: function() {
+    this.checkAnswer(this.question.correctAnswer);
+  }
 }
 
 Questionnaire.registerType(TFQ);

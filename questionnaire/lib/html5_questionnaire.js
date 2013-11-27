@@ -3,7 +3,12 @@ var VideoQuestionnaire = {
     mediaplayer: null,
     video: null,
     replay: function() {
-      this.mediaplayer.player.setCurrentTime(0);
+      this.playAt(0);
+    },
+
+    playAt: function(ds) {
+      var second = ds / 10.0 + 0.1;
+      this.mediaplayer.player.setCurrentTime(second);
       this.mediaplayer.play()
     },
 
@@ -56,13 +61,10 @@ var VideoQuestionnaire = {
       var self = this;
       console.debug("loadVideoQuestionnaire: " + url);
     
-      var $wrapper = this.$wrapper = $(ele);
-      $wrapper.prepend('<div id="overlay" class="video-evt"></div>');
-      $wrapper.addClass("video");
+      this.$wrapper = $(ele);
     
+      var $video = $("video")
       var nakedUrl = url.replace(".mp4","")
-      $video_wrapper = $("<div id='v'></div>");
-      $video = $("<video width='768' height='432' controls></video>").appendTo($video_wrapper);
       $("<source>").attr({
         "id": "mp4",
         "src": url,
@@ -84,13 +86,8 @@ var VideoQuestionnaire = {
         "type": "video/webm",
       }).appendTo($video);
     
-      $video.append("<p>Your user agent does not support the HTML5 Video element.</p>");
-        
-      $wrapper.prepend($video_wrapper);
-    
       mejs.MediaFeatures.svg = false;
-      console.log("CanPlay?");
-      console.log($video[0].canPlayType);
+      console.debug("CanPlayType?", $video[0].canPlayType);
       var firstPlay = true;
       var lastSecond = lastTime || 1.0;
       $video.mediaelementplayer({
@@ -101,6 +98,7 @@ var VideoQuestionnaire = {
         loop: false,
         enablePluginDebug: true,
       	success: function(media, node, player) {
+          $(".video").removeClass("hidden");
           var mediaplayer = self.mediaplayer = media;
           mediaplayer.addEventListener("timeupdate", function() { 
             //lastSecond = mediaplayer.player.getCurrentTime();
@@ -123,11 +121,10 @@ var VideoQuestionnaire = {
           mediaplayer.addEventListener("loadeddata", function() { console.debug("Video event: loadeddata") });
           mediaplayer.addEventListener("play", function() { console.debug("Video event: play") });
           mediaplayer.addEventListener("playing", function() { console.debug("Video event: playing") 
-            //if (firstPlay) {
-            //  mediaplayer.player.setCurrentTime(lastTime);
-            //} else {
-            //  firstPlay = false;
-            //}
+            if (firstPlay) {
+              mediaplayer.player.setCurrentTime(lastTime);
+            }
+            firstPlay = false;
           });
           mediaplayer.addEventListener("pause", function() { console.debug("Video event: pause") });
           mediaplayer.addEventListener("ended", function() { console.debug("Video event: ended") });
@@ -135,9 +132,10 @@ var VideoQuestionnaire = {
           self.loadEvents();
            
           Questionnaire.on("continue", function() {
-            console.log("Play?");
+            console.log("Play?", lastTime);
             mediaplayer.play()
-            $wrapper.removeClass("pause");
+            
+            self.$wrapper.removeClass("pause");
             Questionnaire.fadeOut();
           });
           //mediaplayer.play();
