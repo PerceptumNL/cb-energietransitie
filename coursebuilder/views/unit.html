@@ -16,40 +16,32 @@
   {% else %}
     questionData.scored = false;
   {% endif %}
+  var currentPage = {{ current_page|tojson|safe }}
 </script>
 
 <div id="gcb-main">
-  {% if is_read_write_course and is_course_admin %}
-    <a href="dashboard?action=edit_unit&key={{ unit_id }}"
-      class="gcb-button gcb-button-action">Edit unit</a>
-    {% if lesson %}
-      <a href="dashboard?action=edit_lesson&key={{ lesson_id }}"
-        class="gcb-button gcb-button-action">Edit lesson</a>
+  <div class="row">
+    {% if is_read_write_course and is_course_admin %}
+      <a href="dashboard?action=edit_unit&key={{ unit_id }}"
+        class="gcb-button gcb-button-action">Edit unit</a>
+      {% if lesson %}
+        <a href="dashboard?action=edit_lesson&key={{ lesson_id }}"
+          class="gcb-button gcb-button-action">Edit lesson</a>
+      {% endif %}
     {% endif %}
-  {% endif %}
-  <ul class="gcb-breadcrumb">
-    {# I18N: Navigation breadcrumb. #}
-    <li><a href="course">{{ gettext('Course') }}</a></li>
-    <li><a href="unit?unit={{ unit.unit_id }}">
-      {# I18N: Navigation breadcrumb. #}
-      {{ gettext('Unit') }} {{ unit.index }}</a></li>
-    {% if lesson %}
-      {# I18N: Navigation breadcrumb. #}
-      <li>{{ gettext('Lesson') }} {{ lesson.index }}</li>
-    {% endif %}
-  </ul>
-  <div>
-    <h1 class="gcb-unit-header">
-      {# I18N: Header text for a unit page. #}
-      {{ gettext('Unit %(id)s - %(title)s', id=unit.index, title=unit.title) }}
-    </h1>
+    <div>
+      <h2 class="gcb-unit-title">
+        {{ gettext('Unit %(id)s - %(title)s', id=unit.index, title=unit.title) }}
+      </h2>
+    </div>
   </div>
 
+  <div class="row">
   {% if lessons %}
     {% include 'lesson_navbar.html' %}
   {% endif %}
 
-  <div class="gcb-article tab-content" role="main">
+  <div class="col-md-9" role="main">
     {{course_info.unit.after_content_begins | safe}}
 
     {% if not lesson %}
@@ -61,7 +53,7 @@
       </div>
     {% else %}
 
-      <div style="padding-bottom: 20px;">
+      <div class="lesson-nav">
         <div class="gcb-aside gcb-button-box">
           {% if lesson.now_available or is_course_admin %}
             <div class="gcb-cols">
@@ -158,6 +150,7 @@
       </div>
     {% endif %}
     {{course_info.unit.before_content_ends | safe}}
+  </div>
   </div>
 </div>
 

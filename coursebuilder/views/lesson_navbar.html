@@ -1,5 +1,5 @@
-<div class="gcb-nav gcb-sidebar" id="gcb-nav-y" role="navigation">
-  <ul>
+<div class="col-md-3" role="navigation">
+  <ul class="nav nav-pills nav-stacked lesson-nav">
     {{course_info.unit.after_leftnav_begins | safe}}
 
     {% for lesson in lessons %}
@@ -7,6 +7,7 @@
       {% if lesson.now_available or is_course_admin %}
 
         <li class="les_activiteit {% if page_type == 'unit' and lesson.lesson_id == lesson_id %}active{% endif %}">
+          <a href="unit?unit={{ unit_id }}&lesson={{ lesson.lesson_id }}">
 
           {% if is_progress_recorded %}
             <div class="gcb-progress-icon-holder">
@@ -32,16 +33,19 @@
             </div>
           {% endif %}
 
+          {{ lesson.title }}
+<!--
           <div class="gcb-lesson-title-with-progress">
             {% if page_type == 'unit' and lesson.lesson_id == lesson_id %}
               {{ lesson.title }}
             {% else %}
               <a href="unit?unit={{ unit_id }}&lesson={{ lesson.lesson_id }}">
-                {{ lesson.title }}
               </a>
             {% endif %}
           </div>
+-->
 
+        </a>
         {% if not lesson.now_available and is_course_admin %}
           <span class="gcb-grayed">
             (Private)
@@ -135,3 +139,27 @@
     {{course_info.unit.before_leftnav_ends | safe}}
   </ul>
 </div>
+<!--
+<div class="col-md-6">
+          <div class="panel panel-primary">
+            <div class="panel-heading">Waar was je?</div>
+            <div class="panel-body">Welkom terug!</div>
+          </div>
+          <div class="panel panel-success">
+            <div class="panel-heading">Hier ben je gebleven</div>
+            <div class="panel-body">
+                          <ul id="last-time-concept">
+                              <li><a href="http://localhost:8080/unit?unit=68&lesson=3">Zonne-energie</a></li>
+                          </ul>
+            </div>
+          </div>
+          <div class="panel panel-danger">
+            <div class="panel-heading">Deze lessen wachten nog op jou</div>
+            <div class="panel-body">
+                          <ul id="missing-concept">
+                            <li><a href="http://localhost:8080/unit?unit=87&lesson=3">De energietransitie in de praktijk</a> </li>
+                            <li><a href="http://localhost:8080/unit?unit=68&lesson=2">Huidige energiemix</a></li>    
+                          </ul></div>
+          </div>
+        </div>
+-->

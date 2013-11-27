@@ -15,28 +15,21 @@
       setTimeout(function() {cbHideMsg();}, 20000);
     }
   </script>
-  <div class="gcb-cols">
-
-
-    <div class="gcb-col-11 gcb-aside">
-      {% include 'summary.html' %}    
-    </div>
-
-</div>
+  {% include 'summary.html' %}    
 {% endblock %}
 
 {% block main_content %}
-    <div class="gcb-cols gcb-syllabus">
-      
-      <div class="gcb-outline">
-
-        <h1 class="gcb-schedule-headers" style="margin-left:20px;">
-          {# I18N: This should be interpreted as a noun. It is the title for the course schedule on the main contents page. #}
-          {{ gettext('Lesmateriaal') }}
-        </h1>
-        <div id="gcb-main">
-          <div style="width: 100%;" class="gcb-nav" id="gcb-nav-y">
-            <ul>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="box">
+            <div class="row">
+              <div class="col-md-12 box-title">
+                <h3>{{ gettext('Lesmateriaal') }}</h3>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 box-body">
+              <ul>
               {% for unit in units %}
                 {% if unit.now_available or is_course_admin %}
                   {% if unit.type == 'A' %}
@@ -135,10 +128,14 @@
                         <span class="gcb-progress-empty"></span>
                       {% endif %}
 
+                      {% if not transient_student %}
                       <a href="unit?unit={{ unit.unit_id }}">
                         {# I18N: A row in the course schedule. #}
                         {{ gettext('Unit %(id)s - %(title)s', id=unit.index, title=unit.title) }}
                       </a>
+                      {% else %}
+                        {{ gettext('Unit %(id)s - %(title)s', id=unit.index, title=unit.title) }}
+                      {% endif %}
                   {% elif unit.type == 'O' %}
                     <li>
                       <p class="gcb-top-content">
@@ -182,21 +179,28 @@
                 {% endif %}
 
               {% endfor %}
-            </ul>
+              </ul>
+              </div>
+            </div>
+        </div>
+      </div>
+       <div class="col-md-6">
+        <div class="box">
+            <div class="row">
+              <div class="col-md-12 box-title">
+                <h3>Jonas Voorzanger</h3>
+              </div>
+            </div>
+            <div class="row box-body">
+              <div class="col-md-3">
+                <img src="assets/img/Jonas Voorzanger.png" style="width:100px;"/>
+              </div>
+              <div class="col-md-9">
+                  De docent van deze online lesmodule over de Energietransitie is Jonas Voorzanger. Na het afronden van zijn Natuurkunde Bachelor aan de Vrije Universiteit, doet hij nu een Natuurkunde Master met een specialisatie op het gebied van energie en duurzaamheid. In samenwerking met een aantal medestudenten heeft hij in 2011 Lesmodule De Energiecrisis ontwikkeld, waarmee studenten nu langsgaan op middelbare scholen om leerlingen bekend te maken met duurzame energie. Jonas' motivatie hiervoor is eenvoudig: een betaalbare, duurzame energievoorziening verhoogt onze kwaliteit van leven.
+              </div>
+            </div>
           </div>
         </div>
-
       </div>
-       <div class="gcb-bio-headers">
-        <h1 class="gcb-schedule-headers" style="margin-left:20px;">Jonas Voorzanger</h1>
-        <div style="padding: 9px 0;">
-        <div style="display:inline-block; float:left;">
-           <img src="assets/img/Jonas Voorzanger.png" style="width:100px; margin-left:20px; font-size:16px;"/>
-        </div>
-        <div style="display:inline-block; width:314px; margin-left:20px; text-align:justify; font-size:13px;">
-            De docent van deze online lesmodule over de Energietransitie is Jonas Voorzanger. Na het afronden van zijn Natuurkunde Bachelor aan de Vrije Universiteit, doet hij nu een Natuurkunde Master met een specialisatie op het gebied van energie en duurzaamheid. In samenwerking met een aantal medestudenten heeft hij in 2011 Lesmodule De Energiecrisis ontwikkeld, waarmee studenten nu langsgaan op middelbare scholen om leerlingen bekend te maken met duurzame energie. Jonas' motivatie hiervoor is eenvoudig: een betaalbare, duurzame energievoorziening verhoogt onze kwaliteit van leven.
-            </div>
-            </div>
-       </div>
     </div>
 {% endblock %}

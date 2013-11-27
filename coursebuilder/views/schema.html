@@ -21,14 +21,14 @@
 {% block main_content %}
     <div class="gcb-cols gcb-syllabus schema">
       
-      <div class="gcb-outline schema-custom">
-
-        <h1 class="gcb-schedule-headers" style="margin-left:20px;">
-          {# I18N: This should be interpreted as a noun. It is the title for the course schedule on the main contents page. #}
-          {{ gettext('Lesmateriaal') }}
-        </h1>
-        <div id="gcb-main">
-          <div style="width: 100%;" class="gcb-nav" id="gcb-nav-y">
+      <div class="row gcb-outline schema-custom">
+        <div class="panel panel-default schema col-md-5 col-sm-offset-1">
+          <div class="panel-body">
+            <h1 class="gcb-schedule-headers" style="margin-left:20px;">
+              {# I18N: This should be interpreted as a noun. It is the title for the course schedule on the main contents page. #}
+              {{ gettext('Lesmateriaal') }}
+            </h1>
+            <br />
             <ul>
               {% for unit in units %}
                 {% if unit.now_available %}
@@ -128,10 +128,14 @@
                         <span class="gcb-progress-empty"></span>
                       {% endif %}
 
-                      <a href="unit?unit={{ unit.unit_id }}">
-                        {# I18N: A row in the course schedule. #}
+                    
+                      {% if transient_student %}
                         {{ gettext('Unit %(id)s - %(title)s', id=unit.index, title=unit.title) }}
-                      </a>
+                      {% else %}
+                        <a href="unit?unit={{ unit.unit_id }}">
+                          {{ gettext('Unit %(id)s - %(title)s', id=unit.index, title=unit.title) }}
+                        </a>
+                      {% endif %}
                         <!-- lessons -->
                         <ul id="lessons_schema">
                         {% for lesson in unit.lessons %}
@@ -139,15 +143,15 @@
 
                               <li class="les_activiteit {% if page_type == 'unit' and lesson.lesson_id == lesson_id %}active{% endif %}">
 
-                                {% if is_progress_recorded %}
+                                {% if is_progress_recorded and not transient_student %}
                                   <div class="gcb-progress-icon-holder">
-                                    {% if lesson.lesson_id in lesson_progress and lesson_progress[lesson.lesson_id]['html'] == 2 %}
+                                    {% if lesson.lesson_id in unit.progress and unit.progress[lesson.lesson_id]['html'] == 2 %}
                                       <img src="assets/lib/completed.png"
                                            alt="{# I18N: Alt text for image representing student progress. #}{{ gettext('Completed') }}"
                                            title="{# I18N: Alt text for image representing student progress. #}{{ gettext('Completed') }}"
                                            class="gcb-progress-icon"
                                            id="progress-completed-{{lesson.lesson_id}}">
-                                    {% elif lesson.lesson_id in lesson_progress and lesson_progress[lesson.lesson_id]['html'] == 1 %}
+                                    {% elif lesson.lesson_id in unit.progress and unit.progress[lesson.lesson_id]['html'] == 1 %}
                                       <img src="assets/lib/in_progress.png"
                                            alt="{# I18N: Alt text for image representing student progress. #}{{ gettext('In progress') }}"
                                            title="{# I18N: Alt text for image representing student progress. #}{{ gettext('In progress') }}"
@@ -164,7 +168,7 @@
                                 {% endif %}
 
                                 <div class="gcb-lesson-title-with-progress-schema">
-                                  {% if page_type == 'unit' and lesson.lesson_id == lesson_id %}
+                                  {% if transient_student %}
                                     {{ lesson.title }}
                                   {% else %}
                                     <a href="unit?unit={{ unit.unit_id }}&lesson={{ lesson.lesson_id }}">
@@ -178,58 +182,8 @@
                                   (Private)
                                 </span>
                               {% endif %}
-
-                              
-
                               </li>
                             
-                            <!--no need
-                            {% if lesson.activity and lesson.activity_listed %}
-                               
-                                  {% if page_type == 'activity' and lesson.lesson_id == lesson_id %}
-                                    <li class="active activiteit_sidebar">
-                                  {% else %}
-                                    <li class="activiteit_sidebar">
-                                  {% endif %}
-                                      {% if is_progress_recorded %}
-                                        <div class="gcb-progress-icon-holder">
-                                          {% if lesson.lesson_id in lesson_progress and lesson_progress[lesson.lesson_id]['activity'] == 2 %}
-                                            <img src="assets/lib/completed.png"
-                                                 alt="{# I18N: Alt text for image representing student progress. #}{{ gettext('Completed') }}"
-                                                 title="{# I18N: Alt text for image representing student progress. #}{{ gettext('Completed') }}"
-                                                 class="gcb-progress-icon"
-                                                 id="progress-completed-{{lesson.lesson_id}}-activity">
-                                          {% elif lesson.lesson_id in lesson_progress and lesson_progress[lesson.lesson_id]['activity'] == 1 %}
-                                            <img src="assets/lib/in_progress.png"
-                                                 alt="{# I18N: Alt text for image representing student progress. #}{{ gettext('In progress') }}"
-                                                 title="{# I18N: Alt text for image representing student progress. #}{{ gettext('In progress') }}"
-                                                 class="gcb-progress-icon"
-                                                 id="progress-inprogress-{{lesson.lesson_id}}-activity">
-                                          {% else %}
-                                            <img src="assets/lib/not_started.png"
-                                                 alt="{# I18N: Alt text for image representing student progress. #}{{ gettext('Not yet started') }}"
-                                                 title="{# I18N: Alt text for image representing student progress. #}{{ gettext('Not yet started') }}"
-                                                 class="gcb-progress-icon"
-                                                 id="progress-notstarted-{{lesson.lesson_id}}-activity">
-                                          {% endif %}
-                                        </div>
-                                      {% endif %}
-
-                                      <div class="gcb-activity-title-with-progress">
-                                        {% if page_type == 'activity' and lesson.lesson_id == lesson_id %}
-                                          {# I18N: Menu item. #}
-                                          {{ gettext('Activity') }}
-                                        {% else %}
-                                          <a href="activity?unit={{ unit_id }}&lesson={{ lesson.lesson_id }}">
-                                            {# I18N: Menu item. #}
-                                            {{ gettext('Activity') }}
-                                          </a>
-                                        {% endif %}
-                                      </div>
-                                    </li>
-                               
-                              {% endif %}
--->
                             {% else %}
                               <li>
                                 {% if page_type == 'unit' and lesson.lesson_id == lesson_id %}
@@ -310,50 +264,8 @@
             </ul>
           </div>
         </div>
-
-      </div>
-<object id="windmill" data="https://s3.amazonaws.com/energietransitie/windmill.svg" onload="Windmills.create()">
-   <img src="https://s3.amazonaws.com/energietransitie/windmill.png" width="200" height="50">
-</object>
-<script>
-var Windmills = {
-    wms: [],
-    create: function() {
-        return;
-        var svgDoc = $("#windmill")[0].contentDocument;
-
-        this._load($(svgDoc).find('#c1')[0], $(svgDoc).find('#m1'));
-        this._load($(svgDoc).find('#c2')[0], $(svgDoc).find('#m2'));
-        this._load($(svgDoc).find('#c3')[0], $(svgDoc).find('#m3'));
-
-        var self = this;
-        setInterval(function() {
-          for (var i=0;i<self.wms.length;i++) {
-            var w = self.wms[i];
-            w.rot += w.inc;
-            $(w.ele).attr("transform", "rotate(" + w.rot + ","+w.cx+","+w.cy+")");
-          }
-        }, 10);
-    },
-    _load: function(eleCenter, eleRotate) {
-        var wm = {};
-        var translate = [0, 0];
-        if ($(eleCenter).attr("translate")) {
-          translate = $(eleCenter).attr("translate").split("(")[1].split(")")[0].split(",");
-        } 
-        wm.ele = eleRotate;
-        wm.cx = parseFloat(translate[0]) + parseFloat($(eleCenter).attr("sodipodi:cx"));
-        wm.cy = parseFloat(translate[1]) + parseFloat($(eleCenter).attr("sodipodi:cy"));
-        wm.inc = Math.random() * 1 + 0.5;
-        wm.rot = 0
-        this.wms.push(wm);
-    }
-};
-</script>
-
-
-     
-      <div class="messages-wrapper">
+<!--
+      <div class="col-md-3 messages-wrapper">
           
     
           <div class="message-box welcome-message">
@@ -382,6 +294,13 @@ var Windmills = {
             </div>    
           </div>      
       </div>
+-->
+
+      </div>
+<object id="windmill" data="https://s3.amazonaws.com/energietransitie/windmill.svg">
+   <img src="https://s3.amazonaws.com/energietransitie/windmill.png" width="200" height="50">
+</object>
+     
      
     </div>
      <script type="text/javascript">

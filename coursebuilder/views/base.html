@@ -13,8 +13,6 @@
     <script>
       // import JSON for older browsers like IE 7
       if (typeof JSON == 'undefined') {
-        document.write(
-            '<script src="assets/lib/json2-2012.10.08.min.js"></' + 'script>');
       }
 
       // inline translations
@@ -149,6 +147,7 @@
     </div>
 
     <!-- logo bar -->
+<!--
     <div id="gcb-header" role="banner">
       <div class="gcb-aux">
         <p class="gcb-course-image">
@@ -165,26 +164,8 @@
             <g:plusone size="medium"></g:plusone>
           </span>
         {% endif %}
+-->
 
-        {% if logoutUrl %}
-        <div class="gcb-pull-right" style="font-size: larger; color:#1994d4;">
-          {{ email }}
-          {% if transient_student and can_register %}
-            {# I18N: Text shown in parentheses next to the student's email address at the top-right of all course pages, if the student is logged in but not registered for the course he/she is currently browsing. #}
-            ({{ gettext('Not registered') }})
-          {% endif %}
-          &nbsp;|&nbsp;
-          <a href="{{ logoutUrl }}" style="text-decoration: underline;">
-            {# I18N: Navbar text. #}
-            {{ gettext('Logout') }}
-          </a>
-        </div>
-        {% elif loginUrl %}
-        <div class="gcb-pull-right" style="font-size: larger;">
-          {# I18N: Navbar text. #}
-          <a href="{{ loginUrl }}">{{ gettext('Login') }}</a>
-        </div>
-        {% endif %}
       </div>
     </div>
 
@@ -192,7 +173,7 @@
     {% endblock %}
 
     <!-- top section -->
-    <div class="is-wrapper">
+    <div class="container">
       <div class="gcb-aux">
         {% block top_content %}{% endblock %}
         {{course_info.base.after_top_content_ends | safe}}
@@ -204,37 +185,13 @@
     </div>
 
     <!-- footer section -->
-    <div style="margin-top: 50px;" id="gcb-signature"></div>
-    <div class="gcb-footer" id="gcb-footer">
-      <div id="gcb-footer-local">
-        <div class="gcb-aux">
-        </div>
-      </div>
-       
-      <div id="gcb-footer-global" role="contentinfo">
-
-        <div class="element-footer"><a href="http://www.vu.nl/nl/index.asp" target="_blank"><img style="width:150px;" src="assets/img/VU.png"/></a></div>
-        <div class="element-footer"><a href="http://www.perceptum.nl/" target="_blank"><img style="width:150px;" src="assets/img/header-logo.png"/></a></div>  
-        <div class="element-footer"><a href="http://www.biosolarcells.nl/" target="_blank"><img style="width:150px;"  src="assets/img/BioSollar.png"/></a></div>
-
-        <div class="element-footer element-license"><img style="width:100px;" src="assets/img/by-nc-nd.png"/></div>  
-          <!-- no need 
-          <div class="gcb-aux">
-          <ul>
-            <li>
-              <a href="{{course_info.institution.url}}">{{course_info.institution.name}}</a>
-            </li>
-            <li>
-              <a href="{{course_info.base.privacy_terms_url}}">
-                {# I18N: Link at the bottom of each page to the privacy and 'Terms and Conditions' pages. #}
-                {{ gettext('Privacy & Terms') }}
-              </a>
-            </li>
-          </ul>
-        </div>
-   -->
-      </div>
-    </div>
+    <div style="height: 50px;" id="gcb-signature"></div>
+    <footer class="row">
+        <div class="col-sm-offset-1 col-sm-2"><a href="http://www.vu.nl/nl/index.asp" target="_blank"><img style="width:130px;" src="assets/img/VU.png"/></a></div>
+        <div class="col-sm-2"><a href="http://www.perceptum.nl/" target="_blank"><img style="width:130px;" src="assets/img/header-logo.png"/></a></div>  
+        <div class="col-sm-2"><a href="http://www.biosolarcells.nl/" target="_blank"><img style="width:130px;"  src="assets/img/BioSollar.png"/></a></div>
+        <div class="col-sm-2 col-sm-offset-2 "><img style="width:100px;" src="assets/img/by-nc-nd.png"/></div>  
+    </footer>
     {{course_info.base.before_body_tag_ends | safe}}
 <script type='text/javascript'>
 (function (d, t) {
