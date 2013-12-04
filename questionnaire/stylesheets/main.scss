@@ -1,9 +1,8 @@
 // Use Compass ('cause it rocks!)
 
-$answer: #FFAE4D;
-$answer-hover: #FD8900;
-$answer-disabled: #aaa;
-$width: 788px;
+$answer: #E1E2E3;
+$answer-hover: #c4c5c7;
+$answer-disabled: #EFF0F1;
 
 .gcb-lesson-content br {
     height: 0px;
@@ -138,8 +137,9 @@ question {
 
 .feedback {
   border: 1px solid #9C959B;
-  margin: 20px;
-  padding: 20px;
+  margin: 15px 0px;
+  font-size: 17px;
+  padding: 20px 15px;
   &.hidden {
     display: none;
   }
@@ -194,17 +194,27 @@ question {
 #check-button {
   display: none; }
 
+
+$send-color: $answer-hover;
+$send-bg-color: none;
+$send-hover: black;
+
 #send-button,
 #submit-button,
 #check-button {
   bottom: 0;
   padding: 8px 11px;
-  background-color: #E1E2E3;
-  width: 50px;
+  font-size: 50px;
+  width: 70px;
   text-align: center;
   margin: 0 auto; 
+  color: $send-color;
+  border: 1px solid $send-color;
+  background-color: $send-bg-color;
   &:hover {
     cursor: pointer; 
+    color: $send-hover;
+    border: 1px solid $send-hover;
   }
 }
 
@@ -212,7 +222,15 @@ question {
   clear: both; }
 
 #overview {
-  display: none; }
+  display: none; 
+  .left-col {
+    font-size: 25px;
+  }
+  .right-col {
+    padding: 0% 8%;
+  }
+
+}
 
 #title {
   margin-bottom: 80px;
@@ -220,7 +238,10 @@ question {
 }
 
 #statistics {
-  display: inline-block; }
+  display: inline-block; 
+  position: relative;
+  top: -11px;
+}
 
 #lesson {
   display: inline-block;
@@ -280,7 +301,6 @@ question {
   border-radius: 10px 10px 10px 10px; }
 
 .message_box{
-  background-color:#ABFFC7;
   margin: 10px 0px;
   padding: 20px 0px;
   padding-left: 15px;
@@ -290,6 +310,8 @@ question {
   border-radius: 10px 10px 10px 10px;
   text-align: left;
   color: black;
+  border: 2px solid #1994d4;
+  color: #1994d4;
 }
 #next_step{
     margin-bottom: -28px;
@@ -320,7 +342,7 @@ question {
 .controls li {
   vertical-align: middle;
   display: inline;
-  margin: 0px 20px;
+  margin: 0px 10px;
 }
 
 #textinput {
@@ -332,5 +354,11 @@ question {
 #textinput.submitted {
   border: 2px solid green;
 }
+
+#question {
+  font-size: 24px;
+  text-align: center;
+}
+
 
 @import "modules/all";

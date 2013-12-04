@@ -142,8 +142,8 @@ DDQ.prototype = {
       }
     });
     self.$q("#check-button").toggle(done);
-    if (done && self.lastAnswerHeight > 0)
-        self.$q("#top-answer").height(self.lastAnswerHeight);
+    //if (done && self.lastAnswerHeight > 0)
+    //    self.$q("#top-answer").height(self.lastAnswerHeight);
     return done;
   },
 
