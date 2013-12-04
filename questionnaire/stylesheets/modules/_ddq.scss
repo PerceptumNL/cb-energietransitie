@@ -28,9 +28,8 @@
     &.ui-draggable:hover { cursor: pointer; }
     &.ui-state-disabled:hover { cursor: auto; }
     img {
-      width: 70px;
+      width: 100px;
       display: block; 
-      margin: 0 auto;
     }
     &.dropped {
       border: 2px solid $answer;
@@ -101,7 +100,7 @@
   #send-button,
   #check-button {
     float: none;
-    margin: 20px auto; 
+    margin: 0 auto; 
   }
 
   .target-image { 
