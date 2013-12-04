@@ -1,4 +1,4 @@
-//Build time: 2013-11-25T16:39:28.910467
+//Build time: 2013-11-18T10:56:00.384088
 
 function shuffle(array) {
     var counter = array.length, temp, index;
@@ -50,7 +50,6 @@ function isTesting() {
   return (getXsrfToken() == "")
 }
 
-
 var Questionnaire = {
   registeredQuestionTypes: {},
   defaultQuestionType: null,
@@ -79,12 +78,22 @@ var Questionnaire = {
 
   drawNumbers: function() {
     var self = this;
-    $(".question-index").children().click(function() {
-        console.log("ble")
-      $(this).parent().children().removeClass("active");
-      $(this).addClass("active");
-      self.jumpTo($(this).text()-1);
-    });
+    var nquestions = this.questionsList.length;
+    var ntmpl = $("#number").children()[0].outerHTML;
+    $("#number").html("");
+    for (var i=0; i<nquestions; i++) {
+      var qnumber;
+      (function(j) { 
+        qnumber = $(ntmpl).html(j+1).addClass("number-spacing").click(function() {
+            self.jumpTo(j);
+            self.drawNumbers();
+        });
+      })(i);
+      $("#number").append(qnumber);
+    }
+    $("#number").children().removeClass("sel-number");
+    if (this.index > -1)
+      $("#number").children().eq(this.index).addClass("sel-number");
   },
 
   showOverview: function() {
@@ -92,12 +101,16 @@ var Questionnaire = {
     if (this.status != "2")
         self.sendEnd();
 
-    $(".question-index").children().removeClass("active");
-    $(".question-index").children().eq(self.questionsList.length).addClass("active");
-
     //fast trick
-    if (this.hasVideo()) {
-      this.resizeVideoQuestion();
+    if (VideoQuestionnaire.$wrapper) {
+      if (document.fullScreen || 
+          document.mozFullScreen ||
+          document.webkitIsFullScreen) {
+        VideoQuestionnaire.$wrapper.addClass("fullscreen");
+        this.resizeVideoQuestion();
+      } else {
+        VideoQuestionnaire.$wrapper.removeClass("fullscreen");
+      }
     }
     $("#button-hint").hide()
     $("#statistics-button").css("display", "inline-block");
@@ -113,37 +126,19 @@ var Questionnaire = {
             maybe += 1;
       });
       var total = correct + incorrect + maybe;
-
       console.debug("Overview: ");
       console.debug(" total: " + total);
       console.debug(" correct: " + correct);
       console.debug(" incorrect: " + incorrect);
       console.debug(" maybe: " + maybe);
+      $("#right .percentage").html(Math.round(correct / total * 100) + "%");
+      $("#wrong .percentage").html(Math.round(incorrect / total * 100) + "%");
 
-      window.currentPage = window.currentPage || {}
-      var templateValues = {
-        right: Math.round(correct / total * 100) + "%",
-        wrong: Math.round(incorrect / total * 100) + "%",
-        hasVideo: this.hasVideo(),
-        currentUnit: window.currentPage.currentUnit,
-        currentLesson: window.currentPage.currentLesson,
-        nextLesson: window.currentPage.nextLesson,
-        nextUnit: window.currentPage.nextUnit,
-      }
       this.index = -1;
+      this.drawNumbers();
+      $("#number").css("display", "inline-block");
       $(".question-wrapper").hide()
-      var overview = Handlebars.compile($("#overview-partial").html());
-      var html = overview(templateValues)
-      $(html).appendTo("#single-question");
       $("#overview").show();
-      $("#redo").click(function() {
-        self.redo(false);
-      })
-      if (this.hasVideo()) {
-        $("#revisit").click(function() {
-          self.redo(true);
-        })
-      } 
       return true;
     } else {
       $("#rewatch").show();
@@ -195,7 +190,7 @@ var Questionnaire = {
       console.log("Activity results sent");
     }).fail(function() { 
       console.error("Error sending activity results");
-      if (self.data) {
+      if (self.data && self.data.length) {
         self.data.push(payload);
         console.log(JSON.stringify(self.data))
       }
@@ -206,26 +201,33 @@ var Questionnaire = {
     if (document.fullScreen || 
         document.mozFullScreen ||
         document.webkitIsFullScreen) {
-        $(".questions").parent().addClass("fullscreen");
       //necessary to find real height
-      //$(this.qEle).removeClass("overflow");
-      //$(this.qEle).addClass("fullscreen");
-      //if ($(this.qEle).height() > $(window).height()) {
-      //  $().addClass("overflow");
-      //  $().css("top", "");
-      //} else {
-      //  $(this.qEle).removeClass("overflow");
-      //  var hpos = $(window).height() / 2 - $(this.qEle).height() / 2
-      //  $(this.qEle).css("top", hpos + "px");
-      //}
+      $(this.qEle).removeClass("overflow");
+      $(this.qEle).addClass("fullscreen");
+      if ($(this.qEle).height() > $(window).height()) {
+        $(this.qEle).addClass("overflow");
+        $(this.qEle).css("top", "");
+      } else {
+        $(this.qEle).removeClass("overflow");
+        var hpos = $(window).height() / 2 - $(this.qEle).height() / 2
+        $(this.qEle).css("top", hpos + "px");
+      }
     } else {
-        $(".questions").parent().removeClass("fullscreen");
-     //   $(".questions").css("top", "");
+        $(this.qEle).removeClass("fullscreen");
+        $(this.qEle).css("top", "");
     }
   },
 
   showVideoQuestion: function() {
+    $(this.qEle).css({
+      "display":"block",
+      "visibility":"hidden",
+    });
     this.resizeVideoQuestion();
+    $(this.qEle).css({
+      "display":"none",
+      "visibility":"",
+    });
     this.fadeIn();
   },
   
@@ -274,15 +276,13 @@ var Questionnaire = {
   },
 
   redo: function(showVideo) {
-    var self = this;
-    $(".question-wrapper").remove();
+    $(".question-instance").remove();
     this.data = [];
     this.first_results = $.extend(true, [], this.results);
-    this.redoMode = !(showVideo || false);
+    this.redoMode = showVideo || false;
     this.initData();
     if (showVideo) {
         VideoQuestionnaire.replay();
-        self.fadeOut();
     } else {
         this.jumpNext();
     }
@@ -324,21 +324,10 @@ var Questionnaire = {
         url: a_src,
         type: 'get',
         dataType: 'json',
-        async: false,
+        async: true,
         success: function(data) {
           console.debug("Activity loaded:", data);
           self.activity_original = data;
-          self.activity = $.extend(true, [], self.activity_original);
-          self.questionsList = self.activity.questionsList;
-          if (isTesting()) {
-            $.each(self.questionsList, function(k, v) {
-              if (v.time) {
-                $("<div>").html(v.time).appendTo($("#timeDebug"));
-              } else {
-                $("<div>").html("Same").appendTo($("#timeDebug"));
-              }
-            });
-          }
           requestDone();
         },
         error: function(data) {
@@ -352,23 +341,11 @@ var Questionnaire = {
       url: getLibUrl() + 'base.html',
       type: 'get',
       dataType: 'html',
-      async: false,
-      success: function(source) {
-        $(self.qEle).append(source);
-        self.template = Handlebars.compile($("#questionnaire-template").html());
-        Handlebars.registerPartial("question", $("#question-partial").html());
-        Handlebars.registerPartial("overview", $("#overview-partial").html());
-        var templateValues = {
-            questionsList: self.questionsList,
-            hasVideo: self.hasVideo(),
-            base: window.location.href,
-        }
-        var $html = $(self.template(templateValues));
-        $html.attr({
-          index: this.index
-        }).addClass("question-instance").appendTo('.questionnaire');
-        $(".questions").css("display","none");
-        self.drawNumbers();
+      async: true,
+      success: function(data) {
+        $(self.qEle).hide();
+        $(self.qEle).empty();
+        $(self.qEle).append(data);
         requestDone();
       },
       error: function(data) {
@@ -389,22 +366,27 @@ var Questionnaire = {
     $(".hint").click(function() {
       $(".hint").hide();
     });
+    $("#redo").click(function() {
+      self.redo(self.hasVideo());
+    })
+    if (this.hasVideo()) {
+        $("#revisit").click(function() {
+          self.redo(false);
+        })
+    } else {
+        $("#revisit").hide()
+    }
     $("#statistics-button").click(function() {self.showOverview()});
   },
 
   loadSavedData: function() {
     var self = this;
     for (var i=0;i<this.data.length;i++) {
-      if (Object.keys(this.data[i]).length) {
-        console.debug(JSON.stringify(this.data[i], undefined, 2));
-        this.createQuestion(i, this.data[i])
-        self.doneQuestions[i] = self.leftQuestions[i];
-        self.doneQuestions[i].result = self.data[i].result;
-        self.leftQuestions[i] = undefined;
-        if (this.status != "2" && self.questionsList[i].time) { 
-          self.lastTime = self.time2ds(self.questionsList[i].time) / 10.0 + 0.1;
-        };
-      }
+      console.debug(JSON.stringify(this.data[i], undefined, 2));
+      this.createQuestion(i)
+      self.doneQuestions[i] = self.leftQuestions[i];
+      self.doneQuestions[i].result = self.data[i].result;
+      self.leftQuestions[i] = undefined;
     }
   },
 
@@ -413,26 +395,31 @@ var Questionnaire = {
     if (this.status == "2") {
       console.debug("Activity completed");
       self.showOverview();
-      self.fadeIn();
+      $(this.qEle).show();
       return;
     } 
     if (!this.hasVideo() || this.isVideoDisabled()) {
-      this.fadeIn();
       this.jumpNext();
+      this.fadeIn();
     } else {
       this.on("check", function() {
         self.resizeVideoQuestion();
       });
-      VideoQuestionnaire.create($(this.qEle).parent(), this.activity.videoId, this.lastTime);
+      var lastTime = 0;
+      if (this.data && this.status != "2") {
+        $.each(this.data, function(k, v) {
+            if (self.questionsList[k].time) {
+                lastTime = self.time2ds(self.questionsList[k].time) / 10.0;
+            }
+        });
+      }
+      VideoQuestionnaire.create($(this.qEle).parent(), this.activity.videoId, lastTime);
     }
     this.trigger("load");
 
   },
 
   create: function(qEle, data) {
-Handlebars.registerHelper('add1', function(index) {
-    return parseInt(index)+1;
-});
     var self = this;
     this.qEle = qEle;
     this.data = data || [];
@@ -490,11 +477,11 @@ Handlebars.registerHelper('add1', function(index) {
   },
 
   fadeOut: function() {
-    $(".questions").fadeOut();
+    $(this.qEle).fadeOut();
   },
 
   fadeIn: function() {
-    $(".questions").fadeIn();
+    $(this.qEle).fadeIn();
   },
 
   remaining: function() {
@@ -514,7 +501,6 @@ Handlebars.registerHelper('add1', function(index) {
 
   fixScroll: function() {
     var self = this;
-    console.log(self.qEle);
     $(document.body).animate({
       'scrollTop': $(self.qEle).offset().top
     }, 500);
@@ -535,7 +521,6 @@ Handlebars.registerHelper('add1', function(index) {
     if (!this.hasVideo()) return false;
     if (this.isVideoDisabled()) return false;
     if (this.redoMode) return false;
-    if (this.questionsList[this.index+1] === undefined)  return true;
     if (this.questionsList[this.index+1] &&
         this.questionsList[this.index+1].time === undefined) 
         return false;
@@ -543,32 +528,26 @@ Handlebars.registerHelper('add1', function(index) {
         return true;
   },
 
-  createQuestion: function(index, savedQuestion) {
+  createQuestion: function(index) {
     var self = this;
     var question = this.leftQuestions[index] || this.doneQuestions[index]; 
-    var raw_template = $("." + question.questionType + "-template").html()
-
-    var question_template = Handlebars.compile(raw_template);
-    var templateValues = {
-        question: question,
-        hasVideo: this.hasVideo(),
-        base: window.location.search,
-    }
-    var $html = $(question_template(templateValues));
-    $html.attr({
-      id: this.index, 
+    var template = $(this.qEle).find('#template').clone();
+    $(template).attr({
+      id: "q"+this.index, 
       index: this.index
-    }).addClass("question-instance").appendTo('#single-question');
-
-    console.log(this.registeredQuestionTypes);
-    console.log(question.questionType);
+    }).addClass("question-instance").appendTo('#questions');
 
     this.questionClass = this.registeredQuestionTypes[question.questionType];
-    this.questionInstances[index] = new this.questionClass(question, $html, savedQuestion)
-    this.questionInstances[index].create();
+    this.questionInstances[index] = new this.questionClass(question, template)
+    var _data;
+    if (this.data && this.data[index]) {
+      _data = this.data[index];
+    }
+    this.questionInstances[index].create(_data);
     this.questionInstances[index].show = function() {
       $(this.qEle).show();
     }
+    console.log(this.questionInstances);
     this.questionInstances[index].submit = function() {
       if (self.leftQuestions[self.index] !== undefined) {
         self.doneQuestions[self.index] = self.leftQuestions[self.index];
@@ -577,10 +556,8 @@ Handlebars.registerHelper('add1', function(index) {
         self.sendResults(self.index, self.doneQuestions[self.index])
       }
     }
-    self.trigger("question-created");
-    $html.find("#send-button").click(function() {
+    $(template).find("#send-button").click(function() {
       if (self.isVideoNext()) {
-        self.fadeOut();
         self.trigger("continue");
       } else {
         self.jumpNext();
@@ -592,19 +569,20 @@ Handlebars.registerHelper('add1', function(index) {
   },
 
   jumpTo: function(index) {
+    console.trace()
+    console.log("JUMP TO")
     var self = this;
     this.index = index;
+    this.drawNumbers();
     this.question = this.leftQuestions[this.index] || this.doneQuestions[this.index]; 
-    $(".question-index").children().removeClass("active");
-    $(".question-index").children().eq(index).addClass("active");
 
     if (this.question && this.question.hint) {
       $("#button-hint").show();
       $(".hint-text").html(this.question.hint);
-    } else {
+    } 
+    else {
       $("#button-hint").hide();
     }
-    
     $("#overview").hide();
     $(".question-wrapper").hide();
 
@@ -616,11 +594,10 @@ Handlebars.registerHelper('add1', function(index) {
       return;
     }     
     if (this.remaining().length == 0) {
-      $(".question-index").css("visibility", "");
       this.showOverview();
+      //this.sendResults();
       return;
     } else {
-      $(".question-index").css("visibility", "hidden");
       $("#statistics-button").hide();
     }
     this.createQuestion(index);
@@ -633,17 +610,17 @@ Handlebars.registerHelper('add1', function(index) {
   }
 }
 
-window.addEventListener("load", function() {
-  if (!isTesting()) {
+  window.addEventListener("load", function() {
+if (!isTesting()) {
     console.log("Load questionnaire");
     var qs = $(".questionnaire"); 
     //could support multiple questionnaires
     $.each(qs, function(k, q) {
       Questionnaire.create(q);
     });
-  } else {
-  }
-});
+} else {
+}
+  });
 
 window.test_nofullscreen = function(cont) {
   test( "nofullscreen", function() {
@@ -754,28 +731,21 @@ window.test_time = function() {
         equal(ds, 120)
     });
 }
-function DDQ(question, qEle, savedQuestion) {
+function DDQ(question, qEle) {
   this.question = question;
   this.qEle = qEle;
-  this.savedQuestion = savedQuestion;
-
-  if (savedQuestion && "result" in savedQuestion) {
-    this.result = savedQuestion.result;
-  } else {
-    this.result = {
-      incorrect: false,
-      correct: false,
-      maybe: false,
-      hint: false,
-      selections: Array(this.question.targetList.length)
-    }
+  this.result = {
+    incorrect: false,
+    correct: false,
+    maybe: false,
+    hint: false,
+    selections: []
   }
-
   this.lastAnswerHeight = 0;
   this.$q = function(selector) {
     return $(this.qEle).find(selector);
   }
-  this.targetList = this.question.targetList;
+  this.targetList = [];
   this.$targets = [];
   this.$concepts = [];
 }
@@ -783,13 +753,19 @@ function DDQ(question, qEle, savedQuestion) {
 DDQ.questionType = "ddq";
 DDQ.prototype = {
 
-  create: function() {
+  create: function(data) {
     var self = this;
+    $(this.qEle).addClass("ddq");
+    this.targetList = this.question.targetList;
 
     this.drawQuestion();
     this.drawAnswers();
+    self.$q(".table-feedback").appendTo(self.$q("#top-answer"));
+    self.$q(".table-feedback").hide();
 
-    if (this.savedQuestion) {
+    if (data) { 
+      this.data = data;
+      this.setSelections(this.data.result.selections);
       var total = 0, totalEnd = 0;
       $.each(this.result.selections, function(tIdx, targetArray) {
         $.each(targetArray, function(cIdx, conceptIndex) {
@@ -802,15 +778,31 @@ DDQ.prototype = {
             }, 1);
         });
       });
+      this.result = this.data.result;
+    } else {
+      this.result.selections = Array(this.targetList.length);
     }
   },
 
   drawQuestion: function() {
     var self = this;
+    this.$q("#question-text").html(this.question.text);
+    this.$q("#q-text").html("");
+    this.$q("#tr-text").show();
     var per = 90 / this.targetList.length
-    $(".target").each(function(k, target) {
-      $target = $(target).data("targetIdx", k);
+    $.each(this.targetList, function(k, v) {
+      var $target = $("<td>").addClass("target").data("targetIdx", k);
+      if (v.image) {
+        $("<img>").addClass('target-image')
+            .attr("src", v.image)
+            .appendTo($target);
+      }
+      $("<div>").addClass('target-title')
+            .html(v.text)
+            .appendTo($target);
       $target.css("width", per + "%");
+      self.$q('#tr-text').append($target);
+
       $target.droppable({
         greedy: true,
         activeClass: "ui-state-hover",
@@ -840,12 +832,10 @@ DDQ.prototype = {
     var self = this;
     var $a = self.$q("#top-answer");
     
-    var idx = 0;
     $.each(self.targetList, function(tIdx, target) {
       $.each(target.conceptList, function(cIdx, concept) {
         var $concept = $("<div class='concept'>" + concept.text + "</div>")
           .data("targetIdx", tIdx)
-          .data("idx", idx++)
           .draggable({
             start: function(event, ui) {
                 $(event.target).css("z-index","100");
@@ -894,13 +884,18 @@ DDQ.prototype = {
     var done=true;
     self.$q(".concept").each(function(k,concept) {
       if ($(concept).parent().hasClass("target") == false) {
-        done = false;
+        done=false;
       }
     });
     self.$q("#check-button").toggle(done);
+    self.$q(".table-feedback").toggle(done);
     if (done && self.lastAnswerHeight > 0)
         self.$q("#top-answer").height(self.lastAnswerHeight);
     return done;
+  },
+
+  setSelections: function(selections) {
+    this.result.selections = selections;
   },
 
   getSelections: function() {
@@ -956,21 +951,15 @@ DDQ.prototype = {
 }
 
 Questionnaire.registerType(DDQ);
-function MCQ(question, qEle, savedQuestion) {
+function MCQ(question, qEle) {
   this.question = question;
   this.qEle = qEle;
-  this.savedQuestion = savedQuestion;
-
-  if (savedQuestion && "result" in savedQuestion) {
-    this.result = savedQuestion.result;
-  } else {
-    this.result = {
-      incorrect: false,
-      correct: false,
-      hint: false,
-      selections: [],
-      time: 0,
-    }
+  this.result = {
+    incorrect: false,
+    correct: false,
+    hint: false,
+    selections: [],
+    time: 0,
   }
   this.$q = function(selector) {
     return $(this.qEle).find(selector);
@@ -979,33 +968,53 @@ function MCQ(question, qEle, savedQuestion) {
 
 MCQ.questionType = "mcq";
 MCQ.prototype = {
+  answers: null,
   
-  create: function() {
+  create: function(data) {
+    this.answers = this.question.answers;
     this.drawQuestion();
     this.drawAnswers();
-
-    if (this.savedQuestion) {
-      this.setSelections(this.result.selections);
-      this.checkAnswer(this.result.answer_idx);
+    if (data) { 
+      console.log(data);
+      this.data = data;
+      this.setSelections(this.data.result.selections);
+      this.checkAnswer(this.data.result.selections);
+      this.result = this.data.result;
     }
   },
   
   drawQuestion: function() {
+    var self = this;
+    self.$q("#q-text").html(this.question.text);
+    if (this.question.type == "image") {
+      self.$q("#q-image").attr("src", this.question.image);
+      self.$q("#tr-image").show();
+    }
   },
   
   drawAnswers: function() {
-    var self = this;
-    this.$q(".option").empty();
-    $.each(this.question.answers, function(k, v) {
-      var $div = $("<div>").html(v.text)
-      self.$q(".option").append($div);
-      $div.click(function(evt) {
+    var self = this,
+      q = this.question,
+      a = q.answers,
+      per = 95 / a.length,
+      selected = [];
+    self.$q(".option").html("").addClass("mcq").addClass("enabled");
+    $.each(a, function(k, v) {
+      div = $("<div>").html(v.text).css("width", "80%");
+      self.$q(".option").append(div);
+      $(div).click(
+        function(evt) {
           $(this).toggleClass("toggleon")
-      });
+        }
+      )
     });
 
-    this.$q("#send-button").hide(); 
-    this.$q("#check-button").show().click(function(){
+    self.$q("#send-button").hide(); 
+    self.$q(".table-feedback").show();
+    self.$q(".table-feedback").css("border", "none");
+    self.$q("#check-button").show();
+
+    self.$q("#check-button").click(function(){
       var selections = self.getSelections();
       self.checkAnswer(selections);
       self.submit();
@@ -1023,6 +1032,7 @@ MCQ.prototype = {
   },
 
   setSelections: function(selections) {
+    console.log("selections", selections);
     this.$q(".option").children().each(function(idx, ans) {
       if ($.inArray(idx, selections) >= 0) {
         $(ans).addClass('toggleon');
@@ -1032,60 +1042,50 @@ MCQ.prototype = {
 
   checkAnswer: function(selections) {
     var self = this
-
+    var question = self.question
+    var answers = self.question.answers
     self.result.correct = true;
     self.result.selections = selections;
 
     self.$q(".option").children().each(function(idx, ans) {
-      if ($.inArray(idx, self.question.correctAnswer) >= 0) {
+      if ($.inArray(idx, question.correctAnswer) >= 0) {
         $(ans).addClass("correct");
       } else {
         $(ans).addClass("incorrect");
       }
       //Set correct
-      if ($.inArray(idx, self.question.correctAnswer) >= 0 && $.inArray(idx, selections) >=0 ||
-          $.inArray(idx, self.question.correctAnswer) == -1 && $.inArray(idx, selections) == -1) {
-      } else {
+      if ($.inArray(idx, question.correctAnswer) >= 0 && $.inArray(idx, selections) >=0 ||
+          $.inArray(idx, question.correctAnswer) == -1 && $.inArray(idx, selections) == -1) {
+      }
+      else {
           self.result.correct = false;
           self.result.incorrect = true;
       }
-      if (self.question.answers[idx].feedback) {
-        var $div = $("<div>").addClass("mcq-feedback").appendTo(ans)
-        $("<span>").html(self.question.answers[idx].feedback).appendTo($div);
+      if (answers[idx].feedback) {
+        var $div = $("<div>").attr("id", "fb").appendTo(ans)
+        $("<span>").html(answers[idx].feedback).appendTo($div);
+        $div.addClass("fill")
       }
     });
-    //disable buttons
     self.$q(".option").removeClass("enabled");
     self.$q(".option").children().unbind("click");
-    //show next action buttons
     self.$q("#check-button").hide();
     self.$q("#send-button").show();
-    //meant to resize window
     Questionnaire.trigger("check");
-  },
-
-  test_correct: function() {
-    this.setSelections(this.question.correctAnswer);
-    this.checkAnswer(this.question.correctAnswer);
   }
 }
 
 Questionnaire.registerType(MCQ);
-function TFQ(question, qEle, savedQuestion) {
+function TFQ(question, qEle) {
   this.question = question;
   this.qEle = qEle;
-  this.savedQuestion = savedQuestion;
-
-  if (savedQuestion && "result" in savedQuestion) {
-    this.result = savedQuestion.result;
-  } else {
-    this.result = {
-      incorrect: false,
-      correct: false,
-      hint: false,
-      selections: [],
-      answer_idx: null,
-    }
+  this.data = null;
+  this.result = {
+    incorrect: false,
+    correct: false,
+    maybe: false,
+    hint: false,
+    selections: [],
   }
   this.$q = function(selector) {
     return $(this.qEle).find(selector);
@@ -1094,64 +1094,146 @@ function TFQ(question, qEle, savedQuestion) {
 
 TFQ.questionType = "tfq";
 TFQ.prototype = {
+  answers: null,
 
-  create: function() {
+  create: function(data) {
+    $(this.qEle).addClass("tfq");
+    this.answers = this.question.answers;
     this.drawQuestion();
     this.drawAnswers();
     
-    if (this.savedQuestion) {
-      this.checkAnswer(this.result.answer_idx);
+    if (data) { 
+      this.data = data;
+      this.checkAnswer(this.data.result.ans_index);
+      this.result = this.data.result;
     }
   },
   
   drawQuestion: function() {
+    var self = this;
+    this.$q("#q-text").html(self.question.text);
+    if (self.question.type == "image") {
+      self.$q("#q-image").attr("src", self.question.image);
+      self.$q("#tr-image").show();
+    }
   },
   
   drawAnswers: function(res) {
     var self = this;
-    this.$q(".answer").click(function() {
-      self.checkAnswer(this.dataset.index) ;
-      self.submit();
+    var q = self.question;
+    var a = q.answers;
+    self.$q(".table-feedback").hide();
+    self.$q(".feedback-text").html("");
+    self.$q(".right").hide();
+    self.$q(".wrong").hide();
+    self.$q(".option").html("").addClass("tfq");
+  
+    $.each(a, function(k, v) {
+      var div = $("<div>").html(v.text);
+      self.$q(".option").append(div);
+      if (!res) {
+        div.click(function() { 
+          self.prompt_maybe(false); 
+          self.checkAnswer(k) 
+          self.submit();
+        });
+      }
     });
+    if (q.answerMaybe) {
+      var div = $("<div>").text("Maybe").attr("id", "maybe-button");
+      self.$q(".option").append(div);
+      if (!res) {
+        
+        div.click(function() {
+            self.prompt_maybe(true)
+        });  
+        self.$q("#submit-button").click(function() {
+          $(this).hide()
+          self.$q("#send-button").show();
+          self.$q("#tr-fb-input").hide();
+          self.$q("#feedback-input").hide();
+          self.result.maybe = true;
+          self.result.ans_index = 2;
+          self.result.maybeText = $q("#feedback-input").val();
+        });
+        self.$q("#feedback-input").keyup(function() {
+          if ($(this).val().length > 0) {
+            self.$q("#submit-button").show();
+          } else {
+            self.$q("#submit-button").hide();
+          }
+        });
+      }
+    }
+    self.$q(".option").children().css("width", (84/self.$q(".option").children().length) + "%");
+    if (res) {
+      self.checkAnswer(res.answerIdx)
+    }
   },
   
+  prompt_maybe: function(show) {
+    var self = this;
+    if (show) {
+      self.$q("#feedback-input").show();
+      self.$q("#tr-fb-input").show();
+      self.$q("#send-button").hide();
+      self.$q("#maybe-button").addClass("selected");
+      self.$q(".table-feedback").fadeIn();
+      self.$q("#feedback-input").focus();
+    } else {
+      self.$q(".table-feedback").hide();
+      self.$q("#feedback-input").hide();
+      self.$q("#tr-fb-input").hide();
+      self.$q("#send-button").show();
+      self.$q("#submit-button").hide();
+      self.$q("#maybe-button").removeClass("selected");
+    }
+  },
+  
+  feedback_correct: function(answer_idx) {
+    var self = this;
+    var ele = self.$q(".option").children()[answer_idx];
+    $(ele).addClass("correct");
+    self.$q(".right").show();
+    answer_text = self.answers[answer_idx].feedback;
+    if (typeof answer_text != "undefined")
+      self.$q(".feedback-text").html("<div>" + answer_text + "</div>")
+    self.$q(".table-feedback").fadeIn();
+  },
+  
+  feedback_incorrect: function(answer_idx) {
+    var self = this;
+    var ele = self.$q(".option").children()[answer_idx];
+    $(ele).addClass("incorrect");        
+    self.$q(".wrong").show();
+    answer_text = self.answers[answer_idx].feedback;
+    if (typeof answer_text != "undefined")
+      self.$q(".feedback-text").html("<div>" + answer_text + "</div>")
+    self.$q(".table-feedback").fadeIn();
+  },
+    
   checkAnswer: function(answer_idx) {
     var self = this;
-    //check correct answer
-    if (this.question.correctAnswer == answer_idx) {
-      if (!this.result.incorrect) {
-        this.result.correct = true;
+    self.result.ans_index = answer_idx;
+    if (self.question.correctAnswer == answer_idx) {
+      if (!self.result.incorrect) {
+        self.result.correct = true;
       }
-      this.$q(".right").removeClass("hidden");
+      //console.log("Good! continue with next concept");
+      this.feedback_correct(answer_idx);
     } else {
-      this.result.incorrect = true;
-      this.$q(".wrong").removeClass("hidden");
+      self.result.incorrect = true;
+      //console.log("Wrong... Try again!");
+      this.feedback_incorrect(answer_idx);
     }
-
-    //save result
-    this.result.answer_idx = answer_idx;
-
-    //show feedback
-    this.$q(".feedback").removeClass("hidden");
-    var feedback_text = this.question.answers[answer_idx].feedback;
-    if (typeof feedback_text != "undefined")
-      this.$q(".feedback-text").html("<div>" + feedback_text + "</div>")
     
-    //disable buttons
-    this.$q(".option").children().each(function(idx, ele) {
+    self.$q(".option").children().each(function(idx, ele) {
       if (idx != answer_idx) {
         self.$q(ele).addClass("disabled");
       }
     });
-    this.$q(".option").children().unbind("click");
-
-    //next button
-    this.$q("#send-button").show();
+    self.$q(".option").children().unbind("click");
   },
- 
-  test_correct: function() {
-    this.checkAnswer(this.question.correctAnswer);
-  }
 }
 
 Questionnaire.registerType(TFQ);
@@ -1304,21 +1386,15 @@ var drawArrow=function(ctx,x1,y1,x2,y2,style,which,angle,d)
   }
 }
 
-function DDQTREE(question, qEle, savedQuestion) {
+function DDQTREE(question, qEle) {
   this.question = question;
   this.qEle = qEle;
-  this.savedQuestion = savedQuestion;
-
-  if (savedQuestion && "result" in savedQuestion) {
-    this.result = savedQuestion.result;
-  } else {
-    this.result = {
-      incorrect: false,
-      correct: false,
-      maybe: false,
-      hint: false,
-      selections: [],
-    }
+  this.result = {
+    incorrect: false,
+    correct: false,
+    maybe: false,
+    hint: false,
+    selections: [],
   }
   this.lastAnswerHeight = 0;
   this.$q = function(selector) {
@@ -1332,9 +1408,11 @@ function DDQTREE(question, qEle, savedQuestion) {
 DDQTREE.questionType = "ddqtree";
 DDQTREE.prototype = {
 
-  loadData: function() {
+  loadData: function(data) {
     var self = this;
-    if (this.savedQuestion) { 
+    if (data) { 
+      this.data = data;
+      this.result = this.data.result;
       var total = this.result.selections.length, totalEnd = 0;
       $.each(this.result.selections, function(tIdx, cIdx) {
         var $concept = self.$q(".concept[data-ele_id='"+cIdx+"']");
@@ -1342,6 +1420,7 @@ DDQTREE.prototype = {
         setTimeout(function() {
             self.addConcept($concept, $target);
             totalEnd++;
+            console.log(totalEnd);
             if (total == totalEnd) {
                 setTimeout(function() {
                     self.checkAnswer();
@@ -1349,24 +1428,37 @@ DDQTREE.prototype = {
             }
         }, 1);
       });
-    } 
+    } else {
+      //console.log(this.question)
+      //console.log(":HEI");
+      //this.result.selections = Array(this.question.targetList.length);
+    }
   },
 
-  create: function() {
+  create: function(data) {
     var self = this;
+    $(this.qEle).addClass("ddqtree");
+
     this.tree = self.question.tree[0];
+    $(this.qEle).prepend(self.$q("#answer"));
+    if (this.question && this.question.text) {
+        $(this.qEle).prepend($("<div>").addClass("title").html(this.question.text));
+    }
+
+    this.drawQuestion();
     setTimeout(function() {
-        self.drawQuestion();
         self.drawAnswers();
-    //    self.loadData();
+        self.$q(".table-feedback").hide();
+        self.loadData(data);
     }, 10);
+    
   },
 
   drawQuestion: function() {
     var self = this;
     var depth = 0,    
         max_depth = 0;
-
+    console.log("THIUS", this.depth_ele);
     var depth_ele = this.depth_ele;
     var ele_id = 0;
   
@@ -1391,6 +1483,7 @@ DDQTREE.prototype = {
       return;
     }
     tree_walk(this.tree);
+    this.$q("#question").removeClass("left-col");
     this.$q("#q-text").html("");
     var $t = $("<div>").attr("class","ddqt-table");
     $t.appendTo(this.$q("#q-text"));
@@ -1415,7 +1508,7 @@ DDQTREE.prototype = {
         .appendTo($t);
     }
 
-    this.height = $(".tree").height()
+    this.height = $("#q-table").height()
     this.cell_height = 0.80*this.height/max_depth;
     for (var i=depth_ele.length-1;i>=0;i--) {
       var $tr = $($(".target-col")[i]);
@@ -1540,6 +1633,10 @@ DDQTREE.prototype = {
   drawAnswers: function() {
     var self = this;
     var depth_ele = this.depth_ele;
+    self.$q(".option").html("");
+    self.$q("#answer").removeClass("right-col");
+    self.$q("#a-table").attr("id", "feedback");
+
     var concepts = [];
     for (var i=0;i<depth_ele.length;i++) {
       for (var j=0;j<depth_ele[i].length;j++) {
@@ -1551,8 +1648,10 @@ DDQTREE.prototype = {
     this.cell_width = this.$q(".target").width() - 1;
 
     //void 
+    console.log(concepts)
     for (var i=0; i<concepts.length; i++) {
       concept = concepts[i];
+      console.log(concept);
       var concept_text = $("<div class='concept-text'>"+concept.text+"</div>")
       var concept_div = $("<div>")
             .html(concept_text)
@@ -1578,11 +1677,11 @@ DDQTREE.prototype = {
       $(concept_div).draggable({ 
         containment: self.qEle,
         start: function( event, ui ) {
-          $(event.target)
-            .css("border", "2px dashed orange")
-            .css("bottom", "")
-            .css("right", "")
-            .css("z-index", "100")
+            $(event.target)
+                    .css("border", "2px dashed orange")
+                    .css("bottom", "")
+                    .css("right", "")
+                    .css("z-index", "100")
         },
       });
       self.$q('.option').append(concept_div);
@@ -1593,15 +1692,15 @@ DDQTREE.prototype = {
       hoverClass: "ui-state-active",
       drop: function( event, ui ) {
         if ($(ui.draggable[0]).data("dragged")) {
-          $(ui.draggable[0]).data("dragged", ""); 
+            $(ui.draggable[0]).data("dragged", ""); 
         } else {
-          self.$q(".option").append(ui.draggable[0]);
-          $(ui.draggable[0])
-            .css("border", "2px dashed orange")
-            .css("position", "relative")
-            .css("left", "0")
-            .css("top", "0");
-          self.redrawQuestions();
+            self.$q(".option").append(ui.draggable[0]);
+            $(ui.draggable[0])
+              .css("border", "2px dashed orange")
+              .css("position", "relative")
+              .css("left", "0")
+              .css("top", "0");
+            self.redrawQuestions();
         }
       }
     });
@@ -1625,6 +1724,7 @@ DDQTREE.prototype = {
     }
 
     self.$q("#check-button").toggle(done);
+    self.$q(".table-feedback").toggle(done);
     if (done && self.lastAnswerHeight > 0)
         self.$q("#top-answer").height(self.lastAnswerHeight);
     return done;
@@ -1693,7 +1793,7 @@ DDQTREE.prototype = {
           var $target = $(".target[data-ele_id='" + parent_id + "'");
           self.addConcept(concept, $target);
       });
-    }, 1000);
+    }, 100);
   },
 
   loadCorrect: function() {
@@ -1766,10 +1866,13 @@ var VideoQuestionnaire = {
       var self = this;
       console.debug("loadVideoQuestionnaire: " + url);
     
-      this.$wrapper = $(ele);
+      var $wrapper = this.$wrapper = $(ele);
+      $wrapper.prepend('<div id="overlay" class="video-evt"></div>');
+      $wrapper.addClass("video");
     
-      var $video = $("video")
       var nakedUrl = url.replace(".mp4","")
+      $video_wrapper = $("<div id='v'></div>");
+      $video = $("<video width='768' height='432' controls></video>").appendTo($video_wrapper);
       $("<source>").attr({
         "id": "mp4",
         "src": url,
@@ -1791,8 +1894,13 @@ var VideoQuestionnaire = {
         "type": "video/webm",
       }).appendTo($video);
     
+      $video.append("<p>Your user agent does not support the HTML5 Video element.</p>");
+        
+      $wrapper.prepend($video_wrapper);
+    
       mejs.MediaFeatures.svg = false;
-      console.debug("CanPlayType?", $video[0].canPlayType);
+      console.log("CanPlay?");
+      console.log($video[0].canPlayType);
       var firstPlay = true;
       var lastSecond = lastTime || 1.0;
       $video.mediaelementplayer({
@@ -1803,7 +1911,6 @@ var VideoQuestionnaire = {
         loop: false,
         enablePluginDebug: true,
       	success: function(media, node, player) {
-          $(".video").removeClass("hidden");
           var mediaplayer = self.mediaplayer = media;
           mediaplayer.addEventListener("timeupdate", function() { 
             //lastSecond = mediaplayer.player.getCurrentTime();
@@ -1826,10 +1933,11 @@ var VideoQuestionnaire = {
           mediaplayer.addEventListener("loadeddata", function() { console.debug("Video event: loadeddata") });
           mediaplayer.addEventListener("play", function() { console.debug("Video event: play") });
           mediaplayer.addEventListener("playing", function() { console.debug("Video event: playing") 
-            if (firstPlay) {
-              mediaplayer.player.setCurrentTime(lastTime);
-            }
-            firstPlay = false;
+            //if (firstPlay) {
+            //  mediaplayer.player.setCurrentTime(lastTime);
+            //} else {
+            //  firstPlay = false;
+            //}
           });
           mediaplayer.addEventListener("pause", function() { console.debug("Video event: pause") });
           mediaplayer.addEventListener("ended", function() { console.debug("Video event: ended") });
@@ -1837,10 +1945,9 @@ var VideoQuestionnaire = {
           self.loadEvents();
            
           Questionnaire.on("continue", function() {
-            console.log("Play?", lastTime);
+            console.log("Play?");
             mediaplayer.play()
-            
-            self.$wrapper.removeClass("pause");
+            $wrapper.removeClass("pause");
             Questionnaire.fadeOut();
           });
           //mediaplayer.play();

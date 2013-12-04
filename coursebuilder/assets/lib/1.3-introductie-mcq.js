@@ -1,9 +1,7 @@
 {
     "questionsType": "mcq",
-    "videoId": "https://s3.amazonaws.com/energietransitie/1.3+Introductie+-+energietransitie+in+de+praktijk-2rDTw2JBM4Y.mp4",
     "questionsList": [
         {
-            "time":"3:01.2",
             "type": "text",
             "text": "Welke partij(en) is/zijn verantwoordelijk voor het oprichten van duurzame bedrijven?",
             "correctAnswer": [
@@ -35,7 +33,6 @@
             ]
         },
         {
-            
             "type": "text",
             "text": "Welke partij(en) is/zijn verantwoordelijk voor het subsidiëren van duurzame energie?",
             "correctAnswer": [

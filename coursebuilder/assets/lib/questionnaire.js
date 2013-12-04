@@ -1,4 +1,4 @@
-//Build time: 2013-11-12T12:02:35.269841
+//Build time: 2013-11-18T15:45:53.656196
 
 function shuffle(array) {
     var counter = array.length, temp, index;
@@ -66,6 +66,7 @@ var Questionnaire = {
   videoIndex: -1,
   redoMode: false,
   skipVideo: false,
+  data: [],
 
   getLesson: function() {
     return getURLParameter("lesson");
@@ -74,7 +75,6 @@ var Questionnaire = {
   getUnit: function() {
     return getURLParameter("unit");
   },
-
 
   drawNumbers: function() {
     var self = this;
@@ -98,17 +98,18 @@ var Questionnaire = {
 
   showOverview: function() {
     var self = this;
-    self.sendEnd();
+    if (this.status != "2")
+        self.sendEnd();
 
     //fast trick
-    if ($wrapper) {
+    if (VideoQuestionnaire.$wrapper) {
       if (document.fullScreen || 
           document.mozFullScreen ||
           document.webkitIsFullScreen) {
-        $wrapper.addClass("fullscreen");
+        VideoQuestionnaire.$wrapper.addClass("fullscreen");
         this.resizeVideoQuestion();
       } else {
-        $wrapper.removeClass("fullscreen");
+        VideoQuestionnaire.$wrapper.removeClass("fullscreen");
       }
     }
     $("#button-hint").hide()
@@ -147,6 +148,7 @@ var Questionnaire = {
   },
 
   sendEnd: function(index, question) {
+    var self = this;
     var payload = {
         "location" : window.location.href,
     }
@@ -163,7 +165,6 @@ var Questionnaire = {
       self.data.push(payload);
       console.log(JSON.stringify(self.data))
     });
-    
   },
 
   sendResults: function(index, question) {
@@ -276,11 +277,15 @@ var Questionnaire = {
 
   redo: function(showVideo) {
     $(".question-instance").remove();
-    this.data = null;
+    this.data = [];
     this.first_results = $.extend(true, [], this.results);
-    this.redoMode = showVideo || true;
+    this.redoMode = showVideo || false;
     this.initData();
-    this.jumpNext();
+    if (showVideo) {
+        VideoQuestionnaire.replay();
+    } else {
+        this.jumpNext();
+    }
   },
 
   initData: function() {
@@ -376,14 +381,12 @@ var Questionnaire = {
 
   loadSavedData: function() {
     var self = this;
-    if (this.data) {
-      for (var i=0;i<this.data.length;i++) {
-        console.debug(JSON.stringify(this.data[i], undefined, 2));
-        this.createQuestion(i)
-        self.doneQuestions[i] = self.leftQuestions[i];
-        self.doneQuestions[i].result = self.data[i].result;
-        self.leftQuestions[i] = undefined;
-      }
+    for (var i=0;i<this.data.length;i++) {
+      console.debug(JSON.stringify(this.data[i], undefined, 2));
+      this.createQuestion(i)
+      self.doneQuestions[i] = self.leftQuestions[i];
+      self.doneQuestions[i].result = self.data[i].result;
+      self.leftQuestions[i] = undefined;
     }
   },
 
@@ -410,7 +413,7 @@ var Questionnaire = {
             }
         });
       }
-      loadVideoQuestionnaire($(this.qEle).parent(), this.activity.videoId, lastTime);
+      VideoQuestionnaire.create($(this.qEle).parent(), this.activity.videoId, lastTime);
     }
     this.trigger("load");
 
@@ -419,7 +422,7 @@ var Questionnaire = {
   create: function(qEle, data) {
     var self = this;
     this.qEle = qEle;
-    this.data = data;
+    this.data = data || [];
 
     var a_data = $(qEle).attr("data");
     if (a_data && a_data in window) {
@@ -515,8 +518,10 @@ var Questionnaire = {
   },
 
   isVideoNext: function() {
+    if (!this.hasVideo()) return false;
     if (this.isVideoDisabled()) return false;
     if (this.redoMode) return false;
+    if (this.questionsList[this.index+1] == "undefined")  return false;
     if (this.questionsList[this.index+1] &&
         this.questionsList[this.index+1].time === undefined) 
         return false;
@@ -543,6 +548,7 @@ var Questionnaire = {
     this.questionInstances[index].show = function() {
       $(this.qEle).show();
     }
+    console.log(this.questionInstances);
     this.questionInstances[index].submit = function() {
       if (self.leftQuestions[self.index] !== undefined) {
         self.doneQuestions[self.index] = self.leftQuestions[self.index];
@@ -564,6 +570,8 @@ var Questionnaire = {
   },
 
   jumpTo: function(index) {
+    console.trace()
+    console.log("JUMP TO")
     var self = this;
     this.index = index;
     this.drawNumbers();
@@ -603,16 +611,17 @@ var Questionnaire = {
   }
 }
 
-if (!isTesting()) {
   window.addEventListener("load", function() {
+if (!isTesting()) {
+    console.log("Load questionnaire");
     var qs = $(".questionnaire"); 
     //could support multiple questionnaires
     $.each(qs, function(k, q) {
       Questionnaire.create(q);
     });
-  });
 } else {
 }
+  });
 
 window.test_nofullscreen = function(cont) {
   test( "nofullscreen", function() {
@@ -1416,12 +1425,14 @@ DDQTREE.prototype = {
             if (total == totalEnd) {
                 setTimeout(function() {
                     self.checkAnswer();
-                }, 10);
+                }, 50);
             }
         }, 1);
       });
     } else {
-      this.result.selections = Array(this.targetList.length);
+      //console.log(this.question)
+      //console.log(":HEI");
+      //this.result.selections = Array(this.question.targetList.length);
     }
   },
 
@@ -1635,11 +1646,13 @@ DDQTREE.prototype = {
       }
     }
     concepts = shuffle(concepts);
-    this.cell_width = this.$q(".target").width();
+    this.cell_width = this.$q(".target").width() - 1;
 
     //void 
+    console.log(concepts)
     for (var i=0; i<concepts.length; i++) {
       concept = concepts[i];
+      console.log(concept);
       var concept_text = $("<div class='concept-text'>"+concept.text+"</div>")
       var concept_div = $("<div>")
             .html(concept_text)
@@ -1654,7 +1667,7 @@ DDQTREE.prototype = {
       if (concept.image) {
         $("<img>").attr("src", concept.image)
           .addClass("concept-image")
-          .attr("width", "100")
+          .attr("width", "40%")
           .css("display", "inline")
           .css("margin", "auto")
           .prependTo(concept_div);
@@ -1761,9 +1774,30 @@ DDQTREE.prototype = {
     var self = this;
     setTimeout(function() {
       $(".concept").each(function(i, concept) {
-          self.addConcept(concept, $(".target")[i]);
+            console.log(concept);
+          var c2 = $(concept).clone(true)
+          c2.appendTo(".option");
+      });
+      $(".concept").each(function(i, concept) {
+          var parent_id = $(concept).attr('data-ele_id')
+          var $target = $(".target[data-ele_id='" + parent_id + "'");
+          self.addConcept(concept, $target);
+      });
+    }, 500);
+  },
+
+  test_correct: function() {
+    var self = this;
+    setTimeout(function() {
+      $(".concept").each(function(i, concept) {
+          var parent_id = $(concept).attr('data-ele_id')
+          var $target = $(".target[data-ele_id='" + parent_id + "'");
+          self.addConcept(concept, $target);
       });
     }, 100);
+  },
+
+  loadCorrect: function() {
   }
 }
 
@@ -1775,14 +1809,45 @@ window.test_d1 = function(cont) {
     Questionnaire.getInstance().test();
   });
 };
-var $wrapper;
-var mediaplayer;
+var VideoQuestionnaire = {
+    $wrapper: null,
+    mediaplayer: null,
+    video: null,
+    replay: function() {
+      this.mediaplayer.player.setCurrentTime(0);
+      this.mediaplayer.play()
+    },
 
-function loadVideoEvents(video) {
-  console.debug("loadVideoEvents: " + video);
-  var last_int = null;
-  video.addEventListener('play', function() {
-    last_int = setInterval(function() {
+    loadEvents: function() {
+      console.debug("loadEvents: " + video);
+      var video = this.mediaplayer;
+      var $wrapper = this.$wrapper;
+      var last_int = null;
+      video.addEventListener('play', function() {
+        last_int = setInterval(function() {
+            if (document.fullScreen || 
+                document.mozFullScreen ||
+                document.webkitIsFullScreen) {
+              $wrapper.addClass("fullscreen");
+            } else {
+              $wrapper.removeClass("fullscreen");
+            }
+            var stop = Questionnaire.video_question(video.currentTime);
+            if (stop) {
+              if (last_int) clearInterval(last_int);
+              $wrapper.addClass("pause");
+              video.pause();
+              Questionnaire.showVideoQuestion();
+              Questionnaire.trigger("show");
+            }
+        }, 50);
+      }, false);
+    
+      video.addEventListener('pause', function() {
+        if (last_int) clearInterval(last_int);
+      });
+    
+      video.addEventListener('webkitfullscreenchange', function() {
         if (document.fullScreen || 
             document.mozFullScreen ||
             document.webkitIsFullScreen) {
@@ -1790,136 +1855,112 @@ function loadVideoEvents(video) {
         } else {
           $wrapper.removeClass("fullscreen");
         }
-        var stop = Questionnaire.video_question(video.currentTime);
-        if (stop) {
-          if (last_int) clearInterval(last_int);
-          $wrapper.addClass("pause");
-          video.pause();
-          Questionnaire.showVideoQuestion();
-          Questionnaire.trigger("show");
-        }
-    }, 50);
-  }, false);
-
-  video.addEventListener('pause', function() {
-    if (last_int) clearInterval(last_int);
-  });
-
-  video.addEventListener('webkitfullscreenchange', function() {
-    if (document.fullScreen || 
-        document.mozFullScreen ||
-        document.webkitIsFullScreen) {
-      $wrapper.addClass("fullscreen");
-    } else {
-      $wrapper.removeClass("fullscreen");
-    }
-  });
-
-  video.addEventListener('ended', function() {
-    Questionnaire.showOverview();
-    Questionnaire.fadeIn();
-    Questionnaire.sendEndVideo();
-
-  });
-
-}
-
-function loadVideoQuestionnaire(ele, url, lastTime) {
-  console.debug("loadVideoQuestionnaire: " + url);
-
-  $wrapper = $(ele);
-  $wrapper.prepend('<div id="overlay" class="video-evt"></div>');
-  $wrapper.addClass("video");
-
-  var nakedUrl = url.replace(".mp4","")
-  $video_wrapper = $("<div id='v'></div>");
-  $video = $("<video width='768' height='432' controls></video>").appendTo($video_wrapper);
-  $("<source>").attr({
-    "id": "mp4",
-    "src": url,
-    "type": "video/mp4",
-  }).appendTo($video);
-  $("<source>").attr({
-    "id": "3gp",
-    "src": nakedUrl + ".3gp",
-    "type": "video/3gp",
-  }).appendTo($video);
-  $("<source>").attr({
-    "id": "flv",
-    "src": nakedUrl + ".flv",
-    "type": "video/flv",
-  }).appendTo($video);
-  $("<source>").attr({
-    "id": "webm",
-    "src": nakedUrl + ".webm",
-    "type": "video/webm",
-  }).appendTo($video);
-
-  $video.append("<p>Your user agent does not support the HTML5 Video element.</p>");
-    
-  $wrapper.prepend($video_wrapper);
-
-  mejs.MediaFeatures.svg = false;
-  console.log("CanPlay?");
-  console.log($video[0].canPlayType);
-  var firstPlay = true;
-  var lastSecond = lastTime || 1.0;
-  $video.mediaelementplayer({
-  	features: ['playpause','progress','current', 'duration', 'volume','sourcechooser', 'fullscreen'],
-    iPadUseNativeControls: true,
-    iPhoneUseNativeControls: true, 
-    AndroidUseNativeControls: true,
-    loop: false,
-    enablePluginDebug: true,
-  	success: function(media, node, player) {
-      
-      mediaplayer = media;
-      mediaplayer.addEventListener("timeupdate", function() { 
-        //lastSecond = mediaplayer.player.getCurrentTime();
-        console.debug("Video event: timeupdate")
-      });
-      $(".mejs-time-total").click(function() {
-        lastSecond = mediaplayer.player.getCurrentTime();
       });
     
-      mediaplayer.addEventListener("seeked", function() { 
-        var currentSecond = mediaplayer.player.getCurrentTime();
-        console.log(currentSecond, lastSecond)
-        if (currentSecond > lastSecond) {
-          //mediaplayer.pause()
-          //alert("You have to finish")
-          //mediaplayer.player.setCurrentTime(lastSecond);
-          //mediaplayer.play()
+      video.addEventListener('ended', function() {
+        Questionnaire.showOverview();
+        Questionnaire.fadeIn();
+      });
+    },
+    
+    create: function(ele, url, lastTime) {
+      var self = this;
+      console.debug("loadVideoQuestionnaire: " + url);
+    
+      var $wrapper = this.$wrapper = $(ele);
+      $wrapper.prepend('<div id="overlay" class="video-evt"></div>');
+      $wrapper.addClass("video");
+    
+      var nakedUrl = url.replace(".mp4","")
+      $video_wrapper = $("<div id='v'></div>");
+      $video = $("<video width='768' height='432' controls></video>").appendTo($video_wrapper);
+      $("<source>").attr({
+        "id": "mp4",
+        "src": url,
+        "type": "video/mp4",
+      }).appendTo($video);
+      $("<source>").attr({
+        "id": "3gp",
+        "src": nakedUrl + ".3gp",
+        "type": "video/3gp",
+      }).appendTo($video);
+      $("<source>").attr({
+        "id": "flv",
+        "src": nakedUrl + ".flv",
+        "type": "video/flv",
+      }).appendTo($video);
+      $("<source>").attr({
+        "id": "webm",
+        "src": nakedUrl + ".webm",
+        "type": "video/webm",
+      }).appendTo($video);
+    
+      $video.append("<p>Your user agent does not support the HTML5 Video element.</p>");
+        
+      $wrapper.prepend($video_wrapper);
+    
+      mejs.MediaFeatures.svg = false;
+      console.log("CanPlay?");
+      console.log($video[0].canPlayType);
+      var firstPlay = true;
+      var lastSecond = lastTime || 1.0;
+      $video.mediaelementplayer({
+      	features: ['playpause','progress','current', 'duration', 'volume','sourcechooser', 'fullscreen'],
+        iPadUseNativeControls: true,
+        iPhoneUseNativeControls: true, 
+        AndroidUseNativeControls: true,
+        loop: false,
+        enablePluginDebug: true,
+      	success: function(media, node, player) {
+          var mediaplayer = self.mediaplayer = media;
+          mediaplayer.addEventListener("timeupdate", function() { 
+            //lastSecond = mediaplayer.player.getCurrentTime();
+            console.debug("Video event: timeupdate")
+          });
+          $(".mejs-time-total").click(function() {
+            lastSecond = mediaplayer.player.getCurrentTime();
+          });
+        
+          mediaplayer.addEventListener("seeked", function() { 
+            var currentSecond = mediaplayer.player.getCurrentTime();
+            console.log(currentSecond, lastSecond)
+            if (currentSecond > lastSecond) {
+              //mediaplayer.pause()
+              //alert("You have to finish")
+              //mediaplayer.player.setCurrentTime(lastSecond);
+              //mediaplayer.play()
+            }
+          });
+          mediaplayer.addEventListener("loadeddata", function() { console.debug("Video event: loadeddata") });
+          mediaplayer.addEventListener("play", function() { console.debug("Video event: play") });
+          mediaplayer.addEventListener("playing", function() { console.debug("Video event: playing") 
+            //if (firstPlay) {
+            //  mediaplayer.player.setCurrentTime(lastTime);
+            //} else {
+            //  firstPlay = false;
+            //}
+          });
+          mediaplayer.addEventListener("pause", function() { console.debug("Video event: pause") });
+          mediaplayer.addEventListener("ended", function() { console.debug("Video event: ended") });
+      	  console.debug('mediaelementplayer mode: ' + media.pluginType);
+          self.loadEvents();
+           
+          Questionnaire.on("continue", function() {
+            console.log("Play?");
+            mediaplayer.play()
+            $wrapper.removeClass("pause");
+            Questionnaire.fadeOut();
+          });
+          //mediaplayer.play();
+      	},
+      	error: function(media, err) {
+      	  console.debug('mediaelementplayer mode: ' + media.pluginType);
+          console.error(media.method);
+          console.error(media.outerHTML);
+          console.error("There was an error");
         }
       });
-      mediaplayer.addEventListener("loadeddata", function() { console.debug("Video event: loadeddata") });
-      mediaplayer.addEventListener("play", function() { console.debug("Video event: play") });
-      mediaplayer.addEventListener("playing", function() { console.debug("Video event: playing") 
-        //if (firstPlay) {
-        //  mediaplayer.player.setCurrentTime(lastTime);
-        //} else {
-        //  firstPlay = false;
-        //}
-      });
-      mediaplayer.addEventListener("pause", function() { console.debug("Video event: pause") });
-      mediaplayer.addEventListener("ended", function() { console.debug("Video event: ended") });
-  	  console.debug('mediaelementplayer mode: ' + media.pluginType);
-      loadVideoEvents(media);
-      Questionnaire.on("continue", function() {
-        console.log("Play?");
-        mediaplayer.play()
-        $wrapper.removeClass("pause");
-        Questionnaire.fadeOut();
-      });
-      //mediaplayer.play();
-  	},
-  	error: function(media, err) {
-  	  console.debug('mediaelementplayer mode: ' + media.pluginType);
-      console.error(media.method);
-      console.error(media.outerHTML);
-      console.error("There was an error");
     }
-  });
 }
 function TIQ(question, qEle) {
   this.question = question;

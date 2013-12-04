@@ -1,4 +1,591 @@
+/*
 
+  Copyright 2012 Google Inc. All Rights Reserved.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+*/
+
+/*
+  Core CSS stylesheet. This file is self-contained and has no external dependencies.
+
+  @author: psimakov@google.com (Pavel Simakov)
+*/
+
+/* Wide-ranging styles. */
+
+html {
+ /*    
+  background: #f5f5f5;*/
+  background: #f5f5f5;
+  color: #444;
+  font-size: 13px;
+  line-height: 1.54;
+  padding: 0 15px;
+}
+
+html, input, textarea {
+  font-family: "open sans", arial,sans-serif;
+}
+
+body, table, fieldset {
+  margin: 0;
+}
+
+h1, h2, h3, h4, blockquote, q, .gcb-nav ul {
+  font-family: "open sans",arial,sans-serif;
+  text-align: left;
+}
+.gcb-lesson-title-middle {
+text-align:center;
+}
+
+ul, ol {
+  margin: 10px 10px 10px 30px;
+  padding: 0;
+}
+
+a {
+  color: #15c;
+  text-decoration: none;
+}
+
+a:visited {
+  color: #7847b2;
+}
+
+a:focus, a:hover, a:active {
+  text-decoration: underline;
+}
+
+form label, form p, form input, form textarea, form select {
+  margin: 0 0 5px;
+}
+
+th, td {
+  border: 1px solid #ebebeb;
+  padding: 4px 12px;
+  vertical-align: top;
+}
+
+/* GCB-specific styles. */
+
+
+#gcb-nav-y {
+  float: left;
+  margin: 0 0;
+  width: 15.11%;
+  background-color:white;
+  margin-top: -5PX;
+
+}
+
+.gcb-sidebar {
+  border-radius: 3px;
+  box-shadow: 0 -1px 5px 0 rgba(0,0,0,0.1);
+  border: 1px solid #c4c5c7;
+  margin: 9px 0 !important;
+}
+
+#gcb-nav-y ul {
+  list-style: none;
+  margin: 0;
+ 
+}
+
+#gcb-nav-y ul ul {
+
+  margin: 8px 0 -8px;
+  list-style: none;
+}
+#lessons_schema {
+  margin-left: 34px !important;
+}
+#gcb-nav-y-list {
+  margin: 6px;
+}
+
+.les_activiteit {
+  border-top: 1px solid #e0e0e0;
+}
+.les_activiteit:first-child {
+  border-top: none;
+}
+
+
+#gcb-nav-y li a, #gcb-nav-y li.active li a {
+  font-weight: normal;
+  color: #15C;
+  
+}
+
+#gcb-nav-y li {
+  font-size: 13px;
+  padding: 9px 0;
+
+}
+
+#gcb-nav-y li, #gcb-nav-y li.active a, #gcb-nav-y li.active li, #gcb-nav-y li.active li.active a {
+
+}
+
+#gcb-nav-y li li {
+  margin: 0 0 0 0;
+}
+
+#gcb-nav-y + .gcb-article {
+  float: right;
+  width: 82.8220858896%;
+}
+
+#gcb-nav-y + .gcb-article > :first-child {
+  margin-top: 0;
+}
+
+#gcb-main {
+  /* This rule intentionally left blank. */
+}
+
+.gcb-aux {
+  margin: auto;
+  max-width: 978px;
+}
+
+#gcb-header, #gcb-footer {
+  margin: 0 -15px;
+}
+
+#gcb-header {
+  background: white;
+  filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#fafafa,EndColorStr=#f5f5f5)";
+  background-image: linear-gradient(top,#fafafa,#f5f5f5);
+  color: white;
+  height: 45px;
+  padding: 17px 15px 5px;
+}
+
+#gcb-header img {
+  padding: 0 3px 0 0;
+  position: relative;
+  top: 5.4px;
+  vertical-align: middle;
+  width: 50px;
+}
+
+#gcb-header a {
+  color: #1994d4;
+  text-decoration: none;
+}
+
+#gcb-footer {
+  bottom: 0;
+  margin: 0 -15px;
+  background: #fff;
+  clear: both;
+  color: #666;
+  box-shadow: 0 -1px 5px 0 rgba(0,0,0,0.1);
+  border-top: 1px solid #c4c5c7;    
+}
+
+#gcb-footer-local {
+  background: #f9f9f9;
+  border-top: 1px solid #f5f5f5;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+#gcb-footer-global {
+  margin: auto;
+  max-width: 978px;
+}
+
+#gcb-footer-global ul {
+  margin: 0;
+}
+
+#gcb-footer-global li {
+  display: inline;
+  font-weight: bold;
+}
+.element-footer {
+    height: 100px;
+    display: table-cell;
+    vertical-align:middle;
+    padding: 0 10px;
+}
+.element-license {
+    width: 100%;
+    text-align:right;
+}   
+
+
+#gcb-footer-global li a {
+  font-weight: normal;
+}
+
+#gcb-footer-global li + li::before {
+  content: "·";
+  padding: 0 3px;
+}
+
+.gcb-aside {
+  background-color: #fff;
+  margin: 10px 0;
+  padding: 10px;
+  position: relative;
+  top: -1px;
+  border-radius: 3px;
+  box-shadow: 0 -1px 5px 0 rgba(0,0,0,0.1);
+  border: 1px solid #c4c5c7;   
+}
+
+.gcb-aside>:first-child {
+  margin-top: 0;
+}
+
+.gcb-aside>:last-child {
+  margin-bottom: 0;
+}
+
+
+#gcb-signature {
+  clear: both;
+  margin: 120px auto 0;
+  max-width: 978px;
+  min-height: 4px;
+}
+
+.gcb-breadcrumb {
+  font-size: 11px;
+  margin: 0 0 20px;
+  min-height: 28px;
+  overflow: hidden;
+}
+
+.gcb-breadcrumb li {
+  float: left;
+  height: 28px;
+  line-height: 2.4;
+  list-style: none;
+}
+
+.gcb-breadcrumb li a {
+  margin: 0 5px 0 0;
+  padding: 1px 0 0;
+}
+
+.gcb-breadcrumb li+li:before {
+  content: "›";
+  padding: 0 6px 0 3px;
+}
+
+.gcb-button-box {
+  text-align: center;
+  overflow: hidden;
+}
+
+.gcb-nav ul {
+  font-family: "open sans",arial,sans-serif;
+}
+
+.gcb-button {
+  background-color: #1994d4;
+  background-position: left bottom;
+  background-repeat: repeat-x;
+  border: 1px solid #1994d4;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  -moz-box-shadow: 0 1px 1px rgba(0,0,0,.2);
+  -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.2);
+  box-shadow: 0 1px 1px rgba(0,0,0,.2);
+  color: white;
+  display: inline-block;
+  font-family: "open sans",arial,sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.54;
+  padding: 4px 7px;
+  text-align: center;
+  text-shadow: 0 1px rgba(0,0,0,.1);
+  -moz-transition: all .218s ease-in;
+  -webkit-transition: all .218s ease-in;
+  transition: all .218s ease-in;
+}
+
+.gcb-button[disabled], .gcb-button[disabled]:hover {
+  background: none;
+  background-image: -moz-linear-gradient(top,rgba(226,226,226,.14),rgba(34,34,34,.14));
+  background-image: -webkit-linear-gradient(top,rgba(226,226,226,.14),rgba(34,34,34,.14));
+  background-image: linear-gradient(top,rgba(226,226,226,.14),rgba(34,34,34,.14));
+  border-color: #f3f3f3;
+  color: #b8b8b8;
+}
+
+.gcb-button-large {
+  width: 200px;
+  height: 48px;
+  line-height: 48px;
+  font-size: 150%;
+  margin: 12px;
+}
+
+a.gcb-button {
+  color: #fff !important;
+  text-decoration: none;
+}
+
+button.gcb-button {
+  margin: 0;
+  overflow: visible;
+  white-space: normal;
+}
+
+button.gcb-button::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+.gcb-button:hover, .gcb-button:focus {
+  border-color: #1A709E;
+  background-color: #1A709E;
+
+}
+
+.gcb-button:focus {
+  outline: 0;
+}
+
+.gcb-button:active {
+  -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,.3);
+  -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,.3);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.3);
+}
+
+a.gcb-button-action, button.gcb-button-action {
+  float: right;
+  margin-left: 8px;
+}
+
+#gcb-nav-x {
+  background-color: #1994d4;
+  margin: 0 -15px;
+  padding: 0 15px;
+  margin-bottom:20px;
+}
+
+#gcb-nav-x ul {
+  height: 50px;
+  list-style: none;
+  margin: 0;
+  position: relative;
+}
+
+#gcb-nav-x.gcb-complex ul {
+  height: 48px;
+}
+
+#gcb-nav-x li, #gcb-nav-x li a {
+  font-size: 18px;
+  color: white;
+}
+
+#gcb-nav-x li {
+  float: left;
+  font-size: 15px;
+  line-height: 1.33;
+  margin: 0 30px 0 0;
+  padding: 13px 0 17px;
+  text-shadow: 0 -1px 1px #555d72;
+
+}
+
+#gcb-nav-x li.active a {
+  font-weight: bold;
+}
+
+#gcb-nav-x li {
+  margin: 0 15px 0 0;
+  text-shadow: none;
+}
+
+.gcb-cols {
+  margin: 0px;
+  width: 100%;
+}
+
+.gcb-cols:after {
+  clear: both;
+  content: " ";
+  display: block;
+  height: 0;
+  visibility: hidden;
+}
+
+.gcb-col-1 {
+  width: 5.35714285714%;
+  float: left;
+  margin: 0 1.4880952381% 20px;
+}
+
+.gcb-col-2 {
+  width: 16.4285714286%;
+  float: left;
+  margin: 0 1.4880952381% 20px;
+}
+
+.gcb-col-3 {
+  float: left;
+  width: 26.4285714286%;
+  margin: 0 1.78571428571% 20px;
+}
+
+.gcb-col-4 {
+  float: left;
+  width: 36.4285714286%;
+  margin: 0 1.4880952381% 20px;
+}
+
+.gcb-col-5 {
+  float: left;
+  width: 45%;
+  padding: 0 2.5%;
+  text-align:center;
+}
+.gcb-col-5.gcb-summary-left {
+  padding: 0 1.5% 0 3.5%;
+}
+.gcb-col-5.gcb-summary-right {
+  padding: 0 3.5% 0 1.5%;
+}
+.gcb-col-5.gcb-summary-right frame {
+  float: right;
+}
+
+
+.gcb-col-6 {
+  float: left;
+  width: 56.0238095238%;
+  margin: 0 1.4880952381% 20px;
+}
+
+.gcb-col-7 {
+ 
+  margin-bottom:10px;
+}
+
+.gcb-col-8 {
+  float: left;
+  width: 76.4285714286%
+  margin: 0 1.4880952381% 20px;
+}
+
+.gcb-col-9 {
+  float: left;
+  width: 72.0238095238%;
+  margin: 0 1.4880952381% 20px;
+}
+
+.gcb-col-11 {
+  float: left;
+  width: 100%;
+  margin: 10px 0px;
+  padding: 0px 0px 25px 0px;
+}
+
+/*
+  Core style modifications.
+*/
+
+/* Styles for next and previous navigation buttons at the bottom of lesson pages. */
+.gcb-next-button a, .gcb-prev-button a {
+  float: left;
+  height: 24px;
+  line-height: 24px;
+  position: relative;
+  color: white;
+  text-decoration: none;
+}
+.gcb-next-button a {
+  padding: 10px 10px 10px 20px;
+}
+.gcb-prev-button a {
+  padding: 10px 20px 10px 10px;
+}
+
+.gcb-next-button a:after, .gcb-prev-button a:after {
+  content: "";
+  top: 0;
+  border-width: 22px 22px 22px 22px;
+  border-style: solid;
+  position: absolute;
+  width: 0px;
+  height: 0px;
+}
+.gcb-next-button a:after {
+  border-color: transparent transparent transparent #1994d4;
+  right: -44px;
+}
+.gcb-prev-button a:after {
+  border-color: transparent #1994d4 transparent transparent;
+  left: -44px;
+}
+
+.gcb-next-button, .gcb-prev-button {
+  background-color: #1994d4;
+  background-position: left bottom;
+  background-repeat: repeat-x;
+  -moz-box-shadow: 0 1px 1px rgba(0,0,0,.2);
+  -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.2);
+  box-shadow: 0 1px 1px rgba(0,0,0,.2);
+  display: inline-block;
+  font-family: "open sans", arial, sans-serif;
+  font-size: 15px;
+  position: relative;
+  -moz-transition: all .218s ease-in;
+  -webkit-transition: all .218s ease-in;
+  transition: all .218s ease-in;
+}
+.gcb-next-button {
+  -moz-border-radius: 10px 0px 0px 10px;
+  -webkit-border-radius: 10px 0px 0px 10px;
+  border-radius: 10px 0px 0px 10px;
+  float: right;
+  margin: 5px 40px 5px 0;
+}
+.gcb-prev-button {
+  -moz-border-radius: 0px 10px 10px 0px;
+  -webkit-border-radius: 0px 10px 10px 0px;
+  border-radius: 0px 10px 10px 0px;
+  float: left;
+  margin: 5px 0 5px 40px;
+}
+
+/* Styles for the course title shown at the top of all student-facing pages. */
+.gcb-title-header {
+  border: solid #babcc0;
+  border-width: 0 0 0 1px;
+  float: left;
+  font-family: "open sans", arial, sans-serif;
+  font-size: 27px;
+  font-weight: 300;
+  line-height: 1.52;
+  margin: 0;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+/* Styles for the course logo at the top-left of all student-facing pages. */
 .gcb-course-image {
   float: left;
   font-size: 27px;
@@ -11,119 +598,251 @@
   white-space: nowrap;
 }
 
-#gcb-header img {
-  padding: 0 3px 0 0;
-  position: relative;
-  top: 5.4px;
-  vertical-align: middle;
-  width: 50px;
+/* Styles for course summary headers. */
+.gcb-product-headers-large {
+  font-family: "open sans",arial,sans-serif;
+  font-size: 25px;
+  font-weight: normal;
+  margin: 20px 0px 0px 0px;
+  
 }
-
-footer {
-  text-align: center;
-  background-color: white;
-  padding: 30px 0;
+.gcb-product-headers, .gcb-bio-headers {
+  font-family: "open sans",arial,sans-serif;
+  font-size: 16px;
+  font-weight: normal;
+  /*
+  margin: .4em 0 0;
+  margin: 10px 7px;
+  */    
 }
-
-footer div {
+.gcb-bio-headers {
   padding: 10px 0;
+  width: 48.5%;
+  float: right;
+  background: #fff;
+  display:inline-block;
+  border-radius: 3px;
+  box-shadow: 0 -1px 5px 0 rgba(0,0,0,0.1);
+  border: 1px solid #c4c5c7;   
 }
 
-#windmill {
-    position: absolute;
-    bottom: 70px;
-    right: 0px;
-    left: 0;
-    z-index: -10;
-    opacity: 0.6;
+/* Style for the course schedule header. */
+.gcb-schedule-headers {
+  font-size: 20px;
+  font-weight: normal;
+  margin: 10px 7px;
 }
 
-.gcb-outline li,
-.gcb-outline ul {
-  list-style-type: none; 
-}
-.gcb-outline ul {
-  padding-left: 0px;
-  margin-top: 5px;
-  margin-bottom: 5px;
-}
-.gcb-outline li {
-  padding-left: 10px;
+/*
+  Styles for textual content (mostly in the course schedule and various
+  confirmation pages).
+*/
+.gcb-top-content {
+  margin: 0px 20px;
+  font-size: 16px;
+  font-weight: 200;
+  line-height: 20px;
 }
 
-.gcb-outline .gcb-top-content {
-  font-size: 120%;
-}
-
-.gcb-progress-icon-holder,
-.gcb-lesson-title-with-progress-schema {
-  display: inline;
-}
-.schema {
-  max-width: 1000px;
-}
-.container {
-  margin-top: 40px;
-}
-.gcb-progress-icon {
-  width: 10px;
-}
-.gcb-lesson-title-with-progress {
-  display: inline;
-}
-
-#questions {
-  width: 789px !important;
+/* Styles for elements on a unit/lesson page. */
+.gcb-unit-header {
+  border-bottom:2px dotted #e0e0e0;
+  font-size: 30px;
+  letter-spacing: -1px;
+  line-height: 1;
+  margin: 0;
+  padding-bottom: 10px;
 }
 
 .gcb-lesson-title {
   font-size: 23px;
-  margin-bottom: 20px;
-  text-transform: uppercase;
-  text-align: center;
+  margin: 0px;
+  text-transform:uppercase;
 }
-body {
-  background: #f5f5f5 !important;
+
+.gcb-lesson-content {
+  text-align: left;
+}
+
+.gcb-video-container {
   position: relative;
+  padding-bottom: 56.25%;
+  padding-top: 30px;
+  height: 0;
+  overflow: hidden;
 }
-.lesson-nav {
-  background: white;
-  border-radius: 4px;
-  -webkit-box-shadow: 0 6px 12px rgba(0,0,0,0.175);
-  padding-top: 20px;
-  padding-bottom: 20px;
-}
-.box {
-  background: white;
-  border-radius: 4px;
-  -webkit-box-shadow: 0 6px 12px rgba(0,0,0,0.175);
-  padding: 0px 20px 30px 20px;
-  margin-bottom: 20px;
-}
-.box-title {
-  font-size: 16px;
-  margin: 20px 00px;
-}
-.box-body {
-  text-align: justify;
-  line-height: 20px;
-}
-.box li {
-  list-style-type: none;
+.gcb-video-container iframe, .gcb-video-container object, .gcb-video-container embed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
+/* Styles for the student data table on the student profile page. */
+.gcb-student-data-table tbody tr td {
+  border-collapse: collapse;
+  vertical-align: middle;
+  width: 18%;
+}
 
+table.gcb-student-data-table {
+  width: 100%;
+}
 
+/* Styles for the circular progress indicators. */
+.gcb-progress-icon {
+  margin: 2px 7px 0 0;
+  width: 8px;
+}
+.gcb-progress-empty {
+  display: inline-block;
+  height: 14px;
+  margin: 2px 7px 0 0;
+  width: 15px;
+}
+.gcb-progress-icon-holder {
+  float: left;
+  width: 8px;
+  margin-left: 5px;
+}
 
+.gcb-lesson-title-with-progress {
+  margin-left: 18px;
+  width: 116px;    
+}
+.gcb-lesson-title-with-progress-schema {
+  margin-left: 18px !important;
+}
+.gcb-activity-title-with-progress {
+  margin-left: 18px;
+}
+
+/* Styles for grayed-out text (e.g. to indicate private lessons/units). */
+.gcb-grayed {
+  color: gray;
+  font-weight: normal;
+}
+.gcb-grayed-active {
+  font-weight: bold;
+}
+.gcb-sidebar .active {
+  background-color:#F4F3F3;
+   
+}
+.activiteit_sidebar {
+
+  margin-left: 0px;
+  padding-left: 13px !important;
+  border-top: 1px dashed #e0e0e0 ;
+}
+
+/* A box that surrounds read-only assessments. */
+.gcb-border-box {
+  border: 1px solid black;
+  margin: 20px;
+  padding: 10px;
+}
+
+/* Styles for floating elements to the left. */
+.gcb-pull-left {
+  float: left;
+}
+
+/* Styles for floating elements to the right. */
+.gcb-pull-right {
+  float: right;
+}
+
+/* Styles for aligning elements to the left. */
+.gcb-align-left {
+  text-align: left;
+}
+
+#gcb-nav-x .gcb-pull-right {
+  float: right;
+  margin: 0 0 0 15px;
+}
+
+/* Registration page form. */
+.gcb-reg-form-label {
+  display: block;
+  font-weight: bold;
+  padding: 0;
+}
+
+/* Explorer page list. */
+.gcb-explorer-list {
+  margin-left: 10px;
+}
+
+/* Explorer page list item. */
+.gcb-explorer-list-item {
+  border-bottom: 1px solid #e0e0e0;
+  list-style: none;
+}
+
+/* Course title link in explorer page. */
+a.gcb-explorer-course-title {
+  color: #dd4b39;
+}
+
+/* Button on the explorer page. */
+.gcb-explorer-button {
+  float: right;
+  margin-top: 5px;
+}
+
+/* Padding of anchor link in student table on profile page. */
+.gcb-profile-padding {
+  padding-right: 20px;
+}
+
+/* Error tag, e.g. for invalid HTML. */
+.gcb-error-tag {
+  background-color: #ccc;
+  border-radius: 3px;
+  color: red;
+  font-weight: bold;
+  padding: 0 5px;
+}
+
+#lessonNotesLink {
+  display: none;
+
+}
+
+.gcb-syllabus {
+  margin-top: 20px;   
+}
+
+.schema {
+  width: 978px;   
+}
+.schema-custom {
+  width: 475px !important;
+  margin-left: 90px;
+}
+
+.gcb-outline {
+    padding: 10px 0;
+    width:48.5%; 
+    background: #fff;
+    display:block;   
+    float: left;
+    border-radius: 3px;
+    box-shadow: 0 -1px 5px 0 rgba(0,0,0,0.1);
+    border: 1px solid #c4c5c7;
+}
 .messages-wrapper {
     display: inline-block;
 }
 .message-box {
-    width:100%;
-    min-height: 150px;
+    width:250px;
+    height: 150px;
+    margin: 30px 50px 0px 50px;
     border-radius: 19px;
     border: 4px solid;
-    margin: 0 20px 20px 20px;
 }
 .welcome-message {
     background-color:#1994d4;
@@ -178,10 +897,15 @@ body {
     margin-top:40px;
     line-height: 30px;
 }
-.summary-video {
-    text-align:center;
-}
-.gcb-unit-title {
-    margin: 0px 0px 30px 20px;
+#background-schema {
+    width:100px;
 }
 
+#windmill {
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    left: 0;
+    z-index: -10;
+    opacity: 0.6;
+}
