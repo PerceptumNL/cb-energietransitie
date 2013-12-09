@@ -2,6 +2,8 @@ var VideoQuestionnaire = {
     $wrapper: null,
     mediaplayer: null,
     video: null,
+    activity: null,
+
     replay: function() {
       this.playAt(0);
     },
@@ -12,8 +14,21 @@ var VideoQuestionnaire = {
       this.mediaplayer.play()
     },
 
+    loadIndications: function() {
+      console.debug(this.activity);
+      var self = this;
+      var duration_ds = self.mediaplayer.duration * 10;
+      $.each(this.activity.questionsList, function(k, question) {
+        if ("time" in question) {
+          var ds = Questionnaire.time2ds(question.time);
+          $cue = $("<div class='mejs-cuepoint'></div>").css("left", (ds / duration_ds * 100) + "%");
+          $(".mejs-time-total").append($cue)
+        }
+      });
+    },
+
     loadEvents: function() {
-      console.debug("loadEvents: " + video);
+      console.debug("loadEvents: " + this.video);
       var video = this.mediaplayer;
       var $wrapper = this.$wrapper;
       var last_int = null;
@@ -57,8 +72,11 @@ var VideoQuestionnaire = {
       });
     },
     
-    create: function(ele, url, lastTime) {
+    create: function(ele, activity, lastTime) {
       var self = this;
+      this.activity = activity;
+      var url = activity.videoId;
+
       console.debug("loadVideoQuestionnaire: " + url);
     
       this.$wrapper = $(ele);
@@ -118,7 +136,10 @@ var VideoQuestionnaire = {
               //mediaplayer.play()
             }
           });
-          mediaplayer.addEventListener("loadeddata", function() { console.debug("Video event: loadeddata") });
+          mediaplayer.addEventListener("loadeddata", function() { 
+            console.debug("Video event: loadeddata") 
+            self.loadIndications();
+          });
           mediaplayer.addEventListener("play", function() { console.debug("Video event: play") });
           mediaplayer.addEventListener("playing", function() { console.debug("Video event: playing") 
             if (firstPlay) {

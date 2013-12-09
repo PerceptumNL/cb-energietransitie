@@ -79,7 +79,6 @@ var Questionnaire = {
   drawNumbers: function() {
     var self = this;
     $(".question-index").children().click(function() {
-        console.log("ble")
       $(this).parent().children().removeClass("active");
       $(this).addClass("active");
       self.jumpTo($(this).text()-1);
@@ -89,7 +88,7 @@ var Questionnaire = {
   showOverview: function() {
     var self = this;
     if (this.status != "2")
-        self.sendEnd();
+      self.sendEnd();
 
     $(".question-index").children().removeClass("active");
     $(".question-index").children().eq(self.questionsList.length).addClass("active");
@@ -447,7 +446,7 @@ var Questionnaire = {
       this.on("check", function() {
         self.resizeVideoQuestion();
       });
-      VideoQuestionnaire.create($(this.qEle).parent(), this.activity.videoId, this.lastTime);
+      VideoQuestionnaire.create($(this.qEle).parent(), this.activity, this.lastTime);
     }
     this.trigger("load");
 
