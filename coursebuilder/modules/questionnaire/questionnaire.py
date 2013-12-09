@@ -34,6 +34,8 @@ import urlparse
 from google.appengine.ext import db
 from models.progress import UnitLessonCompletionTracker
 from tools import verify
+from google.appengine.api import namespace_manager
+import logging
 
 
 RESOURCES_PATH = '/modules/questionnaire/resources'
@@ -108,16 +110,33 @@ class StudentProgress():
             self.progress.value = transforms.dumps(progress_dict)
             self.progress.put()
         return transforms.loads(self.progress.value)
+
+    def get_questions_stats(self, unit, lesson):
+        try:
+            unit_id = str(unit.unit_id)
+            lesson_id = str(lesson.lesson_id)
+            count = len(self.value[unit_id][lesson_id][0])
+            correct = len([q for q in self.value[unit_id][lesson_id][0] if "correct" in q and q['correct'] == True])
+            incorrect = len([q for q in self.value[unit_id][lesson_id][0] if "correct" in q and q['correct'] == False])
+            if count == correct:
+                is_finished = True
+            else:
+                is_finished = False
+            return correct, incorrect, count, is_finished
+        except Exception, e:
+            logging.error(Exception)
+            logging.error(str(e))
+
+
         
 
-    def load_lesson(self, lesson_id):
+    def load_lesson(self, unit, lesson_id):
         lesson_id = str(lesson_id)
         
-        lesson_attempts = None
-        for unit, lessons in self.value.iteritems():
-            if lesson_id in lessons:
-                lesson_attempts = self.value[unit][lesson_id]
-                break
+        try:
+            lesson_attempts = self.value[str(unit.unit_id)][lesson_id]
+        except:
+            return []
 
         if lesson_attempts == None or len(lesson_attempts) == 0: return []
 
@@ -216,6 +235,14 @@ class QuestionnaireTag(tags.BaseTag):
         app_context = sites.get_course_for_current_request()
         unit, lesson = extract_unit_and_lesson(handler)
 
+        courses = sites.get_all_courses()
+
+        #needs to find the correct location, by now assume /
+        for app_context in courses:
+            if app_context.get_slug() == '/':
+                break
+        namespace_manager.set_namespace(app_context.namespace)
+
         user = handler.get_user()
         if user == None:
             saved_questionnaire = []
@@ -223,7 +250,7 @@ class QuestionnaireTag(tags.BaseTag):
         else:
             student = Student.get_enrolled_student_by_email(user.email())
             progress = StudentProgress.get_or_create_progress(app_context, student)
-            saved_questionnaire = progress.load_lesson(lesson.lesson_id)
+            saved_questionnaire = progress.load_lesson(unit, lesson.lesson_id)
             status = progress.get_lesson_status(unit.unit_id, lesson.lesson_id)
 
         #quickfix-char-errors
@@ -301,10 +328,11 @@ class QuestionnaireRESTHandler(BaseRESTHandler):
         source_url = payload['location']
         courses = sites.get_all_courses()
 
+        #needs to find the correct location, by now assume /
         for app_context in courses:
-            if source_url == app_context.get_slug() or source_url.startswith(
-                    '%s/' % app_context.get_slug()) or app_context.get_slug() == '/':
+            if app_context.get_slug() == '/':
                 break
+        namespace_manager.set_namespace(app_context.namespace)
 
         course = models.courses.Course(None, app_context)
         unit_id, lesson_id = get_unit_and_lesson_id_from_url(

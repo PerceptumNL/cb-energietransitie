@@ -517,6 +517,7 @@ class StudentProfileHandler(BaseHandler):
     """Handles the click to 'Progress' link in the nav bar."""
 
     def get(self):
+        from modules.questionnaire.questionnaire import StudentProgress
         """Handles GET requests."""
         student = self.personalize_page_and_get_enrolled()
         if not student:
@@ -527,7 +528,10 @@ class StudentProfileHandler(BaseHandler):
         profile = student.profile
         if profile:
             name = profile.nick_name
-
+        ### 2013-12-05
+        progress = StudentProgress.get_or_create_progress(self.app_context, student)
+        setattr(student, "progress", progress)
+        ###
         self.template_value['navbar'] = {'progress': True}
         self.template_value['student'] = student
         self.template_value['student_name'] = name
