@@ -1,0 +1,54 @@
+<style>
+.rotate {
+    -moz-transform: rotate(-90.0deg);  /* FF3.5+ */
+    -o-transform: rotate(-90.0deg);  /* Opera 10.5 */
+    -webkit-transform: rotate(-90.0deg);  /* Saf3.1+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.BasicImage(rotation=0.083);  /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=0.083)";
+    }
+</style>
+<br />
+<br />
+<br />
+<h3>Questionnaire Analytics</h3>
+<table>
+<thead>
+    <tr>
+	<th colspan="17" >Student Progress </th>
+    </tr>
+</thead>
+<thead>
+    <tr>
+<th>Student Name</th>
+	<th colspan="3">{{units[0].title}} </th>
+	<th colspan="13">{{units[1].title}} </th>
+    </tr>
+<tr><td>Unit</td>
+{% for unit in units %}
+   <!--<td><h5 class="rotate"> {{ unit.title }} </h5></td>-->
+    {% for lesson in unit.lessons %}
+	<td><h6 class="_rotate">  {{ lesson.title }} </h6></td>
+    {% endfor %}
+
+{% endfor %}
+</tr>
+</thead>
+{% for student in students %}
+{{student.progress.value}}</br>
+<tr><td>{{ student.email }}-{{ student.name }}</td>
+{% for unit in units %}
+{% for lesson in unit.lessons %}
+    {% if student.progress.value[unit.unit_id][lesson.lesson_id|string][0] %}
+	<td style="background-color:orange">
+	{% for el in  student.progress.value[unit.unit_id][lesson.lesson_id|string][0] if el['correct']%}
+	    &#10004;
+	{% endfor %}
+</td>
+    {% else %}
+	<td style="background-color:red"></td>
+    {% endif %}
+{% endfor %}
+{% endfor %}
+</tr>
+{% endfor %}
+</table>
