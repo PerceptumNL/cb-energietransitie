@@ -1,106 +1,201 @@
 <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:Condensed" />
-<div id="questionnaire-wrapper">
-  <div id="questions">
-    <div id="q-header">
-        <div id="number">
-          <span>1</span>
-          <span class="sel-number">2</span> 
-          <span>2</span>
-          <span>3</span>
-          <span>4</span>
-          <span>5</span>
+<script id="unfinished-overview-partial" type="text/x-handlebars-template">
+<div id="unfinished-overview" class="row">
+   <div class="col-md-12">
+     <div class="middle-align">
+        <div class="unfinished">
+          <h2>You missed to finish {{missingCount}} questions</h2>
+          <div id="revisit">Herhaling video en opgaven</div>
         </div>
-        <div id="statistics-button"><img src="http://farm8.staticflickr.com/7345/9369459729_d946aa106e_o.png"/></div>
-        <div id="button-hint">?</div>
-    </div>
-    <div id="overview">
-      <div class="left-col">
-        <div id="title">
-          <div id="statistics"><img src="http://farm8.staticflickr.com/7345/9369459729_d946aa106e_o.png"/></div>
-          <div id="lesson"><strong>Overzicht resultaat opgaven</strong></div> 
-        </div>
-        <div class="results">
-          <div id="right">
-            <div class="ima"><img src="http://farm3.staticflickr.com/2842/9365150932_15b9ae99a0_o.png"/></div>
-            <div class="percentage">50%</div>
+     </div>
+   </div>
+</div>
+</script>
+<script id="overview-partial" type="text/x-handlebars-template">
+<div id="overview" class="row">
+      <div class="col-md-7">
+        <div class="middle-align">
+          <div id="title">
+            <div id="statistics"><img src="http://farm8.staticflickr.com/7345/9369459729_d946aa106e_o.png"/></div>
+            <div id="lesson"><strong>Overzicht resultaat opgaven</strong></div> 
           </div>
-          <div id="wrong">
-            <div class="ima"><img src="http://farm3.staticflickr.com/2850/9365153454_e2e44fc42f_o.png" /></div>
-            <div class="percentage">50%</div>
+          <div class="results">
+            <div id="right">
+              <div class="ima"><img src="http://farm3.staticflickr.com/2842/9365150932_15b9ae99a0_o.png"/></div>
+              <div class="percentage">{{right}}</div>
+            </div>
+            <div id="wrong">
+              <div class="ima"><img src="http://farm3.staticflickr.com/2850/9365153454_e2e44fc42f_o.png" /></div>
+              <div class="percentage">{{wrong}}</div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="right-col">
-        <div id ="boxes">
+      <div class="col-md-5 right-col">
+        <div id ="boxes" class="middle-align">
+          {{#if hasVideo}}
           <div id="revisit">Herhaling video en opgaven</div>
+          {{/if}}
           <div id="redo">Herhaling opgaven</div>
           <div class="message_box"> 
-              <div>Gefeliciteerd!</div> 
-              <div>Je hebt deel 1 afgerond.</div> 
-              <div id="next_step">De volgende stap is:
-                  <div id="options_next">
-                      <ul style="list-style-type:none;">
-                          <li><a href="http://localhost:8080/unit?unit=68">Deel 2. De Energietransitie in theory</a></li>
-                          <li><a href="http://localhost:8080/schema">Lesmateriaal</a></li>
-                        </ul>  
-                  </div>
+            <div>Gefeliciteerd!</div> 
+            {{#if nextLesson }}
+            <div>Je hebt les {{currentLesson.index}} afgerond.</div> 
+            {{else}}{{#if nextUnit }}
+            <div>Je hebt deel {{currentUnit.index}} afgerond.</div> 
+            {{/if}}{{/if}}
+            <div id="next_step">De volgende stap is:
+              <div id="options_next">
+                <ul style="list-style-type:none;">
+                  {{#if nextLesson }}
+                  <li><a href="{{nextLesson.url}}">Les {{nextLesson.index}}. {{nextLesson.title}}</a></li>
+                  {{else}}{{#if nextUnit }}
+                  <li><a href="{{nextUnit.url}}">Deel {{nextUnit.index}}. {{nextLesson.title}}</a></li>
+                  {{/if}}{{/if}}
+                  <li><a href="http://localhost:8080/schema">Lesmateriaal</a></li>
+                </ul>  
               </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <div id="template" class="question-wrapper">
-      <div id="question" class="left-col">
-      <div id="question-text"></div>
-      <div id="top-answer" class="top-row"></div>
-      <table id="q-table">
-        <tr id="tr-text">
-          <td id='q-text'>A razorblade uses electricity.</td>
-        </tr>
-        <tr id="tr-image"><td>
-        <img id='q-image' src='http://eofdreams.com/data_images/dreams/dog/dog-01.jpg'/>
-        </td></tr>
-      </table>
-      </div>
-      <div id="answer" class="right-col">
-        <table id="a-table">
-          <tr><td>
-            <div class="option">
-              <div>True</div> 
-              <div>False</div> 
-              <div>Maybe</div>
-            </div>
-            <table class="table-feedback">
-              <tr id="tr-fb">
-                <td id="td-fb-icon">
-                  <div class="right"><img src="http://farm3.staticflickr.com/2842/9365150932_15b9ae99a0_o.png"/></div>
-                  <div class="wrong"><img src="http://farm3.staticflickr.com/2850/9365153454_e2e44fc42f_o.png" /></div>  
-                </td>
-                <td id="td-fb-text">
-                  <span class="feedback-text"></span>
-                </td>
-              </tr>
-              <tr id="tr-fb-input">
-                  <td colspan="2">
-                  <textarea id="feedback-input"></textarea>
-                  </td>
-              </tr>
-              <tr id="tr-next">
-                <td></td>
-                <td id="td-fb-next">
-                  <div id="send-button">&rarr;</div>
-                  <div id="submit-button">&#8629;</div>
-                  <div id="check-button">&#8629;</div>
-                </td>
-              </tr>
-            </table>
-          </td></tr>
-        </table>
+</script>
+
+
+<script id="question-part" class="ddqtree-template" type="text/x-handlebars-template">
+<div class="question-wrapper row {{question.questionType}}">
+   <div class="col-md-12">
+     <div class="actions">
+       <div id="send-button" class="glyphicon glyphicon-circle-arrow-right"></div>
+       <div id="submit-button" class="glyphicon glyphicon-ok-sign"></div>
+       <div id="check-button" class="glyphicon glyphicon-ok-sign"></div>
+     </div>
+     <div class="option"></div>
+   </div>
+   <div class="col-md-12 tree">
+     {{{question.text}}}
+     <div id="top-answer"></div>
+     <div id="q-text"></div>
+   </div>
+</div>
+</script>
+<script id="question-part" class="ddq-template" type="text/x-handlebars-template">
+<div class="question-wrapper row {{question.questionType}}">
+   {{#if question.text}}
+   <div class="col-md-12 ddq-title">{{{question.text}}}</div>
+   {{/if}}
+   <div class="actions">
+     <div id="send-button" class="glyphicon glyphicon-circle-arrow-right"></div>
+     <div id="submit-button" class="glyphicon glyphicon-ok-sign"></div>
+     <div id="check-button" class="glyphicon glyphicon-ok-sign"></div>
+   </div>
+   <div id="top-answer" class="col-md-12"></div>
+   <div class="col-md-12 targets" >
+   {{#each question.targetList}}
+        <div class="target">
+            {{#if text}}
+            <div class="target-title">{{{text}}}</div>
+            {{/if}}
+            {{#if image}}
+            <img class="target-image" src="{{image}}" />
+            {{/if}}
+        </div>
+   {{/each}}
+   </div>
+</div>
+</script>
+<script id="question-partial" class="tiq-template" type="text/x-handlebars-template">
+<div class="question-wrapper row {{questionType}}">
+  <div id="question" class="col-md-6">
+    <div class="middle-align">
+      <div id='q-text'>{{{question.text}}}</div>
+    </div>
+  </div>
+  <div id="answer" class="col-md-6">
+    <div class="middle-align">
+      <textarea id="textinput" name="textinput" />
+      <div class="row actions">
+        <div id="send-button" class="glyphicon glyphicon-circle-arrow-right"></div>
+        <div id="submit-button" class="glyphicon glyphicon-ok-sign"></div>
+        <div id="check-button" class="glyphicon glyphicon-ok-sign"></div>
       </div>
     </div>
+  </div>
+</div>
+</script>
+
+<script id="question-partial" class="tfq-template mcq-template" type="text/x-handlebars-template">
+<div class="question-wrapper row {{questionType}}">
+  <div id="question" class="left-col col-sm-6">
+    <div class="middle-align">
+      <div id='q-text'>{{{question.text}}}</div>
+    </div>
+  </div>
+  <div id="answer" class="right-col col-sm-6">
+    <div class="middle-align">
+    <div class="{{question.questionType}} option row">
+      {{#each question.answers}}
+        <div class="col-sm-6"><div class="answer" data-index="{{@index}}">{{{text}}}</div></div> 
+      {{/each}}
+    </div>
+    <div class="row feedback hidden">
+        <div class="right hidden col-sm-1">
+          <img src="http://farm3.staticflickr.com/2842/9365150932_15b9ae99a0_o.png"/>
+        </div>
+        <div class="wrong hidden col-sm-1">
+          <img src="http://farm3.staticflickr.com/2850/9365153454_e2e44fc42f_o.png" />
+        </div>  
+        <div class="feedback-text col-sm-11"></div>
+    </div>
+    <div class="row actions">
+      <div id="send-button" class="glyphicon glyphicon-circle-arrow-right"></div>
+      <div id="submit-button" class="glyphicon glyphicon-ok-sign"></div>
+      <div id="check-button" class="glyphicon glyphicon-ok-sign"></div>
+    </div>
+    </div>
+  </div>
+</div>
+</script>
+
+<script id="questionnaire-template" type="text/x-handlebars-template">
+{{#if hasVideo}}
+<div class="video-evt video hidden">
+    <div id="v">
+        <video width='768' height='432' controls>
+            <p>Your user agent does not support the HTML5 Video element.</p>
+        </video>
+    </div>
+</div>
+{{/if}}
+<div id="overlay"></div>
+<div id="questionnaire-wrapper" class="col-md-12 questions">
+    <div id="q-header" class="row">
+        <div class="col-xs-10">
+            <ul class="pagination question-index">
+              {{#each questionsList}}
+                <li class="index"><a href="{{../base}}#questionnaire-wrapper">{{add1 @index}}</a></li>
+              {{/each}}
+              <li id="statistics-button">
+                <a href="{{base}}#">
+                  <img src="http://farm8.staticflickr.com/7345/9369459729_d946aa106e_o.png"/>
+                </a>
+              </li>
+            </ul>
+        </div>
+        <ul class="col-xs-2 controls">
+            {{#if hasVideo}}
+            <li id="button-rewatch-last" class="glyphicon glyphicon-fast-backward" 
+                data-toggle="tooltip" title="" data-original-title="Rewatch video"></li>
+            {{/if}}
+            <li id="button-hint" class="glyphicon glyphicon-question-sign" 
+                data-toggle="tooltip" title="" data-original-title="Give me a hint!"></li>
+        </ul>
+    </div>
+    <div id="single-question">{{> question}}</div>
     <div id="clear"></div>
     <div class="hint">
       <div class="hint-text">Hey! Are you stupid?</div>
     </div>
-  </div>
 </div>
+</script>
