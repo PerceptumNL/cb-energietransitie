@@ -43,6 +43,7 @@
 
   <div class="col-md-9" role="main">
     {{course_info.unit.after_content_begins | safe}}
+    {% if not transient_student %} 
 
     {% if not lesson %}
       <div style="padding-bottom: 20px;">
@@ -150,6 +151,13 @@
       </div>
     {% endif %}
     {{course_info.unit.before_content_ends | safe}}
+    {% else %}
+    <div class="gcb-aside lesson-nav">
+    <div style="text-align:center">
+      <a href="{{ loginUrl }}" class="btn btn-primary btn-lg">{{ gettext('Login') }}</a>
+    </div>
+    </div>
+    {% endif %}
   </div>
   </div>
 </div>
