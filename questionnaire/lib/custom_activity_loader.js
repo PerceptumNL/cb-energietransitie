@@ -49,6 +49,8 @@ function isTesting() {
 }
 
 
+const COMPLETED = "2"
+
 var Questionnaire = {
   registeredQuestionTypes: {},
   defaultQuestionType: null,
@@ -78,7 +80,7 @@ var Questionnaire = {
 
   drawNumbers: function() {
     var self = this;
-    $(".question-index").children().click(function() {
+    $(".question-index").find(".index").click(function() {
       $(this).parent().children().removeClass("active");
       $(this).addClass("active");
       self.jumpTo($(this).text()-1);
@@ -87,19 +89,23 @@ var Questionnaire = {
 
   showOverview: function() {
     var self = this;
-    if (this.status != "2")
-      self.sendEnd();
-
-    $(".question-index").children().removeClass("active");
-    $(".question-index").children().eq(self.questionsList.length).addClass("active");
-
+    this.index = -1;
     //fast trick
     if (this.hasVideo()) {
       this.resizeVideoQuestion();
     }
     $("#button-hint").hide()
-    $("#statistics-button").css("display", "inline-block");
+    $("#button-rewatch-last").hide()
+    $(".question-wrapper").hide()
     if (this.remaining().length == 0) {
+      if (this.status != COMPLETED)
+        self.sendCompleted();
+      $(".question-index").children().removeClass("active");
+      $(".question-index").children().eq(self.questionsList.length).addClass("active");
+      $(".question-index").css("visibility", "visible");
+      $("#statistics-button").css("display", "inline-block");
+      $(".actions").css("display", "none");
+
       var correct=0, incorrect=0, maybe=0;
       $.each(this.doneQuestions, function(k, q) {
         v = q.result;
@@ -118,39 +124,62 @@ var Questionnaire = {
       console.debug(" incorrect: " + incorrect);
       console.debug(" maybe: " + maybe);
 
-      window.currentPage = window.currentPage || {}
       var templateValues = {
         right: Math.round(correct / total * 100) + "%",
         wrong: Math.round(incorrect / total * 100) + "%",
-        hasVideo: this.hasVideo(),
-        currentUnit: window.currentPage.currentUnit,
-        currentLesson: window.currentPage.currentLesson,
-        nextLesson: window.currentPage.nextLesson,
-        nextUnit: window.currentPage.nextUnit,
       }
-      this.index = -1;
-      $(".question-wrapper").hide()
-      var overview = Handlebars.compile($("#overview-partial").html());
-      var html = overview(templateValues)
+      var html = this.renderTemplate("#overview-partial", templateValues);
       $(html).appendTo("#single-question");
       $("#overview").show();
       $("#redo").click(function() {
+        $("#overview").remove();
+        $("#button-rewatch-last").show()
+        $("#statistics-button").css("display", "none");
         self.redo(false);
       })
       if (this.hasVideo()) {
         $("#revisit").click(function() {
+          $("#overview").remove();
+          $("#button-rewatch-last").show()
+          $(".question-index").css("visibility", "hidden");
           self.redo(true);
+          VideoQuestionnaire.updateCues();
         })
       } 
       return true;
     } else {
-      $("#rewatch").show();
-      alert("Missing " + this.leftQuestions.length + " questions!");
+      var templateValues = {
+        "missingCount": this.remaining().length
+      }
+    
+      var html = this.renderTemplate("#unfinished-overview-partial", templateValues);
+      $(html).appendTo("#single-question");
+      $("#unfinished-overview").show();
+      $("#revisit").click(function() {
+        $("#button-rewatch-last").show()
+        $("#unfinished-overview").remove();
+        self.fadeOut();
+        VideoQuestionnaire.playAt(0);
+      });
       return false;
     }
   },
 
-  sendEnd: function(index, question) {
+  renderTemplate: function(selector, templateValues) {
+     window.currentPage = window.currentPage || {}
+     var globalTemplateValues = {
+       hasVideo: this.hasVideo(),
+       currentUnit: window.currentPage.currentUnit,
+       currentLesson: window.currentPage.currentLesson,
+       nextLesson: window.currentPage.nextLesson,
+       nextUnit: window.currentPage.nextUnit,
+     }
+     $.extend(globalTemplateValues, templateValues)
+     var template = Handlebars.compile($(selector).html());
+     return template(globalTemplateValues)
+  },
+
+  sendCompleted: function(index, question) {
     var self = this;
     var payload = {
         "location" : window.location.href,
@@ -204,20 +233,8 @@ var Questionnaire = {
         document.mozFullScreen ||
         document.webkitIsFullScreen) {
         $(".questions").parent().addClass("fullscreen");
-      //necessary to find real height
-      //$(this.qEle).removeClass("overflow");
-      //$(this.qEle).addClass("fullscreen");
-      //if ($(this.qEle).height() > $(window).height()) {
-      //  $().addClass("overflow");
-      //  $().css("top", "");
-      //} else {
-      //  $(this.qEle).removeClass("overflow");
-      //  var hpos = $(window).height() / 2 - $(this.qEle).height() / 2
-      //  $(this.qEle).css("top", hpos + "px");
-      //}
     } else {
         $(".questions").parent().removeClass("fullscreen");
-     //   $(".questions").css("top", "");
     }
   },
 
@@ -249,23 +266,47 @@ var Questionnaire = {
     return parseInt(floatTs*10)
   },
 
-  video_question: function(floatTs) {
-    var currentDs = this.seconds2ds(floatTs)
-
+  findVideoQuestions: function(currentDs) {
+    var ret = [];
     for (var i=0; i<this.questionsList.length; i++) {
-      if (this.questionsList[i].time) {
-        var questionDs = this.time2ds(this.questionsList[i].time);
-        if (questionDs == currentDs && this.videoIndex != i) {
-          this.videoIndex = i;
-          this.jumpTo(i);
-          return true;
-        }     
+      if (this.questionsList[i].time && ret.length == 0) {
+          var questionDs = this.time2ds(this.questionsList[i].time);
+          if (questionDs == currentDs) {
+              ret.push(i);
+          }
+      } else if (this.questionsList[i].time == undefined && ret.length) {
+        ret.push(i);
+      } else if (ret.length ==0) {
+        continue;
+      } else {  
+        break;
       }
     }
+    return ret;
+  },
 
-    if (this.videoIndex > -1 && 
-        this.time2ds(this.questionsList[this.videoIndex].time) != currentDs) {
-      this.videoIndex = -1;
+  areVideoQuestionsDone: function(currentDs) {
+    var indexes = this.findVideoQuestions(currentDs);
+    console.log(currentDs)
+    console.log(indexes)
+    for (i=0;i<indexes.length;i++) {
+      var index = indexes[i];
+      if (this.doneQuestions[index] == undefined)
+        return false;
+    }
+    return true;
+  },
+
+  checkVideoQuestion: function(floatTs) {
+    var currentDs = this.seconds2ds(floatTs)
+    var indexes = this.findVideoQuestions(currentDs);
+    for (i=0;i<indexes.length;i++) {
+      var index = indexes[i];
+      if (this.videoIndex != currentDs) {
+         this.videoIndex = currentDs;
+         this.jumpTo(index);
+         return true;
+      }     
     }
     return false;
   },
@@ -276,7 +317,7 @@ var Questionnaire = {
     this.data = [];
     this.first_results = $.extend(true, [], this.results);
     this.redoMode = !(showVideo || false);
-    this.nround + 1;
+    this.nround++;
     this.initData();
     if (showVideo) {
         VideoQuestionnaire.replay();
@@ -329,12 +370,16 @@ var Questionnaire = {
           self.activity = $.extend(true, [], self.activity_original);
           self.questionsList = self.activity.questionsList;
           if (isTesting()) {
+            $("#timeDebug").html("");
             $.each(self.questionsList, function(k, v) {
               if (v.time) {
-                $("<div>").html(v.time).appendTo($("#timeDebug"));
+                $("<span>").html(v.time).appendTo($("#timeDebug"));
               } else {
-                $("<div>").html("Same").appendTo($("#timeDebug"));
+                $("<span>").html("bis").appendTo($("#timeDebug"));
               }
+              $("<span>").html(v.questionType).appendTo($("#timeDebug"));
+              $("<span>").html(v.text).appendTo($("#timeDebug"));
+              $("<br />").appendTo($("#timeDebug"));
             });
           }
           requestDone();
@@ -390,6 +435,7 @@ var Questionnaire = {
     $("#statistics-button").click(function() {self.showOverview()});
     if (this.hasVideo()) {
       $("#button-rewatch-last").click(function() {
+        self.videoIndex = -1;
         self.fadeOut();
         var lastDs = 0
         if (self.index > 0) {
@@ -408,8 +454,25 @@ var Questionnaire = {
             }
           }
         }
+        console.debug("Play At " + lastDs);
         VideoQuestionnaire.playAt(lastDs);
       });
+    }
+  },
+
+  isVideoStopCompleted: function(indexOfStop) {
+    for (var i=0;i<this.questionsList.length;i++) {
+      this.nround = this.data[0].nround;
+      if (Object.keys(this.data[i]).length) {
+        console.debug(JSON.stringify(this.data[i], undefined, 2));
+        this.createQuestion(i, this.data[i])
+        self.doneQuestions[i] = self.leftQuestions[i];
+        self.doneQuestions[i].result = self.data[i].result;
+        self.leftQuestions[i] = undefined;
+        if (this.status != COMPLETED && self.questionsList[i].time) { 
+          self.lastTime = self.time2ds(self.questionsList[i].time) / 10.0 + 0.1;
+        };
+      }
     }
   },
 
@@ -419,12 +482,13 @@ var Questionnaire = {
       this.nround = this.data[0].nround;
       if (Object.keys(this.data[i]).length) {
         console.debug(JSON.stringify(this.data[i], undefined, 2));
-        this.createQuestion(i, this.data[i])
-        self.doneQuestions[i] = self.leftQuestions[i];
-        self.doneQuestions[i].result = self.data[i].result;
-        self.leftQuestions[i] = undefined;
-        if (this.status != "2" && self.questionsList[i].time) { 
-          self.lastTime = self.time2ds(self.questionsList[i].time) / 10.0 + 0.1;
+        var index = this.data[i].index;
+        this.createQuestion(index, this.data[i])
+        self.doneQuestions[index] = self.leftQuestions[index];
+        self.doneQuestions[index].result = self.data[i].result;
+        self.leftQuestions[index] = undefined;
+        if (this.status != COMPLETED && self.questionsList[index].time) { 
+          self.lastTime = self.time2ds(self.questionsList[index].time) / 10.0 + 0.1;
         };
       }
     }
@@ -433,29 +497,28 @@ var Questionnaire = {
   start: function() {
     var self = this;
     $(".controls li").tooltip();
-    if (this.status == "2") {
-      console.debug("Activity completed");
-      self.showOverview();
-      self.fadeIn();
-      return;
-    } 
-    if (!this.hasVideo() || this.isVideoDisabled()) {
+    if (this.status != COMPLETED && (!this.hasVideo() || this.isVideoDisabled())) {
+      $(".question-index").css("visibility", "visible");
       this.fadeIn();
       this.jumpNext();
     } else {
+      if (this.status == COMPLETED) {
+        console.debug("Activity completed");
+        self.showOverview();
+        self.fadeIn(true);
+      } 
       this.on("check", function() {
         self.resizeVideoQuestion();
       });
       VideoQuestionnaire.create($(this.qEle).parent(), this.activity, this.lastTime);
     }
     this.trigger("load");
-
   },
 
   create: function(qEle, data) {
-Handlebars.registerHelper('add1', function(index) {
-    return parseInt(index)+1;
-});
+    Handlebars.registerHelper('add1', function(index) {
+        return parseInt(index)+1;
+    });
     var self = this;
     this.qEle = qEle;
     this.data = data || [];
@@ -516,8 +579,11 @@ Handlebars.registerHelper('add1', function(index) {
     $(".questions").fadeOut();
   },
 
-  fadeIn: function() {
-    $(".questions").fadeIn();
+  fadeIn: function(fast) {
+    if (fast)
+        $(".questions").show();
+    else
+        $(".questions").fadeIn();
   },
 
   remaining: function() {
@@ -616,6 +682,11 @@ Handlebars.registerHelper('add1', function(index) {
     var self = this;
     this.index = index;
     this.question = this.leftQuestions[this.index] || this.doneQuestions[this.index]; 
+     
+    if (this.question == undefined) {
+        this.showOverview();
+        return;
+    }
 
     $(".question-index").children().removeClass("active");
     $(".question-index").children().eq(index).addClass("active");
@@ -637,14 +708,6 @@ Handlebars.registerHelper('add1', function(index) {
       }, 500);
       return;
     }     
-    if (this.remaining().length == 0) {
-      $(".question-index").css("visibility", "");
-      this.showOverview();
-      return;
-    } else {
-      $(".question-index").css("visibility", "hidden");
-      $("#statistics-button").hide();
-    }
     this.createQuestion(index);
     this.questionInstances[index].show();
   },

@@ -257,7 +257,7 @@ DDQTREE.prototype = {
         .appendTo($t);
     }
 
-    this.height = $(".tree").height()
+    this.height = this.$q(".tree").height()
     this.cell_height = 0.80*this.height/max_depth;
     for (var i=depth_ele.length-1;i>=0;i--) {
       var $tr = $($(".target-col")[i]);
@@ -352,7 +352,7 @@ DDQTREE.prototype = {
       $(canvas[i]).attr("width",$(canvas[i]).parent().width())
       $(canvas[i]).attr("height",$(canvas[i]).parent().height())
       for (var j=0;j<depth_ele[i].length;j++) {
-        $eles = $(".target[data-parent_id='"+depth_ele[i][j].ele_id+"']");
+        $eles = this.$q(".target[data-parent_id='"+depth_ele[i][j].ele_id+"']");
         var min=1000;
         var max=0;
         $eles.each(function(k,ele) {
@@ -362,10 +362,10 @@ DDQTREE.prototype = {
           if ($ele.position().top < min)
               min = $ele.position().top;
         });
-        ele = $(".target[data-ele_id='"+depth_ele[i][j].ele_id+"']");
+        ele = this.$q(".target[data-ele_id='"+depth_ele[i][j].ele_id+"']");
         var _top = 0;
         if (j>0) {
-         _top -= $(".target[data-ele_id='"+depth_ele[i][j-1].ele_id+"']").height() + 20;
+         _top -= this.$q(".target[data-ele_id='"+depth_ele[i][j-1].ele_id+"']").height() + 20;
         }      
         var top = (max + min) / 2 - $(ele).height() / 2 + _top ;
         $(ele).css("top", top + "px");
@@ -478,7 +478,7 @@ DDQTREE.prototype = {
   
   getSelection: function() {
     var selections = [];
-    $(".target").each(function(tIdx, target) {
+    this.$q(".target").each(function(tIdx, target) {
       selections[tIdx] = parseInt($(target).children()[0].dataset.ele_id);
     })
     return selections;
@@ -488,10 +488,10 @@ DDQTREE.prototype = {
     var self = this;
     this.result.correct = true;
     this.result.selections = this.getSelection();
-    $(".target").each(function(k,cell) {
-      parent_cell = $(".target[data-ele_id='"+cell.dataset.parent_id+"']");
-      parent_ans = $(parent_cell).children()[0];
-      ans = $(cell).children()[0]; 
+    self.$q(".target").each(function(k,cell) {
+      var parent_cell = self.$q(".target[data-ele_id='"+cell.dataset.parent_id+"']");
+      var parent_ans = $(parent_cell).children()[0];
+      var ans = $(cell).children()[0]; 
       $(ans).parent().css("border", "2px solid");
       if ((ans.dataset.parent_id == -1 && parent_ans !== undefined) ||
           (parent_ans && ans.dataset.parent_id != parent_ans.dataset.ele_id) ||
@@ -514,12 +514,12 @@ DDQTREE.prototype = {
   test: function() {
     var self = this;
     setTimeout(function() {
-      $(".concept").each(function(i, concept) {
+      self.$q(".concept").each(function(i, concept) {
             console.log(concept);
           var c2 = $(concept).clone(true)
           c2.appendTo(".option");
       });
-      $(".concept").each(function(i, concept) {
+      self.$q(".concept").each(function(i, concept) {
           var parent_id = $(concept).attr('data-ele_id')
           var $target = $(".target[data-ele_id='" + parent_id + "'");
           self.addConcept(concept, $target);
@@ -530,9 +530,9 @@ DDQTREE.prototype = {
   test_correct: function() {
     var self = this;
     setTimeout(function() {
-      $(".concept").each(function(i, concept) {
+      selt.$q(".concept").each(function(i, concept) {
           var parent_id = $(concept).attr('data-ele_id')
-          var $target = $(".target[data-ele_id='" + parent_id + "'");
+          var $target = self.$q(".target[data-ele_id='" + parent_id + "'");
           self.addConcept(concept, $target);
       });
     }, 1000);

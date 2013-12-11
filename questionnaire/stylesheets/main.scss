@@ -10,9 +10,6 @@ $width: 788px;
     display: none;
 }
 
-.mejs-container {
-    margin: 0 auto;
-}
 
 question {
     display: block;
@@ -136,18 +133,24 @@ question {
   vertical-align: middle; 
 }
 
+.feedback-text {
+  padding: 5px;
+}
 .feedback {
+  font-size: 17px;
   border: 1px solid #9C959B;
-  margin: 20px;
+  margin: 20px 0px;
   padding: 20px;
   &.hidden {
     display: none;
+  }
+  .right, .wrong {
+    padding: 0px;
   }
 }
 
 #td-fb-icon {
   vertical-align: top; }
-
 
 .hidden {
   display: none; }
@@ -189,30 +192,43 @@ question {
   background-color: orange;
   border: 1px solid orange; }
 
-#send-button,
-#submit-button,
-#check-button {
-  display: none; }
-
-#send-button,
-#submit-button,
-#check-button {
-  bottom: 0;
-  padding: 8px 11px;
-  background-color: #E1E2E3;
-  width: 50px;
-  text-align: center;
-  margin: 0 auto; 
-  &:hover {
-    cursor: pointer; 
+.actions {
+  div {
+    display: none; 
+    bottom: 0;
+    width: 50px;
+    font-size: 50px;
+    text-align: center;
+    margin: 0 auto; 
+    &:hover {
+      cursor: pointer; 
+      color: #818283;
+    }
   }
 }
 
 #clear {
   clear: both; }
 
+.question-index {
+  visibility: hidden;
+}
+
+
+
 #overview {
-  display: none; }
+  font-size: 18px;
+  display: none; 
+  #statistics img {
+    margin-top: -20px;
+  }
+  .right-col {
+  }
+  .ima img {
+    top: -5px;
+    position: relative;
+  }
+}
 
 #title {
   margin-bottom: 80px;
@@ -254,12 +270,12 @@ question {
   text-align: center; }
 
 #revisit {
+  text-align: center;
   background-color: #1994d4;
   color: white;
   margin: 10px 0px;
   padding: 20px 0px;
   padding-left: 15px;
-  font-size: 15px;
   -moz-border-radius: 10px 10px 10px 10px;
   -webkit-border-radius: 10px 10px 10px 10px;
   border-radius: 10px 10px 10px 10px; }
@@ -274,32 +290,28 @@ question {
   margin: 10px 0px;
   padding: 20px 0px;
   padding-left: 15px;
-  font-size: 15px;
   -moz-border-radius: 10px 10px 10px 10px;
   -webkit-border-radius: 10px 10px 10px 10px;
   border-radius: 10px 10px 10px 10px; }
 
 .message_box{
-  background-color:#ABFFC7;
   margin: 10px 0px;
   padding: 20px 0px;
   padding-left: 15px;
-  font-size: 15px;
   -moz-border-radius: 10px 10px 10px 10px;
   -webkit-border-radius: 10px 10px 10px 10px;
   border-radius: 10px 10px 10px 10px;
   text-align: left;
-  color: black;
+  color: #1994d4;
+  border: 2px solid #1994d4;
 }
 #next_step{
-    margin-bottom: -28px;
+    margin-bottom: -10px;
   
 }
 #options_next {
-  margin-left: 20px;
-  margin-top: 0px !important;
+  margin-top: 10px;
   line-height: 26px;
-  font-size: 14px;
 }
 #redo:hover {
   cursor: pointer; }
@@ -309,8 +321,12 @@ question {
   width: 100%; 
 }
 
-#statistics-button img {
-  width: 20px;
+
+#statistics-button {
+  display: none;
+  img {
+    width: 20px;
+  }
 }
 
 .controls {
@@ -333,8 +349,6 @@ question {
   border: 2px solid green;
 }
 
-<<<<<<< Updated upstream
-=======
 #question {
   font-size: 24px;
   text-align: center;
@@ -345,8 +359,26 @@ question {
   background: #ff0;
   width: 2px;
   height: 100%;
+  &.done {
+    background: red;
+  }  
+}
+
+.mejs-container {
+    margin: 0 auto;
+}
+
+.unfinished {
+    text-align: center;
+    width: 50%;
+    margin: 0 auto;
+    font-size: 20px;
+    
+}
+.middle-align {
+  width: 2000px !important;
 }
 
 
->>>>>>> Stashed changes
+
 @import "modules/all";

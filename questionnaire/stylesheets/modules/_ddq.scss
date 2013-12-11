@@ -1,6 +1,22 @@
+$ddq-frame-color: #c4c5c7;
 .ddq {
 
-  .soldd {
+  .ddq-title {
+    text-align: center;
+    margin: 10px 0;
+    font-size: 20px;
+  }
+
+  #top-answer {
+    text-align: center;
+    margin: 10px auto;
+  }
+
+  .actions div {
+    margin: 20px auto;
+  }
+
+  .ddq-solution {
     position: absolute;
     top: -11;
     right: -5;
@@ -9,12 +25,9 @@
     padding: 1px;
     font-size: 11px;
   }
-  .top-row { text-align: center; }
-  .ui-state-active { background-color: $answer; }
 
-  #question-text {
-    padding-top: 5px;
-    font-size: 20px; 
+  .ui-state-active { 
+    background-color: $answer; 
   }
 
   .concept {
@@ -30,114 +43,49 @@
     img {
       width: 100px;
       display: block; 
+      margin: 0 auto;
     }
     &.dropped {
       border: 2px solid $answer;
     }
     &.correct {
-        border: 2px solid green;
+      border: 2px solid green;
     }
     &.incorrect {
-        border: 2px solid red;
+      border: 2px solid red;
     }
   }
+
+  .targets {
+    text-align: center;
+  }
+
   .target {
+    max-width: 300px;
     font-size: 10px;
     display: inline-block;
     text-align: center;
-    border: 1px solid #c4c5c7;
-    height: 100%;
+    border: 1px solid $ddq-frame-color;
+    min-height: 400px;
     margin-left: 1%;
     margin-right: 1%;
+    margin-bottom: 20px;
     vertical-align: top; 
-  }
-
-  #question {
-    width: 100%;
-    text-align: center; 
-  }
-
-  #q-table {
-    width: 100%; 
-    margin-top: 7px;
   }
 
   .target-title {
     font-size: 15px;
     line-height: 20px;
-    background-color: #c4c5c7;
+    background-color: $ddq-frame-color;
     padding: 10px 0px; 
   }
 
-  .targets {
-    text-align: center; 
-  }
-
-  #targets {
-    div {
-      width: 100%;
-      display: inline-block;
-      text-align: center;
-      border: 1px solid black;
-      line-height: 50px;
-      cursor: pointer;
-      position: relative; 
-      &:hover {
-        background-color: gray; 
-      }
-    }
-  }
-
-  .left-col {
-    width: 100%;
-    float: none; }
-  
-  .right-col {
-    display: none;
-    width: 236px; 
-  }
-
-  #send-button,
-  #check-button {
-    float: none;
-    margin: 0 auto; 
-  }
-
   .target-image { 
-     width: 100%; 
-     height: 110px;
-    }
-
-  #q-text { display: none; }
-  #tr-fb { display: none; }
- .table-feedback { height: 100%; }
-  #td-fb-next { vertical-align: middle; }
-  #concept_img {
-    height: 200px; 
-  }
-
-  #check_answer {
-    margin-top: 20px;
-    text-align: center; 
-    span {
-      color: blue;
-      font-weight: bold;
-      text-align: center;
-      border: 1px blue solid;
-      padding: 10px; 
-      &:hover { 
-        color: white;
-        background-color: blue;
-        cursor: pointer; 
-      }
-    }
+    max-width: 100%; 
+    background-color: $ddq-frame-color;
+    margin-top: 0px;
   }
 }
 
-.ddq-title {
-  text-align: center;
-  margin: 10px 0;
-  font-size: 20px;
-}
 
 

@@ -27,13 +27,42 @@
   <link rel="stylesheet" type="text/css" href="/lib/questionnaire.css">
   </head>
   <body>
-    <select id="demo">
-    </select>
- <style>
-
+    <div id="debug-controls">
+      Demo:
+      <select id="type">
+      </select>
+      Load:
+      <select id="load">
+          <option value="">Empty</option>
+      </select>
+      When:
+      <select id="when">
+          <option value="start">Start</option>
+          <option value="overview">Overview</option>
+      </select>
+    </div>
+<style>
+body {
+    margin: 20px;
+}
 #qunit {
     display: none;
+}
+#debug { 
+    border: 1px solid blue;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+    margin: 20px;
+}
+#debug-controls { 
+    margin-bottom: 20px;
+}
 
+#timeDebug span {
+    min-width: 50px;
+    max-width: 500px;
+    display: inline-block;
 }
 </style>
   
@@ -64,18 +93,22 @@ var nextUnit = {
 }
 */
 </script>
-    <div id="timeDebug"></div>
     <div id="activityContents" class="container">
 <!--
       <div class="row questionnaire" data="lesson_questionnaire_11" status="1"></div>
 -->
       <div class="row questionnaire"></div>
     </div>
+    <div id="debug"> 
+      Questions showing in times:
+      <div id="timeDebug"></div>
+    </div>
     <script>
         var demos = { 
             "tfq": "TFQ",
             "ddq": "DDQ",
             "ddq_tree": "DDQ TREE",
+            "ddq_tree_but_1": "DDQ TREE BUG#1",
             "mcq": "MCQ",
             "tiq": "TIQ",
             "mix": "MIX",
@@ -97,13 +130,27 @@ var nextUnit = {
             "2.12-waterenergie-mix":      "2.12-waterenergie-mix.js",
             "2.13-WKO-mix":               "2.13-WKO-mix.js"
         }
+        var samples = {
+            "2.2-huidigemix-mix": {
+                "half" : "2.2-huidigemix-mix-half-data.js",
+            },
+            "video": { 
+                "half": "video-half.data.json",
+                "full": "video-full.data.json"
+            },
+            "ddq": {
+                "wrong": "ddq-wrong-data.js",
+                "correct": "ddq-correct-data.js",
+            }
+        }
         var params = {
             "type": getURLParameter("type", "tfq"),
             "solve": getURLParameter("solve", false),
             "test": getURLParameter("test", false),
             "load": getURLParameter("load", false),
             "correct": getURLParameter("correct", false),
-            "skipvideo": getURLParameter("skipvideo", false)
+            "skipvideo": getURLParameter("skipvideo", false),
+            "when": getURLParameter("when", "start")
         }
         function updateUrl() {
             var url = window.location.protocol + 
@@ -117,15 +164,22 @@ var nextUnit = {
             return url
         }
         function load_questionnaire(type) {
+            var type = $("#type").val();
+            var load = $("#load").val();
+            var when = $("#when").val();
+            console.error(load == "");
             params['type'] = type;
+            params['load'] = (load == "") ? "" : (load || params['load']);
+            params['when'] = when;
             updateUrl()
             console.debug("Load questionnaire " + type);
             $q = $(".questionnaire")
             $q.empty().attr("src", "samples/" + type + ".js");
             var data = null;
             if (params['load'] && !params['correct']) {
+              console.debug("Load saved json questionnaire " + params['load']);
               $.ajax({
-                url: 'samples/' + type + '_data.js',
+                url: 'samples/' + params['load'],
                 success: function(_data) {
                   data = _data;
                 },
@@ -136,9 +190,6 @@ var nextUnit = {
     
             if (params['correct']) {
                 console.log("Load with correct answers");
-               // Questionnaire.on("load", function() { 
-               //     Questionnaire.getInstance().test_correct();
-               // });
                 Questionnaire.on("question-created", function() {
                     Questionnaire.getInstance().test_correct();
                     Questionnaire.getInstance().submit();
@@ -163,17 +214,48 @@ var nextUnit = {
                     console.error("Test doesn't exist: " + testName); 
                 }
             }
+            if (params['when'] == "overview") {
+                Questionnaire.on("loaddeddata", function() {
+                    console.error("BLE");
+                    VideoQuestionnaire.playAt(0);
+                    setTimeout(function() {
+                    Questionnaire.showOverview();
+                    }, 1000);
+        
+                });
+            }
             Questionnaire.create($q, data);
         }
+        $("#when").children().each(function(k, v) {
+            if ($(this).val() == params['when']) {
+                $(this).prop('selected', true);
+            }
+        })
+        if (params['type'] in samples) {
+            $.each(samples[params['type']], function(k, v) {
+                console.log(k, v);
+                console.log(params['load']);
+                $option = $("<option>").val(v).html(k).appendTo($("#load"));
+                if (v == params['load']) {
+                    $option.prop('selected', true);
+                }
+            })
+        }
         $.each(demos, function(k, v) {
-            $option = $("<option>").val(k).html(v).appendTo($("#demo"));
+            $option = $("<option>").val(k).html(v).appendTo($("#type"));
             if (k == params['type']) {
                 $option.prop('selected', true);
                 load_questionnaire(k)
             }
         })
-        $("#demo").change(function() {
-            load_questionnaire($(this).val());
+        $("#type").change(function() {
+            load_questionnaire();
+        })
+        $("#load").change(function() {
+            load_questionnaire();
+        })
+        $("#when").change(function() {
+            load_questionnaire();
         })
     </script>
   </body>

@@ -14,7 +14,7 @@
                             "text": "Energievraag verkleinen",
                             "children": [
                                 {
-                                    "text": "EfficiÃ«ntere processen",
+                                    "text": "Efficiëntere processen",
                                     "image": "assets/img/concept-1.png"
                                 },
                                 {

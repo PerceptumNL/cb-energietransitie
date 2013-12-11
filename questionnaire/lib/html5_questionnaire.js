@@ -14,17 +14,30 @@ var VideoQuestionnaire = {
       this.mediaplayer.play()
     },
 
+    updateCues: function() {
+       $(".mejs-cuepoint").each(function() {
+         var timeDs = $(this).attr("ds")
+         if (Questionnaire.areVideoQuestionsDone(timeDs)) {
+           $(this).addClass("done");  
+         } else {
+           $(this).removeClass("done");  
+         }
+       });
+    },
+
     loadIndications: function() {
-      console.debug(this.activity);
+      console.debug("loadIndications");
       var self = this;
       var duration_ds = self.mediaplayer.duration * 10;
       $.each(this.activity.questionsList, function(k, question) {
         if ("time" in question) {
           var ds = Questionnaire.time2ds(question.time);
           $cue = $("<div class='mejs-cuepoint'></div>").css("left", (ds / duration_ds * 100) + "%");
+          $cue.attr("ds", ds);
           $(".mejs-time-total").append($cue)
         }
       });
+      this.updateCues();
     },
 
     loadEvents: function() {
@@ -41,7 +54,7 @@ var VideoQuestionnaire = {
             } else {
               $wrapper.removeClass("fullscreen");
             }
-            var stop = Questionnaire.video_question(video.currentTime);
+            var stop = Questionnaire.checkVideoQuestion(video.currentTime);
             if (stop) {
               if (last_int) clearInterval(last_int);
               $wrapper.addClass("pause");
@@ -70,14 +83,18 @@ var VideoQuestionnaire = {
         Questionnaire.showOverview();
         Questionnaire.fadeIn();
       });
+
+      $(".mejs-container").bind("controlshidden", function() { 
+        $(".mejs-controls").css("visibility","");
+      })
     },
     
     create: function(ele, activity, lastTime) {
       var self = this;
-      this.activity = activity;
       var url = activity.videoId;
+      this.activity = activity;
 
-      console.debug("loadVideoQuestionnaire: " + url);
+      console.debug("Load video from URL: " + url);
     
       this.$wrapper = $(ele);
     
@@ -117,6 +134,7 @@ var VideoQuestionnaire = {
         enablePluginDebug: true,
       	success: function(media, node, player) {
           $(".video").removeClass("hidden");
+          //player.hideControls = function() {};
           var mediaplayer = self.mediaplayer = media;
           mediaplayer.addEventListener("timeupdate", function() { 
             //lastSecond = mediaplayer.player.getCurrentTime();
@@ -129,23 +147,24 @@ var VideoQuestionnaire = {
           mediaplayer.addEventListener("seeked", function() { 
             var currentSecond = mediaplayer.player.getCurrentTime();
             console.log(currentSecond, lastSecond)
-            if (currentSecond > lastSecond) {
-              //mediaplayer.pause()
-              //alert("You have to finish")
-              //mediaplayer.player.setCurrentTime(lastSecond);
-              //mediaplayer.play()
-            }
+            //if (currentSecond > lastSecond) {
+            //  mediaplayer.pause()
+            //  alert("You have to finish")
+            //  mediaplayer.player.setCurrentTime(lastSecond);
+            //  mediaplayer.play()
+            //}
           });
           mediaplayer.addEventListener("loadeddata", function() { 
             console.debug("Video event: loadeddata") 
+            Questionnaire.trigger("loaddeddata");
             self.loadIndications();
           });
           mediaplayer.addEventListener("play", function() { console.debug("Video event: play") });
           mediaplayer.addEventListener("playing", function() { console.debug("Video event: playing") 
-            if (firstPlay) {
-              mediaplayer.player.setCurrentTime(lastTime);
-            }
-            firstPlay = false;
+            //if (firstPlay) {
+            //  mediaplayer.player.setCurrentTime(lastTime);
+            //}
+            //firstPlay = false;
           });
           mediaplayer.addEventListener("pause", function() { console.debug("Video event: pause") });
           mediaplayer.addEventListener("ended", function() { console.debug("Video event: ended") });
@@ -153,9 +172,11 @@ var VideoQuestionnaire = {
           self.loadEvents();
            
           Questionnaire.on("continue", function() {
+        
             console.log("Play?", lastTime);
             mediaplayer.play()
             
+            self.updateCues();
             self.$wrapper.removeClass("pause");
             Questionnaire.fadeOut();
           });

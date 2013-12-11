@@ -15,7 +15,7 @@ function DDQ(question, qEle, savedQuestion) {
     }
   }
 
-  this.lastAnswerHeight = 0;
+  //this.lastAnswerHeight = 0;
   this.$q = function(selector) {
     return $(this.qEle).find(selector);
   }
@@ -52,7 +52,7 @@ DDQ.prototype = {
   drawQuestion: function() {
     var self = this;
     var per = 90 / this.targetList.length
-    $(".target").each(function(k, target) {
+    self.$q(".target").each(function(k, target) {
       $target = $(target).data("targetIdx", k);
       $target.css("width", per + "%");
       $target.droppable({
@@ -69,7 +69,7 @@ DDQ.prototype = {
 
   addConcept: function(concept, target) {
     var self = this;
-    self.lastAnswerHeight = self.$q("#top-answer").height();
+    //self.lastAnswerHeight = self.$q("#top-answer").height();
     $(target).append(concept);
     $(concept)
       .css("left", "0px")
@@ -142,15 +142,15 @@ DDQ.prototype = {
       }
     });
     self.$q("#check-button").toggle(done);
-    if (done && self.lastAnswerHeight > 0)
-        self.$q("#top-answer").height(self.lastAnswerHeight);
+    //if (done && self.lastAnswerHeight > 0)
+    //    self.$q("#top-answer").height(self.lastAnswerHeight);
     return done;
   },
 
   getSelections: function() {
     var self = this;
     var selections = [];
-    $(".target").each(function(tIdx, target) {
+    self.$q(".target").each(function(tIdx, target) {
       selections[tIdx] = [] 
       $(target).find(".concept").each(function(cIdx, concept) {
         selections[tIdx].push($(concept).data("idx"));
@@ -164,7 +164,7 @@ DDQ.prototype = {
     this.result.correct = true;
     this.result.selections = this.getSelections();
     
-    $(".target").each(function(tIdx, target) {
+    this.$q(".target").each(function(tIdx, target) {
       $(target).find(".concept").each(function(cIdx, concept) {
         try {
             $(concept).draggable( "destroy" );
@@ -172,7 +172,7 @@ DDQ.prototype = {
 
         if ($(concept).data("targetIdx") != $(target).data("targetIdx")) {
           $(this).addClass("incorrect");
-          $(this).append("<div class='soldd'>"+($(concept).data("targetIdx")+1)+"</div>"); 
+          $(this).append("<div class='ddq-solution'>"+($(concept).data("targetIdx")+1)+"</div>"); 
           self.result.correct = false;
           self.result.incorrect = true;
         } 
@@ -186,17 +186,15 @@ DDQ.prototype = {
     return true;
   },
   
-  test: function() {
+  test_correct: function() {
     var self = this;
     self.$q('.concept').each(function(k,concept) {
         setTimeout(function() {
-            self.addConcept(concept, $(".target").first());
+            self.addConcept(concept, self.$q(".target").first());
         }, 1);
     });
     this.checkDone();
   }
-
-
 }
 
 Questionnaire.registerType(DDQ);
