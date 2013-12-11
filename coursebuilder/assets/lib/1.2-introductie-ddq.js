@@ -1,6 +1,46 @@
 {
-    "questionsType": "ddq",
+    "videoId": "https://s3.amazonaws.com/energietransitie/1.2+Introductie+-+energietransitie+in+theorie-_xqcBVtXBFo.mp4",
     "questionsList": [
+        {
+            "time": "2:52.6",
+            "questionType": "ddqtree",
+            "tree": [
+                {
+                    "type": "text",
+                    "text": "Gebruik fossiele brandstoffen terugdringen",
+                    "children": [
+                        {
+                            "type": "text",
+                            "text": "Energievraag verkleinen",
+                            "children": [
+                                {
+                                    "text": "Efficiëntere processen",
+                                    "image": "assets/img/concept-1.png"
+                                },
+                                {
+                                    "text": "Zuinigere apparaten en technologie",
+                                    "image": "assets/img/concept-2.png"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "text",
+                            "text": "Aanbod duurzame energie vergroten",
+                            "children": [
+                                {
+                                    "text": "Productie duurzame energie vergroten",
+                                    "image": "assets/img/concept-3.png"
+                                },
+                                {
+                                    "text": "Duurzame energie geschikt maken voor gebruik",
+                                    "image": "assets/img/concept-4.png"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
         {
             "questionType": "ddq",
             "targetList": [
@@ -9,16 +49,16 @@
                     "text": "Efficiëntere processen",
                     "conceptList": [
                         {
-                            "type": "text",
-                            "text": "Stadslandbouw"
+                            "text": "Stadslandbouw",
+                            "image": "assets/img/1.2-Stadslandbouw.png"
                         },
                         {
-                            "type": "text",
-                            "text": "Slim openbaar vervoer"
+                            "text": "Slim OV",
+                            "image": "assets/img/1.2-SlimOV.png"
                         },
                         {
-                            "type": "text",
-                            "text": "Goede infrastructuur voor fietsen"
+                            "text": "Goede fiets infrastructuur",
+                            "image": "assets/img/1.2-Goedefietsinfrastructuur.png"
                         }
                     ]
                 },
@@ -27,16 +67,16 @@
                     "text": "Zuinigere apparaten en technologie",
                     "conceptList": [
                         {
-                            "type": "text",
-                            "text": "Elektrisch transport"
+                            "text": "Elektrisch transport",
+                            "image": "assets/img/1.2-Elektrischtransport.png"
                         },
                         {
-                            "type": "text",
-                            "text": "LED verlichting"
+                            "text": "LED verlichting",
+                            "image": "assets/img/1.2-LEDverlichting.png"
                         },
                         {
-                            "type": "text",
-                            "text": "Warmte-koude opslag"
+                            "text": "Warmte-koude opslag",
+                            "image": "assets/img/1.2-Warmte-koudeopslag.png"
                         }
                     ]
                 },
@@ -45,16 +85,16 @@
                     "text": "Productie duurzame energie vergroten",
                     "conceptList": [
                         {
-                            "type": "text",
-                            "text": "Zonne-energie"
+                            "text": "Zonne-energie",
+                            "image": "assets/img/1.2-Zonne-energie.png"
                         },
                         {
-                            "type": "text",
-                            "text": "Drijvende windturbines"
+                            "text": "Drijvende windturbines",
+                            "image": "assets/img/1.2-Drijvendewindturbines.png"
                         },
                         {
-                            "type": "text",
-                            "text": "Algen biobrandstof"
+                            "text": "Algen biobrandstof",
+                            "image": "assets/img/1.2-Algenbiobrandstof.png"
                         }
                     ]
                 },
@@ -63,16 +103,16 @@
                     "text": "Duurzame energie geschikt maken voor gebruik",
                     "conceptList": [
                         {
-                            "type": "text",
-                            "text": "Smart Grid"
+                            "text": "Smart Grid",
+                            "image": "assets/img/1.2-SmartGrid.png"
                         },
                         {
-                            "type": "text",
-                            "text": "Energie-opslag"
+                            "text": "Energie-opslag",
+                            "image": "assets/img/1.2-Energie-opslag.png"
                         },
                         {
-                            "type": "text",
-                            "text": "Energienetten verbinden"
+                            "text": "Energienetten verbinden",
+                            "image": "assets/img/1.2-Energienettenverbinden.png"
                         }
                     ]
                 }

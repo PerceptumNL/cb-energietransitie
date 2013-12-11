@@ -1,5 +1,5 @@
 {
-    "videoId": "https://s3.amazonaws.com/energietransitie/12.+Biobrandstof-CFQ0wm3hZoI.mp4qcBVtXBFo",
+    "videoId": "https://s3.amazonaws.com/energietransitie/12.+Biobrandstof-CFQ0wm3hZoI.mp4",
     "questionsList": [
         {
             "time": "0:35.5",
