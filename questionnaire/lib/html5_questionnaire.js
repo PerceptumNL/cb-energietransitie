@@ -47,13 +47,6 @@ var VideoQuestionnaire = {
       var last_int = null;
       video.addEventListener('play', function() {
         last_int = setInterval(function() {
-            if (document.fullScreen || 
-                document.mozFullScreen ||
-                document.webkitIsFullScreen) {
-              $wrapper.addClass("fullscreen");
-            } else {
-              $wrapper.removeClass("fullscreen");
-            }
             var stop = Questionnaire.checkVideoQuestion(video.currentTime);
             if (stop) {
               if (last_int) clearInterval(last_int);
@@ -69,17 +62,8 @@ var VideoQuestionnaire = {
         if (last_int) clearInterval(last_int);
       });
     
-      video.addEventListener('webkitfullscreenchange', function() {
-        if (document.fullScreen || 
-            document.mozFullScreen ||
-            document.webkitIsFullScreen) {
-          $wrapper.addClass("fullscreen");
-        } else {
-          $wrapper.removeClass("fullscreen");
-        }
-      });
-    
       video.addEventListener('ended', function() {
+        $wrapper.addClass("pause");
         Questionnaire.showOverview();
         Questionnaire.fadeIn();
       });

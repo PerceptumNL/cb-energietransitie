@@ -77,10 +77,6 @@ var Questionnaire = {
   showOverview: function() {
     var self = this;
     this.index = -1;
-    //fast trick
-    if (this.hasVideo()) {
-      this.resizeVideoQuestion();
-    }
     $("#button-hint").hide()
     $("#button-rewatch-last").hide()
     $(".question-wrapper").hide()
@@ -215,18 +211,7 @@ var Questionnaire = {
     });
   },
 
-  resizeVideoQuestion: function() { 
-    if (document.fullScreen || 
-        document.mozFullScreen ||
-        document.webkitIsFullScreen) {
-        $(".questions").parent().addClass("fullscreen");
-    } else {
-        $(".questions").parent().removeClass("fullscreen");
-    }
-  },
-
   showVideoQuestion: function() {
-    this.resizeVideoQuestion();
     this.fadeIn();
   },
   
@@ -476,8 +461,13 @@ var Questionnaire = {
         self.showOverview();
         self.fadeIn(true);
       } 
-      this.on("check", function() {
-        self.resizeVideoQuestion();
+      document.addEventListener(screenfull.raw.fullscreenchange, function () {
+        if (screenfull.isFullscreen) {
+          VideoQuestionnaire.$wrapper.addClass("fullscreen");
+          $(".questions").parent().addClass("fullscreen");
+        } else {
+          $(".fullscreen").removeClass("fullscreen");
+        }
       });
       VideoQuestionnaire.create($(this.qEle).parent(), this.activity, this.lastTime);
     }
@@ -571,7 +561,6 @@ var Questionnaire = {
   jumpNext: function() {
     this.index++; 
     this.jumpTo(this.index);
-    this.resizeVideoQuestion();
   },
 
   fixScroll: function() {
