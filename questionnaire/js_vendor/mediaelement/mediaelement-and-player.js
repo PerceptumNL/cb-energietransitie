@@ -2791,6 +2791,7 @@ if (typeof jQuery != 'undefined') {
 			}
 
 			// outer area
+            railWidth--;
 			rail.width(railWidth);
 			// dark space
 			total.width(railWidth - (total.outerWidth(true) - total.width()));
