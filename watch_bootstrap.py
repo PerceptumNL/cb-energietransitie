@@ -3,6 +3,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import logging
 import shutil
+import os
 
 class LoggingEventHandler(FileSystemEventHandler):
 
@@ -29,13 +30,14 @@ class LoggingEventHandler(FileSystemEventHandler):
 
     def on_modified(self, event):
         super(LoggingEventHandler, self).on_modified(event)
-        shutil.copyfile("bootstrap/dist/css/bootstrap.css", "coursebuilder/assets/css/bootstrap.css")
-        shutil.copyfile("bootstrap/dist/js/bootstrap.js", "coursebuilder/assets/lib/bootstrap.js")
-
+        os.chdir("bootstrap")
+        os.system("grunt dist")
+        os.chdir("..")
+        #shutil.copyfile("bootstrap/dist/css/bootstrap.css", "coursebuilder/assets/css/bootstrap.css")
+        #shutil.copyfile("bootstrap/dist/js/bootstrap.js", "coursebuilder/assets/lib/bootstrap.js")
         print("Bootstrap updated!")
         what = 'directory' if event.is_directory else 'file'
         print("Modified %s: %s", what, event.src_path)
-
 
 if __name__ == "__main__":
     event_handler = LoggingEventHandler()
