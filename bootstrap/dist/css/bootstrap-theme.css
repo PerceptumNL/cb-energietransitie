@@ -6,7 +6,19 @@
  * Designed and built with all the love in the world by @mdo and @fat.
  */
 
-@media (max-width: 991px) {
+@media (min-width: 1100px) and (max-width: 1199px) {
+  [role=main] {
+    padding-left: 0 !important;
+  }
+}
+
+@media (max-width: 1099px) {
+  [role=main] {
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 1099px) {
   .middle-align {
     display: table-cell;
     width: 1000px;
@@ -15,7 +27,13 @@
   }
 }
 
-@media (min-width: 768px) {
+@media (max-width: 10px) {
+  .schema {
+    margin: 0 auto;
+  }
+}
+
+@media (min-width: 10px) {
   #answer {
     border-left: 1px dashed #c4c5c7;
   }
