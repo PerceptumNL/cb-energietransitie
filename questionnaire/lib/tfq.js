@@ -65,12 +65,11 @@ TFQ.prototype = {
       this.$q(".feedback-text").html("<div>" + feedback_text + "</div>")
     
     //disable buttons
-    this.$q(".option").children().each(function(idx, ele) {
-      if (idx != answer_idx) {
-        self.$q(ele).addClass("disabled");
+    this.$q(".answer").each(function(idx, ele) {
+      if (idx == answer_idx) {
+        self.$q(ele).addClass("selected");
       }
-    });
-    this.$q(".option").children().unbind("click");
+    }).addClass("disabled").unbind("click");
 
     //next button
     this.$q("#send-button").show();

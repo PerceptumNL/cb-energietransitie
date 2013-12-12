@@ -175,27 +175,58 @@ function DDQTREE(question, qEle, savedQuestion) {
 DDQTREE.questionType = "ddqtree";
 DDQTREE.prototype = {
 
+  //loadData: function() {
+  //  var self = this;
+  //  if (this.savedQuestion) { 
+  //    self.$q(".concepts").css("visibility", "hidden");
+  //    self.$q(".targets").css("visibility", "hidden");
+  //    var total = this.result.selections.length, totalEnd = 0;
+  //    $.each(this.result.selections, function(tIdx, cIdx) {
+  //      var $concept = self.$q(".concept[data-ele_id='"+cIdx+"']");
+  //      var $target = self.$q(".target[data-ele_id='"+tIdx+"']");
+  //      setTimeout(function() {
+  //          self.addConcept($concept, $target);
+  //          totalEnd++;
+  //          if (total == totalEnd) {
+  //              setTimeout(function() {
+  //                  self.checkAnswer();
+  //                  self.$q(".concepts").css("visibility", "");
+  //                  self.$q(".targets").css("visibility", "");
+  //              }, 50);
+  //          }
+  //      }, 10);
+  //    });
+  //    return true;
+  //  } 
+  //  return false;
+  //},
   loadData: function() {
     var self = this;
     if (this.savedQuestion) { 
       self.$q(".concepts").css("visibility", "hidden");
       self.$q(".targets").css("visibility", "hidden");
-      var total = this.result.selections.length, totalEnd = 0;
-      $.each(this.result.selections, function(tIdx, cIdx) {
-        var $concept = self.$q(".concept[data-ele_id='"+cIdx+"']");
-        var $target = self.$q(".target[data-ele_id='"+tIdx+"']");
+      var total = this.result.selections.length
+      var tIdx = 0;
+
+      function _addConcept() {
         setTimeout(function() {
+            var cIdx = self.result.selections[tIdx];
+            var $concept = self.$q(".concept[data-ele_id='"+cIdx+"']");
+            var $target = self.$q(".target[data-ele_id='"+tIdx+"']");
             self.addConcept($concept, $target);
-            totalEnd++;
-            if (total == totalEnd) {
-                setTimeout(function() {
-                    self.checkAnswer();
-                    self.$q(".concepts").css("visibility", "");
-                    self.$q(".targets").css("visibility", "");
-                }, 50);
+            tIdx++;
+            if (total == tIdx) {
+              setTimeout(function() {
+                  self.checkAnswer();
+                  self.$q(".concepts").css("visibility", "");
+                  self.$q(".targets").css("visibility", "");
+              }, 100);
+            } else {
+              _addConcept();
             }
         }, 10);
-      });
+      }
+      _addConcept();
       return true;
     } 
     return false;
@@ -263,6 +294,7 @@ DDQTREE.prototype = {
       if (i>0) {
         var $tr = $("<div>").attr("class", "ddqt-col")
           .css("width", 15/depth_ele.length + "%")
+          .height(self.$q(".targets").height() + "px")
           .appendTo($t);
         var $cell = $("<div>").attr("class","ddqt-arrow-cell")
           .appendTo($tr);  
@@ -276,6 +308,7 @@ DDQTREE.prototype = {
         .addClass("ddqt-col target-col")
         .css("width", 85/depth_ele.length + "%")
         .data("depth", i)
+        .height(self.$q(".targets").height() + "px")
         .appendTo($t);
     }
 

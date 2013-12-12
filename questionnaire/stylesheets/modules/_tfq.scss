@@ -1,46 +1,29 @@
-$answer: #E1E2E3;
-$answer-hover: #c4c5c7;
-$answer-disabled: #EFF0F1;
 
 .tfq {
   &.option {
     border: 2px;
-    color: black;
-    font-size: 17px;
+    font-size: $answer-font-size;
     text-align: center; 
 
-    div div {
+    .answer {
       padding: 10px 2.3px;
-      background-color: $answer; 
+      background-color: $tfq-answer; 
       &.selected {
-        background-color: $answer-hover;
-        cursor: pointer; 
+        background-color: $tfq-answer-hover;
         border: 3px solid black;
       }
-      &:hover {
-        background-color: $answer-hover;
-        cursor: pointer; 
 
+      &:hover {
+        background-color: $tfq-answer-hover;
+        cursor: pointer; 
       }
     
       &.disabled,
       &.disabled:hover {
-        background-color: $answer-disabled;
+        background-color: $tfq-answer; 
         cursor: default; 
-        text-shadow: none;
       }   
-      &.correct,
-      &.incorrect {
-        background-color: $answer-hover;
-        cursor: default; 
-        border: 3px solid black;
-      }
     }
-    
   }
-  .table-feedback {
-    margin-top: 14px; 
-  }
-
 }
 

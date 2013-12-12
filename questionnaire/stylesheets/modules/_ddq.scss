@@ -1,4 +1,3 @@
-$ddq-frame-color: #c4c5c7;
 .ddq {
 
   .ddq-title {
@@ -25,12 +24,12 @@ $ddq-frame-color: #c4c5c7;
   }
 
   .ui-state-active { 
-    background-color: $answer; 
+    background-color: $ddq-answer-color; 
   }
 
   .concept {
     display: inline-block;
-    border: 2px dashed $answer;
+    border: 2px dashed $ddq-answer-color;
     margin: 8px;
     padding: 5px;
     font-size: 14px;
@@ -44,7 +43,7 @@ $ddq-frame-color: #c4c5c7;
       margin: 0 auto;
     }
     &.dropped {
-      border: 2px solid $answer;
+      border: 2px solid $ddq-answer-color;
     }
     &.correct {
       border: 2px solid green;

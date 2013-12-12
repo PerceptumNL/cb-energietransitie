@@ -31,7 +31,7 @@ def build_css():
 
 def build_js():
     libs = ['lib/custom_activity_loader.js', 'lib/ddq.js', 'lib/mcq.js', 'lib/tfq.js', 'lib/ddq_tree.js', 'lib/html5_questionnaire.js', 'lib/tiq.js']
-    filenames = libs + ['js_vendor/jquery-ui-1.10.3.custom.min.js', 'js_vendor/mediaelement/mediaelement-and-player.min.js']
+    filenames = libs + ['js_vendor/jquery-ui-1.10.3.custom.min.js', 'js_vendor/mediaelement/mediaelement-and-player.js']
     with open(os.path.join(filedir, 'build/questionnaire.js'), 'w') as outfile:
         outfile.write("//Build time: %s\n\n" % datetime.datetime.now().isoformat())
         for fname in filenames:

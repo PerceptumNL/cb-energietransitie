@@ -1,20 +1,11 @@
-.tiq #question {
-  height: 250px; }
-
-.tiq #q-table {
-  height: 100%; }
-
-.tiq #answer {
-  width: 100%;
-  text-align: center; }
-
-.tiq #textinput {
-  width: 80%;
-  height: 120px;
-  font-size: 14px; }
-
-.tiq #send-button,
-.tiq #submit-button {
-  float: none;
-  margin: 30px auto;
-  display: none; }
+.tiq {
+  #textinput {
+    width: 100%;
+    height: 350px;
+    margin-bottom: 20px;
+    border: 2px solid #c4c5c7;
+  }
+  #textinput.submitted {
+    border: 2px solid orange;
+  }
+}

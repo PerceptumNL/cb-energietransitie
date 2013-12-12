@@ -620,7 +620,7 @@ var Questionnaire = {
     $html.attr({
       id: this.index, 
       index: this.index
-    }).addClass("question-instance").appendTo('#single-question');
+    }).addClass("question-instance").addClass(question.questionType).appendTo('#single-question');
 
     this.questionClass = this.registeredQuestionTypes[question.questionType];
     this.questionInstances[index] = new this.questionClass(question, $html, savedQuestion)

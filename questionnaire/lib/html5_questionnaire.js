@@ -133,6 +133,7 @@ var VideoQuestionnaire = {
         loop: false,
         enablePluginDebug: true,
       	success: function(media, node, player) {
+
           $(".video").removeClass("hidden");
           //player.hideControls = function() {};
           var mediaplayer = self.mediaplayer = media;
