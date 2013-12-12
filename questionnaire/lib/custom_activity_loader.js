@@ -1,22 +1,9 @@
-function shuffle(array) {
-    var counter = array.length, temp, index;
-
-    // While there are elements in the array
-    while (counter > 0) {
-        // Pick a random index
-        index = Math.floor(Math.random() * (counter + 1));
-
-        // Decrease counter by 1
-        counter--;
-
-        // And swap the last element with it
-        temp = array[counter];
-        array[counter] = array[index];
-        array[index] = temp;
-    }
-
-    return array;
-}
+//+ Jonas Raoni Soares Silva
+//@ http://jsfromhell.com/array/shuffle [v1.0]
+function shuffle(o){ //v1.0
+    for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
+};
 
 function shuffleRange(length) {
     var array = [];
@@ -287,8 +274,6 @@ var Questionnaire = {
 
   areVideoQuestionsDone: function(currentDs) {
     var indexes = this.findVideoQuestions(currentDs);
-    console.log(currentDs)
-    console.log(indexes)
     for (i=0;i<indexes.length;i++) {
       var index = indexes[i];
       if (this.doneQuestions[index] == undefined)
@@ -308,6 +293,7 @@ var Questionnaire = {
          return true;
       }     
     }
+    this.videoIndex = -1;
     return false;
   },
 
@@ -401,6 +387,7 @@ var Questionnaire = {
         self.template = Handlebars.compile($("#questionnaire-template").html());
         Handlebars.registerPartial("question", $("#question-partial").html());
         Handlebars.registerPartial("overview", $("#overview-partial").html());
+        Handlebars.registerPartial("actions", $("#actions-partial").html());
         var templateValues = {
             questionsList: self.questionsList,
             hasVideo: self.hasVideo(),
@@ -435,7 +422,6 @@ var Questionnaire = {
     $("#statistics-button").click(function() {self.showOverview()});
     if (this.hasVideo()) {
       $("#button-rewatch-last").click(function() {
-        self.videoIndex = -1;
         self.fadeOut();
         var lastDs = 0
         if (self.index > 0) {
@@ -519,6 +505,10 @@ var Questionnaire = {
     Handlebars.registerHelper('add1', function(index) {
         return parseInt(index)+1;
     });
+    Handlebars.registerHelper('pluralize', function(number, single, plural) {
+     return (number === 1) ? single : plural;
+    });
+
     var self = this;
     this.qEle = qEle;
     this.data = data || [];

@@ -5,16 +5,16 @@
   <script src="/js_vendor/jquery-1.7.2.min.js"></script>
   <script src="/js_vendor/jquery.color.js"></script>
   <script src="/js_vendor/jquery-ui-1.10.3.custom.min.js"></script>
-  <script src="/js_vendor/bootstrap.js"></script>
+  <script src="/assets/js/bootstrap.js"></script>
   <script src="js_vendor/swfobject.js"></script>
   <script src="/lib/custom_activity_loader.js"></script>
   <link rel="stylesheet" href="tests/qunit-1.12.0.css">
-  <link rel="stylesheet" href="js_vendor/bootstrap.css">
+  <link rel="stylesheet" href="/assets/css/bootstrap.css">
   <script src="tests/qunit-1.12.0.js"></script>
     <!--
   <script src="lib/youtube_questionnaire.js"></script>
 -->
-	<link rel="stylesheet" href="js_vendor/mediaelement/mediaelementplayer.min.css" />
+  <link rel="stylesheet" href="js_vendor/mediaelement/mediaelementplayer.min.css" />
   <script src="js_vendor/mediaelement/mediaelement-and-player.min.js"></script>
   <script src="js_vendor/screenfull.min.js"></script>
   <script src="js_vendor/handlebars-v1.1.2.js"></script>
@@ -131,6 +131,12 @@ var nextUnit = {
             "2.13-WKO-mix":               "2.13-WKO-mix.js"
         }
         var samples = {
+            "1.1-introductie-mcq": {
+                "last answered": "1.1-introductie-mcq-last-answered.js",
+            },
+            "ddq_tree": {
+                "randomly saved": "ddq_tree-random-data.js",
+            },
             "2.2-huidigemix-mix": {
                 "half" : "2.2-huidigemix-mix-half-data.js",
             },
@@ -167,7 +173,6 @@ var nextUnit = {
             var type = $("#type").val();
             var load = $("#load").val();
             var when = $("#when").val();
-            console.error(load == "");
             params['type'] = type;
             params['load'] = (load == "") ? "" : (load || params['load']);
             params['when'] = when;

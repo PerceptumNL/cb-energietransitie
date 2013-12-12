@@ -127,16 +127,6 @@
                     "children": [
                         {
                             "type": "text",
-                            "text": "Traditionele landbouw (η: 0,5%)",
-                            "children": [
-                                {
-                                    "type": "text",
-                                    "text": "Biomassa (0,5 J)"
-                                }
-                            ]
-                        },
-                        {
-                            "type": "text",
                             "text": "PV panelen (η: 20%)",
                             "children": [
                                 {
@@ -148,6 +138,16 @@
                                             "text": "Biomassa (1,5J)"
                                         }
                                     ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "text",
+                            "text": "Traditionele landbouw (η: 0,5%)",
+                            "children": [
+                                {
+                                    "type": "text",
+                                    "text": "Biomassa (0,5 J)"
                                 }
                             ]
                         }

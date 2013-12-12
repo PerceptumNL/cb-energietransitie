@@ -1,4 +1,11 @@
 <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:Condensed" />
+<script id="actions-partial" type="text/x-handlebars-template">
+     <div class="row actions">
+       <div id="send-button" class="glyphicon glyphicon-circle-arrow-right"></div>
+       <div id="submit-button" class="glyphicon glyphicon-ok-sign"></div>
+       <div id="check-button" class="glyphicon glyphicon-ok-sign"></div>
+     </div>
+</script>
 <script id="unfinished-overview-partial" type="text/x-handlebars-template">
 <div id="unfinished-overview" class="row">
    <div class="col-md-12">
@@ -65,19 +72,12 @@
 
 <script id="question-part" class="ddqtree-template" type="text/x-handlebars-template">
 <div class="question-wrapper row {{question.questionType}}">
+   <div class="ddqtree-title">{{{question.text}}}</div>
    <div class="col-md-12">
-     <div class="actions">
-       <div id="send-button" class="glyphicon glyphicon-circle-arrow-right"></div>
-       <div id="submit-button" class="glyphicon glyphicon-ok-sign"></div>
-       <div id="check-button" class="glyphicon glyphicon-ok-sign"></div>
-     </div>
-     <div class="option"></div>
+     {{> actions}}
+     <div class="concepts"></div>
    </div>
-   <div class="col-md-12 tree">
-     {{{question.text}}}
-     <div id="top-answer"></div>
-     <div id="q-text"></div>
-   </div>
+   <div class="col-md-12 targets"></div>
 </div>
 </script>
 <script id="question-part" class="ddq-template" type="text/x-handlebars-template">
@@ -85,11 +85,7 @@
    {{#if question.text}}
    <div class="col-md-12 ddq-title">{{{question.text}}}</div>
    {{/if}}
-   <div class="actions">
-     <div id="send-button" class="glyphicon glyphicon-circle-arrow-right"></div>
-     <div id="submit-button" class="glyphicon glyphicon-ok-sign"></div>
-     <div id="check-button" class="glyphicon glyphicon-ok-sign"></div>
-   </div>
+   {{> actions}}
    <div id="top-answer" class="col-md-12"></div>
    <div class="col-md-12 targets" >
    {{#each question.targetList}}
@@ -115,11 +111,7 @@
   <div id="answer" class="col-md-6">
     <div class="middle-align">
       <textarea id="textinput" name="textinput" />
-      <div class="row actions">
-        <div id="send-button" class="glyphicon glyphicon-circle-arrow-right"></div>
-        <div id="submit-button" class="glyphicon glyphicon-ok-sign"></div>
-        <div id="check-button" class="glyphicon glyphicon-ok-sign"></div>
-      </div>
+      {{> actions}}
     </div>
   </div>
 </div>
@@ -148,11 +140,7 @@
         </div>  
         <div class="feedback-text col-sm-11"></div>
     </div>
-    <div class="row actions">
-      <div id="send-button" class="glyphicon glyphicon-circle-arrow-right"></div>
-      <div id="submit-button" class="glyphicon glyphicon-ok-sign"></div>
-      <div id="check-button" class="glyphicon glyphicon-ok-sign"></div>
-    </div>
+    {{> actions}}
     </div>
   </div>
 </div>

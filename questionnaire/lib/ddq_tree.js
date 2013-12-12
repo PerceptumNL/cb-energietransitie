@@ -168,6 +168,7 @@ function DDQTREE(question, qEle, savedQuestion) {
   }
   this.tree = null;
   this.depth_ele = [];
+  this.max_depth = 0;
   this.targets = [];
 }
 
@@ -177,6 +178,8 @@ DDQTREE.prototype = {
   loadData: function() {
     var self = this;
     if (this.savedQuestion) { 
+      self.$q(".concepts").css("visibility", "hidden");
+      self.$q(".targets").css("visibility", "hidden");
       var total = this.result.selections.length, totalEnd = 0;
       $.each(this.result.selections, function(tIdx, cIdx) {
         var $concept = self.$q(".concept[data-ele_id='"+cIdx+"']");
@@ -187,31 +190,46 @@ DDQTREE.prototype = {
             if (total == totalEnd) {
                 setTimeout(function() {
                     self.checkAnswer();
+                    self.$q(".concepts").css("visibility", "");
+                    self.$q(".targets").css("visibility", "");
                 }, 50);
             }
-        }, 1);
+        }, 10);
       });
+      return true;
     } 
+    return false;
   },
 
   create: function() {
     var self = this;
     this.tree = self.question.tree[0];
+    this.calcTree();
+    self.drawAnswers();
     setTimeout(function() {
+        self.$q('.concepts').children().each(function(idx, concept_div) {
+          if ($(concept_div).height() > self.max_height) {
+            self.max_height = $(concept_div).height();
+          }
+        });
         self.drawQuestion();
-        self.drawAnswers();
-    //    self.loadData();
-    }, 10);
+        if(!self.loadData()) {
+            setTimeout(function() {
+                self.redrawQuestions();
+                self.$q(".concepts").css("visibility", "");
+                self.$q(".targets").css("visibility", "");
+            }, 10);
+        }
+    }, 100);
   },
+ 
+  calcTree: function() {
 
-  drawQuestion: function() {
     var self = this;
-    var depth = 0,    
-        max_depth = 0;
-
     var depth_ele = this.depth_ele;
-    var ele_id = 0;
   
+    var depth = 0;    
+    var ele_id = 0;
     function tree_walk(ele) {
       ele.depth = depth
       if (depth == 0) ele.parent_id = -1;
@@ -219,8 +237,8 @@ DDQTREE.prototype = {
       ele_id++;
       depth_ele[depth] = depth_ele[depth] || [];
       depth_ele[depth].push(ele);
-      if (depth_ele[depth].length > max_depth)
-        max_depth = depth_ele[depth].length;
+      if (depth_ele[depth].length > self.max_depth)
+        self.max_depth = depth_ele[depth].length;
       if (ele.children === undefined) {
       } else { 
         for (var i=0;i<ele.children.length; i++) {
@@ -233,10 +251,14 @@ DDQTREE.prototype = {
       return;
     }
     tree_walk(this.tree);
-    this.$q("#q-text").html("");
+  },
+
+  drawQuestion: function() {
+    var self = this;
+    var depth_ele = this.depth_ele;
     var $t = $("<div>").attr("class","ddqt-table");
-    $t.appendTo(this.$q("#q-text"));
-    console.log("depth_ele" ,depth_ele);
+    $t.appendTo(this.$q(".targets"));
+
     for (var i=0;i<depth_ele.length;i++) {
       if (i>0) {
         var $tr = $("<div>").attr("class", "ddqt-col")
@@ -257,16 +279,15 @@ DDQTREE.prototype = {
         .appendTo($t);
     }
 
-    this.height = this.$q(".tree").height()
-    this.cell_height = 0.80*this.height/max_depth;
+    this.height = this.max_depth;
+    this.cell_height = this.max_height + 4;//0.80*this.height/this.max_depth;
     for (var i=depth_ele.length-1;i>=0;i--) {
-      var $tr = $($(".target-col")[i]);
-      var top = -1/max_depth/2.0-1/depth_ele[i].length/2;
+      var $tr = $(self.$q(".target-col")[i]);
+      var top = -1/this.max_depth/2.0-1/depth_ele[i].length/2;
       for (var j=0;j<depth_ele[i].length;j++) {
         var $target = $("<div>")
             .addClass("target")
             .css("height", this.cell_height + "px")
-            .css("margin", "20px 0px")
             .appendTo($tr)  
             .attr("data-ele_id", depth_ele[i][j].ele_id)
             .attr("data-parent_id", depth_ele[i][j].parent_id)
@@ -283,34 +304,35 @@ DDQTREE.prototype = {
         self.targets.push($target);
       }
     }
-    setTimeout(function() {
-        self.redrawQuestions();
-    }, 10);
+    //setTimeout(function() {
+    //    self.redrawQuestions();
+    //}, 10);
   },
 
   addConcept: function(concept, target) {
     var self = this;
-    self.lastAnswerHeight = self.$q("#top-answer").height();
+    //self.lastAnswerHeight = self.$q("#top-answer").height();
     if ($(target).children().length) {
       $(target).children()
           .css("position", "relative")
           .css("border", "2px dashed orange")
-      self.$q(".option").append($(target).children()[0]);
+      $ele = $(target).children().eq(0).width(this.cell_width);
+      self.$q(".concepts").append($ele);
     }
-    $(target).height($(concept).height());
+    $(target).height($(concept).height()+8);
     $(target).append(concept);
     $(concept)
-      .css("border", "0px solid orange")
+      .css("border", "2px solid white")
       .css("position", "absolute")
       .css("top", "0px")
       .css("left", "0px")
       .css("right", "0px")
       .css("bottom", "0px")
       .css("z-index", "0")
+      .css("width", "")
       .data("dragged", "true")
     setTimeout(function() {
-    $(concept)
-      .data("dragged", "")
+      $(concept).data("dragged", "")
     },100);
 
     self.checkDone();
@@ -347,27 +369,41 @@ DDQTREE.prototype = {
     var self = this;
     self.resizeHeight();
     var depth_ele = this.depth_ele;
-    var canvas = $("canvas");
+    var canvas = self.$q("canvas");
+
+    //last target boxes
+    for (var j=0;j<depth_ele[depth_ele.length-1].length;j++) {
+      var ele = this.$q(".target[data-ele_id='"+depth_ele[depth_ele.length-1][j].ele_id+"']");
+      console.log(ele);
+    }
     for (var i=depth_ele.length-2;i>=0;i--) {
       $(canvas[i]).attr("width",$(canvas[i]).parent().width())
       $(canvas[i]).attr("height",$(canvas[i]).parent().height())
       for (var j=0;j<depth_ele[i].length;j++) {
         $eles = this.$q(".target[data-parent_id='"+depth_ele[i][j].ele_id+"']");
-        var min=1000;
-        var max=0;
-        $eles.each(function(k,ele) {
-          var $ele=$(ele);
-          if ($ele.position().top + $ele.height() > max)
-              max = $ele.position().top + $ele.height();
-          if ($ele.position().top < min)
-              min = $ele.position().top;
-        });
-        ele = this.$q(".target[data-ele_id='"+depth_ele[i][j].ele_id+"']");
+        var ele = this.$q(".target[data-ele_id='"+depth_ele[i][j].ele_id+"']");
         var _top = 0;
-        if (j>0) {
-         _top -= this.$q(".target[data-ele_id='"+depth_ele[i][j-1].ele_id+"']").height() + 20;
-        }      
-        var top = (max + min) / 2 - $(ele).height() / 2 + _top ;
+        if ($eles.length) {
+          var min=1000;
+          var max=0;
+          $eles.each(function(k,ele) {
+            var $ele=$(ele);
+            if ($ele.position().top + $ele.height() > max)
+                max = $ele.position().top + $ele.height();
+            if ($ele.position().top < min)
+                min = $ele.position().top;
+          });
+          if (j>0) {
+           _top -= this.$q(".target[data-ele_id='"+depth_ele[i][j-1].ele_id+"']").height() + 20;
+          }      
+          var top = (max + min) / 2 - $(ele).height() / 2 + _top ;
+        } else {
+          if (j>0) {
+           _top -= this.$q(".target[data-ele_id='"+depth_ele[i][j-1].ele_id+"']").height() + 20;
+          }      
+          var top = _top  + 20;
+        }
+        if (top < 0) top = 0;
         $(ele).css("top", top + "px");
 
         var y1 = $(ele).position().top + $(ele).height() / 2 + 20;
@@ -385,39 +421,34 @@ DDQTREE.prototype = {
     var concepts = [];
     for (var i=0;i<depth_ele.length;i++) {
       for (var j=0;j<depth_ele[i].length;j++) {
-        var ele = depth_ele[i][j];
-        concepts.push(ele);
+        concepts.push(depth_ele[i][j]);
       }
     }
     concepts = shuffle(concepts);
-    this.cell_width = this.$q(".target").width() - 1;
+
+    this.cell_width = 85/depth_ele.length + "%";
+    this.max_height = 0;
 
     //void 
     for (var i=0; i<concepts.length; i++) {
-      concept = concepts[i];
-      var concept_text = $("<div class='concept-text'>"+concept.text+"</div>")
-      var concept_div = $("<div>")
-            .html(concept_text)
-            .addClass('concept')
+      var concept = concepts[i];
+      var $concept_div = $("<div>").addClass('concept')
             .attr("data-parent_id", concept.parent_id)
             .attr("data-ele_id", concept.ele_id)
-            .css("text-align", "center")
-            .css("display", "inline-block")
             .css("width", self.cell_width)
             .data("depth", concept.depth)
 
       if (concept.image) {
         $("<img>").attr("src", concept.image)
-          .addClass("concept-image")
-          .attr("width", "40%")
-          .css("display", "inline")
-          .css("margin", "auto")
-          .prependTo(concept_div);
-      } else {
-        concept_text.addClass("solo-text");
+            .addClass("concept-image")
+            .appendTo($("<span>").appendTo($concept_div));
       }
+      var $concept_text = $("<span>").html(concept.text)
+        .addClass('concept-text')
+        .addClass(concept.image ? "": "text-only")
+        .appendTo($concept_div)
 
-      $(concept_div).draggable({ 
+      $concept_div.draggable({ 
         containment: self.qEle,
         start: function( event, ui ) {
           $(event.target)
@@ -427,31 +458,31 @@ DDQTREE.prototype = {
             .css("z-index", "100")
         },
       });
-      self.$q('.option').append(concept_div);
+      self.$q('.concepts').append($concept_div);
+      if ($concept_div.height() > this.max_height) {
+        this.max_height = $concept_div.height();
+      }
     };
 
-    $(self.qEle).droppable({
-      activeClass: "ui-state-hover",
-      hoverClass: "ui-state-active",
-      drop: function( event, ui ) {
-        if ($(ui.draggable[0]).data("dragged")) {
-          $(ui.draggable[0]).data("dragged", ""); 
-        } else {
-          self.$q(".option").append(ui.draggable[0]);
-          $(ui.draggable[0])
-            .css("border", "2px dashed orange")
-            .css("position", "relative")
-            .css("left", "0")
-            .css("top", "0");
-          self.redrawQuestions();
-        }
-      }
-    });
+    //$(self.qEle).droppable({
+    //  activeClass: "ui-state-hover",
+    //  hoverClass: "ui-state-active",
+    //  drop: function( event, ui ) {
+    //    if ($(ui.draggable[0]).data("dragged")) {
+    //      $(ui.draggable[0]).data("dragged", ""); 
+    //    } else {
+    //      self.$q(".concepts").append(ui.draggable[0]);
+    //      $(ui.draggable[0])
+    //        .css("border", "2px dashed orange")
+    //        .css("position", "relative")
+    //        .css("left", "0")
+    //        .css("top", "0");
+    //      self.redrawQuestions();
+    //    }
+    //  }
+    //});
   
     self.$q("#send-button").hide(); 
-    self.$q(".table-feedback").show();
-    self.$q(".table-feedback").css("border", "none");
-
     self.$q("#check-button").click(function(){
       self.checkAnswer();
       self.submit();
@@ -467,8 +498,8 @@ DDQTREE.prototype = {
     }
 
     self.$q("#check-button").toggle(done);
-    if (done && self.lastAnswerHeight > 0)
-        self.$q("#top-answer").height(self.lastAnswerHeight);
+    //if (done && self.lastAnswerHeight > 0)
+    //    self.$q("#top-answer").height(self.lastAnswerHeight);
     return done;
   },
 
@@ -515,9 +546,8 @@ DDQTREE.prototype = {
     var self = this;
     setTimeout(function() {
       self.$q(".concept").each(function(i, concept) {
-            console.log(concept);
           var c2 = $(concept).clone(true)
-          c2.appendTo(".option");
+          c2.appendTo(".concepts");
       });
       self.$q(".concept").each(function(i, concept) {
           var parent_id = $(concept).attr('data-ele_id')

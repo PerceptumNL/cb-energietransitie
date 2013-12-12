@@ -4,6 +4,13 @@ $answer: #FFAE4D;
 $answer-hover: #FD8900;
 $answer-disabled: #aaa;
 $width: 788px;
+$title-font-size: 22px;
+
+@mixin title() {
+    text-align: center;
+    font-size: $title-font-size;
+    margin: 10px 0px;
+}
 
 .gcb-lesson-content br {
     height: 0px;
@@ -116,7 +123,7 @@ question {
   right: -1px;
   position: absolute;
   color: white;
-  font-size: 20px;
+  font-size: $title-font-size;
   z-index: 10; 
 }
 
@@ -217,7 +224,7 @@ question {
 
 
 #overview {
-  font-size: 18px;
+  font-size: $title-font-size;
   display: none; 
   #statistics img {
     margin-top: -20px;
@@ -350,7 +357,7 @@ question {
 }
 
 #question {
-  font-size: 24px;
+  font-size: $title-font-size;
   text-align: center;
 }
 

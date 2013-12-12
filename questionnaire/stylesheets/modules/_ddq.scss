@@ -2,9 +2,7 @@ $ddq-frame-color: #c4c5c7;
 .ddq {
 
   .ddq-title {
-    text-align: center;
-    margin: 10px 0;
-    font-size: 20px;
+    @include title();
   }
 
   #top-answer {
