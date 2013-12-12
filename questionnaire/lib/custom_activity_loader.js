@@ -446,22 +446,6 @@ var Questionnaire = {
     }
   },
 
-  isVideoStopCompleted: function(indexOfStop) {
-    for (var i=0;i<this.questionsList.length;i++) {
-      this.nround = this.data[0].nround;
-      if (Object.keys(this.data[i]).length) {
-        console.debug(JSON.stringify(this.data[i], undefined, 2));
-        this.createQuestion(i, this.data[i])
-        self.doneQuestions[i] = self.leftQuestions[i];
-        self.doneQuestions[i].result = self.data[i].result;
-        self.leftQuestions[i] = undefined;
-        if (this.status != COMPLETED && self.questionsList[i].time) { 
-          self.lastTime = self.time2ds(self.questionsList[i].time) / 10.0 + 0.1;
-        };
-      }
-    }
-  },
-
   loadSavedData: function() {
     var self = this;
     for (var i=0;i<this.data.length;i++) {
@@ -469,7 +453,6 @@ var Questionnaire = {
       if (Object.keys(this.data[i]).length) {
         console.debug(JSON.stringify(this.data[i], undefined, 2));
         var index = this.data[i].index;
-        this.createQuestion(index, this.data[i])
         self.doneQuestions[index] = self.leftQuestions[index];
         self.doneQuestions[index].result = self.data[i].result;
         self.leftQuestions[index] = undefined;
@@ -698,7 +681,11 @@ var Questionnaire = {
       }, 500);
       return;
     }     
-    this.createQuestion(index);
+    if (this.data[index]) {
+      this.createQuestion(index, this.data[index])
+    } else {
+      this.createQuestion(index);
+    }
     this.questionInstances[index].show();
   },
 
