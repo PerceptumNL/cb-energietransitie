@@ -112,20 +112,26 @@ class StudentProgress():
         return transforms.loads(self.progress.value)
 
     def get_questions_stats(self, unit, lesson):
-        try:
-            unit_id = str(unit.unit_id)
-            lesson_id = str(lesson.lesson_id)
-            count = len(self.value[unit_id][lesson_id][0])
-            correct = len([q for q in self.value[unit_id][lesson_id][0] if "correct" in q and q['correct'] == True])
-            incorrect = len([q for q in self.value[unit_id][lesson_id][0] if "correct" in q and q['correct'] == False])
-            if count == correct:
-                is_finished = True
-            else:
-                is_finished = False
-            return correct, incorrect, count, is_finished
-        except Exception, e:
-            logging.error(Exception)
-            logging.error(str(e))
+        question_stats = []
+        unit_id = str(unit.unit_id)
+        lesson_id = str(lesson.lesson_id)
+        for attempt in self.value[unit_id][lesson_id]:
+            try:
+                # count = len(self.value[unit_id][lesson_id][n])
+                # correct = len([q for q in self.value[unit_id][lesson_id][n] if "correct" in q and q['correct'] == True])
+                # incorrect = len([q for q in self.value[unit_id][lesson_id][n] if "correct" in q and q['correct'] == False])
+                incorrect = len([q for q in attempt if "correct" in q and q['correct'] == False])
+                count = len(attempt)
+                correct = len([q for q in attempt if "correct" in q and q['correct'] == True])
+                if count == correct:
+                    is_finished = True
+                else:
+                    is_finished = False
+                question_stats.append((correct, incorrect, count, is_finished))
+            except Exception, e:
+                logging.error(Exception)
+                logging.error(str(e))
+        return question_stats
 
 
         

@@ -1,11 +1,9 @@
-<style>
-  .rotate {
-    -moz-transform: rotate(-90.0deg);  /* FF3.5+ */
-    -o-transform: rotate(-90.0deg);  /* Opera 10.5 */
-    -webkit-transform: rotate(-90.0deg);  /* Saf3.1+, Chrome */
-    filter:  progid:DXImageTransform.Microsoft.BasicImage(rotation=0.083);  /* IE6,IE7 */
-    -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=0.083)";
-    }
+<style type="text/css">
+  #student_progress td, #student_progress th , #student_progress thead {
+
+    border: 1px solid;
+    padding: 2px 2px 2px 2px;
+  }
   .attempt {
     display: -webkit-box;
     display: -moz-box;
@@ -18,61 +16,64 @@
     text-align: left;
     /*white-space: nowrap;*/
     float:left;
+    /*width: 10%;*/
     margin: 0px 5px;
     /*display: inline-block;*/
+  }
+  td:first-child, th:first-child {
+    display: none;
+  }
+  td {
+    min-width: 70px;
   }
 </style>
 <br />
 <br />
-<br />
-<h3>Questionnaire Analytics</h3>
-<br />
-<br />
-<table >
+<div id="student_progress">
+<table>
 <thead>
     <tr>
-	<th colspan="17" >Studievoortgang </th>
+      <th colspan="17" style="text-align:center"><b>Studievoortgang </b> </th>
     </tr>
 </thead>
 <thead>
     <tr>
-<th>Student Naam</th>
-	<th colspan="3">{{units[0].title}} </th>
-	<th colspan="13">{{units[1].title}} </th>
+      <th>Unit</th>
+      <th colspan="3" style="text-align:center">{{units[0].title}} </th>
+      <th colspan="13" style="text-align:center">{{units[1].title}} </th>
     </tr>
-<tr><td>Unit</td>
-{% for unit in units %}
-   <!--<td><h5 class="rotate"> {{ unit.title }} </h5></td>-->
+<tr>
+  <td>Les</td>
+  {% for unit in units %}
     {% for lesson in unit.lessons %}
-	<td><h6 class="_rotate">  {{ lesson.title }} </h6></td>
+      <td>
+        <h6>
+          <small>{{ lesson.title }} </small>
+        </h6>
+      </td>
     {% endfor %}
 
 {% endfor %}
 </tr>
 </thead>
-{% for student in students %}
     
 
 <!-- {{student.progress.value}}</br> -->
-    <tr><td>{{ student.email }}-{{ student.name }}</td>
+    <tr><td>{{ student.name }}</td>
     {% for unit in units %}
         {% for lesson in unit.lessons %}
             {% set stats = student.progress.get_questions_stats(unit, lesson) %}
-
-            {% if stats[3] %}
-            <td style="background-color:green">100%
-              <!-- {{stats}} -->
-                <!-- SCORE = {{stats[0][0]}} / {{stats[0][2]}} -->
-            </td>
+            {% if stats[100] %}
+            <!-- <td style="background-color:green">
+              100% <br /> SCORE = <br /> {{stats[0]}} / {{stats[2]}}
+            </td> -->
             {% elif student.progress.value[unit.unit_id|string][lesson.lesson_id|string][0] %}
-            <!-- {{ stats[2] }} -->
-        	<td style="background-color:white">
-            <!-- {{stats}} -->
-                <div class="attempt">
+            <td style="background-color:white">
+              <div class="attempt">
               {% for attempt in student.progress.value[unit.unit_id|string][lesson.lesson_id|string] %}
                 {% set rowloop = loop %}
                 {% set ques_attempt = stats[rowloop.index-1]%}
-                <div class='col' >
+                <div class='col'>
                 {% for question in attempt %}
                   <small>{{ loop.index }}</small>
                       {% if question['correct'] == True %}
@@ -82,7 +83,6 @@
                       {% endif %}
                   <br />
                 {% endfor %}
-                  <!-- {{stats}} -->
                   <hr />
                   <span {% if ques_attempt[3] %}
                   style="color: green"
@@ -90,27 +90,18 @@
                   {{ques_attempt[0]}}/{{ques_attempt[2]}}
                   
                   </span>
-                  <!-- <br />{{ques_attempt}} / {{ques_attempt}} -->
                   <br />
                 </div> <!-- col -->
               {% endfor %}
               </div> <!-- attempt -->
-<!--             	{% for el in student.progress.value[unit.unit_id|string][lesson.lesson_id|string][0] %}
-                {{ loop.index }}
-                    {% if el['correct'] == True %}
-            	        &#10004;
-                    {% else %}
-                    &#10007;
-                    {% endif %}
-                <br />
-            	{% endfor %}
-                SCORE = {{stats[0]}} / {{stats[2]}}
-                </td> -->
+              </td>
             {% else %}
-        	    <td style="background-color: #ccbbbb"></td>
+              <td style="background-color: #ccbbbb"></td>
             {% endif %}
         {% endfor %}
     {% endfor %}
     </tr>
-{% endfor %}
 </table>
+</div>
+<br />
+<br />

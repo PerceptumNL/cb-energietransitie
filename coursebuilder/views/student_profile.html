@@ -9,6 +9,8 @@
 {% endblock %}
 
 {% block main_content %}
+
+  {% if student %}
 <div id="gcb-main">
   <div class="gcb-article tab-content">
     <div class="gcb-aside">
@@ -16,27 +18,6 @@
         {# I18N: Title of the student progress page.#}
         {{ gettext('Student Progress') }}
       </h2>
-
-      {% if student %}
-        {{units}}
-        <table>
-        <tr>
-        {% for unit in units %}
-        <td>unit</td>
-          {% for lesson in unit.lessons %}
-              {% if student.progress.value[unit.unit_id][lesson.lesson_id|string][0] %}
-                <td style="background-color:orange">
-                {% for el in  student.progress.value[unit.unit_id][lesson.lesson_id|string][0] if el['correct']%}
-                    &#10004;
-                {% endfor %}
-                </td>
-                {% else %}
-                <td style="background-color:red"></td>
-              {% endif %}
-          {% endfor %}
-        {% endfor %}
-        </tr>
-        </table>
 
         {% include 'student_data_table.html' %}
 
@@ -89,6 +70,11 @@
     </div>
   </div>
 </div>
+
+{% if student %}
+{% include 'student_questionnaire_table.html' %}
+{% endif %}
+
 
 {% endblock %}
 
