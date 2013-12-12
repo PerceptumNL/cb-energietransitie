@@ -532,6 +532,15 @@ class StudentProfileHandler(BaseHandler):
         progress = StudentProgress.get_or_create_progress(self.app_context, student)
         setattr(student, "progress", progress)
         ###
+        ### 2013-12-11
+        from models.courses import Course
+        self.course = Course(self)
+        units = self.course.get_units()
+        for _unit in units:
+            lessons = self.course.get_lessons(_unit.unit_id)
+            setattr(_unit, "lessons",  lessons)
+        ###
+        self.template_value['units'] = units
         self.template_value['navbar'] = {'progress': True}
         self.template_value['student'] = student
         self.template_value['student_name'] = name
