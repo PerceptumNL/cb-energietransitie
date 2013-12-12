@@ -468,6 +468,9 @@ var Questionnaire = {
         } else {
           $(".fullscreen").removeClass("fullscreen");
         }
+        if (self.getInstance() && "redrawQuestions" in self.getInstance()) {
+          self.getInstance().redrawQuestions();
+        }
       });
       VideoQuestionnaire.create($(this.qEle).parent(), this.activity, this.lastTime);
     }
