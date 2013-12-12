@@ -211,19 +211,19 @@
 
 // Extra small screen / phone
 // Note: Deprecated @screen-xs and @screen-phone as of v3.0.1
-@screen-xs:                  480px;
+@screen-xs:                  0;
 @screen-xs-min:              @screen-xs;
 @screen-phone:               @screen-xs-min;
 
 // Small screen / tablet
 // Note: Deprecated @screen-sm and @screen-tablet as of v3.0.1
-@screen-sm:                  768px;
+@screen-sm:                  10px;
 @screen-sm-min:              @screen-sm;
 @screen-tablet:              @screen-sm-min;
 
 // Medium screen / desktop
 // Note: Deprecated @screen-md and @screen-desktop as of v3.0.1
-@screen-md:                  992px;
+@screen-md:                  1100px;
 @screen-md-min:              @screen-md;
 @screen-desktop:             @screen-md-min;
 
@@ -626,11 +626,11 @@
 
 // Small screen / tablet
 @container-tablet:             ((720px + @grid-gutter-width));
-@container-sm:                 @container-tablet;
+@container-sm:                 826px; //@container-tablet;
 
 // Medium screen / desktop
 @container-desktop:            ((940px + @grid-gutter-width));
-@container-md:                 @container-desktop;
+@container-md:                 1085px; //@container-desktop;
 
 // Large screen / wide desktop
 @container-large-desktop:      ((1140px + @grid-gutter-width));
@@ -640,29 +640,42 @@
 
 
 
+
+// Custom for Energie Transitie
+
+@media (min-width: @screen-md-min) and (max-width: @screen-md-max) {
+    [role=main] {
+        padding-left: 0px !important;
+    }
+}
+@media (max-width: @screen-sm-max) {
+    [role=main] {
+        margin-top: 20px;
+    }
+}
+
 @media (max-width: @screen-sm-max) { 
-
-.middle-align {
-  display: table-cell;
-  padding: 10px 0;
-  vertical-align: middle;
-  width: 1000px;
+  .middle-align {
+    display: table-cell;
+    padding: 10px 0;
+    vertical-align: middle;
+    width: 1000px;
+  }
+}
+@media (max-width: @screen-sm-min) { 
+    .schema {
+        margin: 0 auto;
+    }
 }
 
-}
 @media (min-width: @screen-sm-min) { 
-
-
-#answer {
-  border-left: 1px dashed #c4c5c7;
-}
-
-
-.middle-align {
-  display: table-cell;
-  height: 500px;
-  vertical-align: middle;
-  width: 1000px;
-}
-
+  #answer {
+    border-left: 1px dashed #c4c5c7;
+  }
+  .middle-align {
+    display: table-cell;
+    height: 500px;
+    vertical-align: middle;
+    width: 1000px;
+  }
 }

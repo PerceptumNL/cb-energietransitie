@@ -21,7 +21,12 @@
 footer {
   text-align: center;
   background-color: white;
-  padding: 30px 0;
+  padding: 20px 0;
+  display: table !important;
+  min-width: 827px;
+  width: 100%;
+  vertical-align: middle;
+  margin-top: 30px;
 }
 
 footer div {
@@ -32,7 +37,7 @@ footer div {
     position: absolute;
     bottom: 70px;
     right: 0px;
-    left: 0;
+    left: -2px;
     z-index: -10;
     opacity: 0.6;
 }
@@ -59,7 +64,7 @@ footer div {
   display: inline;
 }
 .schema {
-  max-width: 1000px;
+  width: 500px !important;
 }
 .container {
   margin-top: 40px;
@@ -89,6 +94,8 @@ body {
   background: white;
   border-radius: 4px;
   -webkit-box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+  -moz-box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.175);
   padding-top: 20px;
   padding-bottom: 20px;
 }
@@ -96,6 +103,8 @@ body {
   background: white;
   border-radius: 4px;
   -webkit-box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+  -moz-box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.175);
   padding: 0px 20px 30px 20px;
   margin-bottom: 20px;
 }
