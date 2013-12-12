@@ -164,10 +164,10 @@
             <g:plusone size="medium"></g:plusone>
           </span>
         {% endif %}
--->
 
       </div>
     </div>
+-->
 
     {% block navbar %}
     {% endblock %}
@@ -182,16 +182,15 @@
         {% block main_content %}{% endblock %}
         {{course_info.base.after_main_content_ends | safe}}
       </div>
+      <!-- footer section -->
     </div>
-
-    <!-- footer section -->
-    <div style="height: 50px;" id="gcb-signature"></div>
-    <footer class="row">
+    <footer>
         <div class="col-sm-offset-1 col-sm-2"><a href="http://www.vu.nl/nl/index.asp" target="_blank"><img style="width:130px;" src="assets/img/VU.png"/></a></div>
         <div class="col-sm-2"><a href="http://www.perceptum.nl/" target="_blank"><img style="width:130px;" src="assets/img/header-logo.png"/></a></div>  
         <div class="col-sm-2"><a href="http://www.biosolarcells.nl/" target="_blank"><img style="width:130px;"  src="assets/img/BioSollar.png"/></a></div>
         <div class="col-sm-2 col-sm-offset-2 "><img style="width:100px;" src="assets/img/by-nc-nd.png"/></div>  
     </footer>
+
     {{course_info.base.before_body_tag_ends | safe}}
 <script type='text/javascript'>
 (function (d, t) {
