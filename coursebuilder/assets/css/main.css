@@ -36,10 +36,12 @@ footer div {
 #windmill {
     position: absolute;
     bottom: 70px;
-    right: 0px;
+    right: -2px;
     left: -2px;
     z-index: -10;
     opacity: 0.6;
+    min-width: 827px;
+    width: 101%;
 }
 
 .gcb-outline li,
@@ -64,7 +66,9 @@ footer div {
   display: inline;
 }
 .schema {
-  width: 500px !important;
+  width: 450px !important;
+  margin-left: 100px;
+  opacity: 0.9;
 }
 .container {
   margin-top: 40px;

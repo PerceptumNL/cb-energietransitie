@@ -15,14 +15,12 @@
       setTimeout(function() {cbHideMsg();}, 20000);
     }
   </script>
-
 {% endblock %}
 
 {% block main_content %}
     <div class="gcb-cols gcb-syllabus schema">
-      
       <div class="row gcb-outline schema-custom">
-        <div class="panel panel-default schema col-md-5 col-sm-offset-1">
+        <div class="panel panel-default">
           <div class="panel-body">
             <h1 class="gcb-schedule-headers" style="margin-left:20px;">
               {# I18N: This should be interpreted as a noun. It is the title for the course schedule on the main contents page. #}
@@ -297,12 +295,10 @@
 -->
 
       </div>
-<object id="windmill" data="https://s3.amazonaws.com/energietransitie/windmill.svg">
-   <img src="https://s3.amazonaws.com/energietransitie/windmill.png" width="200" height="50">
-</object>
-     
-     
     </div>
+    <object id="windmill" data="https://s3.amazonaws.com/energietransitie/windmill.svg">
+       <img src="https://s3.amazonaws.com/energietransitie/windmill.png" width="200" height="50">
+    </object>
      <script type="text/javascript">
          $(document).ready(function(){
            $('.close-message-box').click(function(){
