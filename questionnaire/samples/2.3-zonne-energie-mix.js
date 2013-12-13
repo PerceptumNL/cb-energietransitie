@@ -243,12 +243,12 @@
                 {
                     "type": "text",
                     "text": "Waar",
-                    "feedback": false
+                    "feedback": ""
                 },
                 {
                     "type": "text",
                     "text": "Niet waar",
-                    "feedback": false
+                    "feedback": ""
                 }
             ]
         },

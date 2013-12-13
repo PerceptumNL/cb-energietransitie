@@ -127,27 +127,27 @@
                     "children": [
                         {
                             "type": "text",
-                            "text": "Traditionele landbouw\n(η: 0,5%)",
+                            "text": "PV panelen (η: 20%)",
                             "children": [
                                 {
                                     "type": "text",
-                                    "text": "Biomassa (0,5 J)"
+                                    "text": "LED vertical farming (η: 7,5%)",
+                                    "children": [
+                                        {
+                                            "type": "text",
+                                            "text": "Biomassa (1,5J)"
+                                        }
+                                    ]
                                 }
                             ]
                         },
                         {
                             "type": "text",
-                            "text": "PV panelen\n(η: 20%)",
+                            "text": "Traditionele landbouw (η: 0,5%)",
                             "children": [
                                 {
                                     "type": "text",
-                                    "text": "LED vertical farming\n(η: 7,5%)",
-                                    "children": [
-                                        {
-                                            "type": "text",
-                                            "text": "Biomassa\n(1,5J)"
-                                        }
-                                    ]
+                                    "text": "Biomassa (0,5 J)"
                                 }
                             ]
                         }
