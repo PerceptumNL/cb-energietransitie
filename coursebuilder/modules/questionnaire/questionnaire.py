@@ -185,6 +185,13 @@ class StudentProgress():
 
     def add(self, unit_id, lesson_id, nround, index, count, event_key, correct):
         progress_dict = transforms.loads(self.progress.value)
+
+        if not (str(unit_id) in progress_dict):
+            progress_dict[unit_id] = StudentProgress._empty_unit(self.app_context, unit_id)
+
+        if not (str(lesson_id) in progress_dict[unit_id]):
+            progress_dict[unit_id][lesson_id] = []
+
         current_progress = progress_dict[str(unit_id)][str(lesson_id)]
 
         if len(current_progress) == 0:
@@ -203,15 +210,21 @@ class StudentProgress():
         self.progress.put()
         
     @classmethod
-    def _empty_progress(self, app_context):
+    def _empty_unit(cls, app_context, unit_id):
+        unit_progress_dict = {}
+        course = models.courses.Course(None, app_context=app_context)
+        lessons = course.get_lessons(unit_id)
+        for lesson in lessons:
+            unit_progress_dict[lesson.lesson_id] = []
+        return unit_progress_dict
+
+    @classmethod
+    def _empty_progress(cls, app_context):
         progress_dict = dict()
         course = models.courses.Course(None, app_context=app_context)
         units = course.get_units()
         for unit in units:
-            progress_dict[unit.unit_id] = dict()
-            lessons = course.get_lessons(unit.unit_id)
-            for lesson in lessons:
-                progress_dict[unit.unit_id][lesson.lesson_id] = []
+            progress_dict[unit.unit_id] = cls._empty_unit(app_context, unit.unit_id)
         return progress_dict
 
     @classmethod
@@ -354,7 +367,7 @@ class QuestionnaireRESTHandler(BaseRESTHandler):
         index = int(payload['index']) or 0
         nround = int(payload['nround']) or 0
         correct = bool(payload['correct']) or False
-        progress.add(unit_id, lesson_id, nround, index, count, str(event.key()), correct)
+        progress.add(str(unit_id), str(lesson_id), nround, index, count, str(event.key()), correct)
 
 
 custom_module = None
