@@ -87,7 +87,8 @@ DDQ.prototype = {
     var idx = 0;
     $.each(self.targetList, function(tIdx, target) {
       $.each(target.conceptList, function(cIdx, concept) {
-        var $concept = $("<div class='concept'>" + concept.text + "</div>")
+        var text = concept.text || ""
+        var $concept = $("<div class='concept'>" + text + "</div>")
           .data("targetIdx", tIdx)
           .data("idx", idx++)
           .draggable({
