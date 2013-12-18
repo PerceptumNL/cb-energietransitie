@@ -205,7 +205,7 @@ var Questionnaire = {
     }).fail(function() { 
       console.error("Error sending activity results");
       if (self.data) {
-        self.data.push(payload);
+        self.data[self.index] = payload;
         console.log(JSON.stringify(self.data))
       }
     });
@@ -270,6 +270,7 @@ var Questionnaire = {
   checkVideoQuestion: function(floatTs) {
     var currentDs = this.seconds2ds(floatTs)
     var indexes = this.findVideoQuestions(currentDs);
+
     for (i=0;i<indexes.length;i++) {
       var index = indexes[i];
       if (this.videoIndex != currentDs) {
@@ -278,7 +279,6 @@ var Questionnaire = {
          return true;
       }     
     }
-    this.videoIndex = -1;
     return false;
   },
 
@@ -434,6 +434,7 @@ var Questionnaire = {
   loadSavedData: function() {
     var self = this;
     for (var i=0;i<this.data.length;i++) {
+      if (this.data[i] == undefined) continue;
       this.nround = this.data[0].nround;
       if (Object.keys(this.data[i]).length) {
         console.debug(JSON.stringify(this.data[i], undefined, 2));
@@ -486,19 +487,21 @@ var Questionnaire = {
     });
 
     var self = this;
-    this.qEle = qEle;
-    this.data = data || [];
 
-    var a_data = $(qEle).attr("data");
-    if (a_data && a_data in window) {
-      this.data = window[a_data];
-    }
+    this.qEle = qEle;
 
     var a_status = $(qEle).attr("status");
     this.status = a_status || "0";
 
     this.asyncInit(function() {
         self.initData();
+
+        //Fetch data
+        self.data = data || Array(self.questionsList.length);
+        var a_data = $(qEle).attr("data");
+        if (a_data && a_data in window) {
+          self.data = window[a_data];
+        }
         self.loadEvents();
         self.loadSavedData();
         self.start();
@@ -635,6 +638,9 @@ var Questionnaire = {
       if (self.isVideoNext()) {
         self.fadeOut();
         self.trigger("continue");
+        setTimeout(function() {
+          self.videoIndex = -1;
+        }, 300)
       } else {
         self.jumpNext();
       }
